@@ -17,15 +17,15 @@ export type TimeData = {
 
 export type DataType = {
     simple: {
-        past: TimeData;
-        present: TimeData;
-        future: TimeData;
+        Past: TimeData;
+        Present: TimeData;
+        Future: TimeData;
     };
 };
 
 export const data: DataType = {
     simple: {
-        ['present']: {
+        ['Present']: {
             ['lesson1']: [
                 {
                     id: v1(),
@@ -74,7 +74,7 @@ export const data: DataType = {
                 },
             ],
         },
-        ['past']: {
+        ['Past']: {
             ['lesson1']: [
                 {
                     id: v1(),
@@ -96,7 +96,7 @@ export const data: DataType = {
                 },
             ],
         },
-        ['future']: {
+        ['Future']: {
             ['lesson1']: [
                 {
                     id: v1(),

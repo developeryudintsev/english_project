@@ -2,7 +2,7 @@ import {Collapse, IconButton, Paper} from '@mui/material';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 type PropsType = {
-    time: string,
+    time: 'Present'|"Past"|"Future",
     thorium: boolean,
     toggleTheory: () => void,
     getTheoryComponent: () => React.ReactNode

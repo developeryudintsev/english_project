@@ -65,7 +65,7 @@ export const Header = (props:HeaderType) => {
                             variant="body1"
                             sx={{ color:'#FFF44F', fontWeight: 500,minWidth: 100, fontFamily: 'Roboto, sans-serif' ,margin:'10px' }}
                         >
-                            English Practice cat v0.2
+                            English Practice cat v0.3
                         </Typography>
                     </Box>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>

@@ -4,12 +4,11 @@ import {Box} from "@mui/material";
 import {PracticeComponent} from "./smallCamponents/PracticeCamponent";
 
 type PropsType = {
-    time: string,
+    time: "Present" | "Future"|"Past",
     thorium: boolean,
     toggleTheory: () => void,
     getTheoryComponent: () => React.ReactNode
 }
-
 export const ThoriumComponent = (props: PropsType) => {
     return (
         <Box
@@ -31,7 +30,7 @@ export const ThoriumComponent = (props: PropsType) => {
                 time={props.time}
             />
             <VideoComponent />
-            <PracticeComponent time={'present'}/>
+            <PracticeComponent time={props.time}/>
         </Box>
     );
 };
