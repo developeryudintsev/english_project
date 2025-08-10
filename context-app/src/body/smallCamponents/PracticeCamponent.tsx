@@ -10,7 +10,7 @@ import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { data } from "../../Data/Data";
 
-type TimeKey =  "Present" | "Future"|"Past" ;
+type TimeKey =  "Present" | "Future"|"Past";
 
 type PracticeComponentProps = {
     time: TimeKey;
@@ -24,7 +24,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
     const [toggle, setToggle] = useState(false);
     const toggleTheory = () => setToggle((prev) => !prev);
     const questions = data.simple[time][lessonKey];
-    console.log(time)
     const [currentIndex, setCurrentIndex] = useState(0);
     const [answerStatus, setAnswerStatus] = useState<"none" | "correct" | "wrong">("none");
     const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
@@ -34,13 +33,9 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
 
     const handleAnswer = (answerText: string) => {
         if (answerStatus !== "none") return;
-
         setSelectedAnswer(answerText);
-
         if (!currentQuestion) return;
-
         const correctAnswer = currentQuestion.answers.find((ans) => ans.isCorrect);
-
         if (correctAnswer && correctAnswer.text === answerText) {
             setAnswerStatus("correct");
         } else {

@@ -29,7 +29,6 @@ export const App = () => {
                 return null;
         }
     };
-
     return (
         <>
             <Header time={time} setTime={setTime} handleChange={handleChange} />
