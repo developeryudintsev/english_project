@@ -12,14 +12,13 @@ export const VideoComponent = () => {
             elevation={3}
             sx={{
                 padding: 2,
-                position: "relative",
-                width: "100%",
+                position: 'relative',
+                width: '100%',
                 maxWidth: '600px',
-                margin: "0 auto",
                 marginBottom: 2,
-                textAlign: "center",
-                backgroundColor: "#444447",
-                transition: "all 0.3s ease",
+                textAlign: 'center',
+                backgroundColor:'#444447',
+                transition: 'all 0.3s ease',
             }}
         >
             <IconButton
@@ -35,7 +34,7 @@ export const VideoComponent = () => {
 
                 <Box
                     sx={{
-                        mt: 2,
+                        mt: 0,
                         overflowX: "auto",
                     }}
                 >

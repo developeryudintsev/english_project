@@ -7,7 +7,7 @@ createRoot(document.getElementById('root')!).render(
     <StrictMode>
         <div
             style={{
-                backgroundColor: '#fcfcb6',
+                backgroundColor: '#FFF44F',
                 minHeight: '100vh',       // Обеспечивает 100% высоты экрана
                 width: '100%',            // Полная ширина
                 margin: 0,                // Без отступов

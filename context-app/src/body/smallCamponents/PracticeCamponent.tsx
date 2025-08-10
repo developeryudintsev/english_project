@@ -65,7 +65,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                 position: "relative",
                 width: "100%",
                 maxWidth: "600px",
-                margin: "0 auto",
                 textAlign: "center",
                 backgroundColor: "#444447",
                 transition: "all 0.3s ease",
@@ -81,6 +80,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                 }}
             >
                 <Typography
+                    onClick={toggleTheory}
                     sx={{
                         color: "#FFF44F",
                         fontFamily: "Roboto, sans-serif",
@@ -88,7 +88,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                     }}
                 >
                     {!toggle
-                        ? `Практика – ${time} Simple (нажмите для просмотра)`
+                        ? `Практика – ${time} Simple`
                         : !isFinished
                             ? `Вопрос ${currentIndex + 1} из ${questions.length}`
                             : "Поздравляем! Вы ответили на все вопросы."
