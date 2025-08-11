@@ -63,7 +63,7 @@ export const Header = (props: HeaderType) => {
                                         gap: 0.5,
                                     }}
                                 >
-                                    English Practice cat v0.3
+                                    English Practice cat v0.4
                                     <ArrowForwardIos sx={{ fontSize: 16 }} />
                                 </Typography>
                                 <Avatar

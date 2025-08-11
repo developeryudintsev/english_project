@@ -15,14 +15,18 @@ type TimeKey =  "Present" | "Future"|"Past";
 type PracticeComponentProps = {
     time: TimeKey;
     lessonKey?: string;
+    toggle:boolean,
+    toggleTheory:(togglePractice:boolean)=>void,
 };
 
 export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                                                         time,
                                                                         lessonKey = "lesson1",
+                                                                        toggle,
+                                                                        toggleTheory
                                                                     }) => {
-    const [toggle, setToggle] = useState(false);
-    const toggleTheory = () => setToggle((prev) => !prev);
+    // const [toggle, setToggle] = useState(false);
+    // const toggleTheory = () => setToggle((prev) => !prev);
     const questions = data.simple[time][lessonKey];
     const [currentIndex, setCurrentIndex] = useState(0);
     const [answerStatus, setAnswerStatus] = useState<"none" | "correct" | "wrong">("none");
@@ -80,7 +84,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                 }}
             >
                 <Typography
-                    onClick={toggleTheory}
+                    onClick={()=>toggleTheory(!toggle)}
                     sx={{
                         color: "#FFF44F",
                         fontFamily: "Roboto, sans-serif",
@@ -96,7 +100,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                 </Typography>
 
                 <IconButton
-                    onClick={toggleTheory}
+                    onClick={()=>toggleTheory(!toggle)}
                     sx={{
                         color: "#FFF44F",
                         position: "absolute",

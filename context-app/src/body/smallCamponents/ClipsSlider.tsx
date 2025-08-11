@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Box, Skeleton } from "@mui/material";
+import  {useEffect, useRef, useState} from "react";
+import {Box, Button, Skeleton} from "@mui/material";
 
-export const clips = [
+export const clipsReverse = [
     "https://vk.com/video_ext.php?oid=885405802&id=456239205&hd=2",
     "https://vk.com/video_ext.php?oid=885405802&id=456239204",
     "https://vk.com/video_ext.php?oid=885405802&id=456239202&hd=2&autoplay=1",
@@ -13,65 +13,67 @@ export const clips = [
     "https://vk.com/video_ext.php?oid=885405802&id=456239178&hd=2",
     "https://vk.com/video_ext.php?oid=885405802&id=456239177&hd=2",
 ];
-
-export const ClipsSlider: React.FC = () => {
+export const clips = clipsReverse.reverse();
+type ClipsSliderType={
+    togglePractice:boolean,
+    toggleTheory:(togglePractice:boolean)=>void,
+}
+export const ClipsSlider = ({togglePractice,toggleTheory}:ClipsSliderType) => {
     const containerRef = useRef<HTMLDivElement | null>(null);
 
     const ORIGINAL_W = 240;
     const ORIGINAL_H = 480;
-    const VISIBLE_COUNT = 4;
     const GAP = 12;
-    const ARROW_SPACE = 64 * 2;
+    const ARROW_SIZE = 64;
+    const SCALE = 0.4;
+    const MAX_VISIBLE = 4;
+    const MIN_VISIBLE = 1;
 
-    const [page, setPage] = useState(0);
-    const maxPage = Math.max(0, clips.length - VISIBLE_COUNT);
+    const [visibleCount, setVisibleCount] = useState<number>(4);
+    const [page, setPage] = useState<number>(0);
 
-    const [scale, setScale] = useState(0.5);
-    const [loaded, setLoaded] = useState<boolean[]>(
-        Array(VISIBLE_COUNT).fill(false)
-    );
-
+    const maxPage = Math.max(0, clips.length - visibleCount);
+    // хранить загрузку по абсолютному индексу (для всех клипов)
+    const [loaded, setLoaded] = useState<boolean[]>(() => Array(clips.length).fill(false));
 
     useEffect(() => {
-        const calc = () => {
-            const root = containerRef.current;
-            if (!root) return;
-            const cw = root.clientWidth;
-            const totalGaps = GAP * (VISIBLE_COUNT - 1);
-            const availableForVideos = Math.max(
-                50,
-                cw - ARROW_SPACE - totalGaps
-            );
-            const widthPerVideo = availableForVideos / VISIBLE_COUNT;
-            let newScale = widthPerVideo / ORIGINAL_W;
-            newScale = Math.min(newScale, 1);
-            newScale = Math.max(newScale, 0.12);
-            setScale(newScale);
+        const handleResize = () => {
+            const width = window.innerWidth;
+            if (width < 470) {
+                setVisibleCount(MIN_VISIBLE);
+            } else if (width < 570) {
+                setVisibleCount(2);
+            } else if (width < 630) {
+                setVisibleCount(3);
+            } else {
+                setVisibleCount(MAX_VISIBLE);
+            }
         };
 
-        calc();
-        const ro = new (window as any).ResizeObserver(calc);
-        if (containerRef.current) ro.observe(containerRef.current);
-        window.addEventListener("resize", calc);
-        return () => {
-            ro.disconnect();
-            window.removeEventListener("resize", calc);
-        };
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
     }, []);
 
     useEffect(() => {
-        setLoaded(Array(VISIBLE_COUNT).fill(false));
-    }, [page]);
+        if (page > maxPage) setPage(maxPage);
+    }, [visibleCount, maxPage, page]);
 
-    const handleLoad = (index: number) => {
+    const handleLoad = (absIndex: number) => {
         setLoaded((prev) => {
+            if (prev[absIndex]) return prev;
             const copy = [...prev];
-            copy[index] = true;
+            copy[absIndex] = true;
             return copy;
         });
     };
 
-    const visibleClips = clips.slice(page, page + VISIBLE_COUNT);
+    const visibleClips = clips.slice(page, page + visibleCount);
+
+    const handlePracticeClick = () => {
+        toggleTheory(true)
+        console.log(togglePractice)
+    };
 
     return (
         <Box
@@ -82,7 +84,6 @@ export const ClipsSlider: React.FC = () => {
                 alignItems: "center",
                 justifyContent: "center",
                 gap: `${GAP}px`,
-                overflow: "hidden",
                 boxSizing: "border-box",
                 px: 1,
                 py: 2,
@@ -94,84 +95,127 @@ export const ClipsSlider: React.FC = () => {
                 onClick={() => setPage((p) => Math.max(0, p - 1))}
                 disabled={page === 0}
                 style={{
-                    width: 64,
-                    height: 64,
+                    width: ARROW_SIZE,
+                    height: ARROW_SIZE,
                     fontSize: 28,
                     background: "none",
                     border: "none",
                     color: "#FFF44F",
                     cursor: page === 0 ? "not-allowed" : "pointer",
+                    flexShrink: 0,
                 }}
             >
                 ‹
             </button>
 
-            {/* Видео ряд */}
+            {/* Видео + кнопки (каждое видео в колонке: iframe сверху, кнопка снизу) */}
             <Box
                 sx={{
                     display: "flex",
                     gap: `${GAP}px`,
                     alignItems: "flex-start",
-                    height: ORIGINAL_H * scale,
+                    width: visibleCount * (ORIGINAL_W * SCALE + GAP) - GAP,
+                    overflowX: "auto",
+                    scrollbarWidth: "none",
+                    msOverflowStyle: "none",
+                    "&::-webkit-scrollbar": { display: "none" },
+                    flexShrink: 0,
+                    height: ORIGINAL_H * SCALE + 56,
                 }}
             >
-                {visibleClips.map((clip, idx) => (
-                    <Box
-                        key={clip}
-                        sx={{
-                            width: ORIGINAL_W * scale,
-                            height: ORIGINAL_H * scale,
-                            overflow: "hidden",
-                            position: "relative",
-                            borderRadius: 1,
-                            background: "#000",
-                            boxShadow: 3,
-                        }}
-                    >
-                        {!loaded[idx] && (
-                            <Skeleton
-                                variant="rectangular"
-                                width={ORIGINAL_W * scale}
-                                height={ORIGINAL_H * scale}
-                                animation="wave"  // анимация волны для видимой загрузки
-                                sx={{
-                                    position: "absolute",
-                                    left: 0,
-                                    top: 0,
-                                    zIndex: 2,
-                                    backgroundColor: "rgba(255, 255, 255, 0.1)", // чуть светлее, чтобы отличался от чёрного
-                                    borderRadius: 1,
-                                }}
-                            />
-                        )}
-                        <div
-                            style={{
-                                width: ORIGINAL_W,
-                                height: ORIGINAL_H,
-                                transform: `scale(${scale})`,
-                                transformOrigin: "top left",
-                                willChange: "transform",
-                                pointerEvents: "none",
+                {visibleClips.map((clip, idx) => {
+                    const absIndex = page + idx;
+                    const isLoaded = Boolean(loaded[absIndex]);
+
+                    return (
+                        <Box
+                            key={clip}
+                            sx={{
+                                width: ORIGINAL_W * SCALE,
+                                height: ORIGINAL_H * SCALE + 56,
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                gap: 1,
+                                overflow: "visible",
+                                position: "relative",
+                                flexShrink: 0,
                             }}
                         >
-                            <iframe
-                                src={clip}
-                                width={ORIGINAL_W}
-                                height={ORIGINAL_H}
-                                frameBorder={0}
-                                allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
-                                allowFullScreen
-                                title={`clip-${page + idx}`}
-                                onLoad={() => handleLoad(idx)}
-                                style={{
-                                    display: "block",
-                                    border: 0,
-                                    pointerEvents: loaded[idx] ? "auto" : "none",
+                            {/* video wrapper (scaled content) */}
+                            <Box
+                                sx={{
+                                    width: ORIGINAL_W * SCALE,
+                                    height: ORIGINAL_H * SCALE,
+                                    overflow: "hidden",
+                                    position: "relative",
+                                    borderRadius: 1,
+                                    background: "#000",
+                                    boxShadow: 3,
                                 }}
-                            />
-                        </div>
-                    </Box>
-                ))}
+                            >
+                                {!isLoaded && (
+                                    <Skeleton
+                                        variant="rectangular"
+                                        width={ORIGINAL_W * SCALE}
+                                        height={ORIGINAL_H * SCALE}
+                                        animation="wave"
+                                        sx={{
+                                            position: "absolute",
+                                            left: 0,
+                                            top: 0,
+                                            zIndex: 2,
+                                            backgroundColor: "rgba(255,255,255,0.06)",
+                                            borderRadius: 1,
+                                        }}
+                                    />
+                                )}
+
+                                <div
+                                    style={{
+                                        width: ORIGINAL_W,
+                                        height: ORIGINAL_H,
+                                        transform: `scale(${SCALE})`,
+                                        transformOrigin: "top left",
+                                        willChange: "transform",
+                                    }}
+                                >
+                                    <iframe
+                                        src={clip}
+                                        width={ORIGINAL_W}
+                                        height={ORIGINAL_H}
+                                        frameBorder={0}
+                                        allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+                                        allowFullScreen
+                                        title={`clip-${absIndex}`}
+                                        onLoad={() => handleLoad(absIndex)}
+                                        style={{
+                                            display: "block",
+                                            border: 0,
+                                            pointerEvents: isLoaded ? "auto" : "none",
+                                        }}
+                                    />
+                                </div>
+                            </Box>
+
+                            {/* Кнопка Практика под видео */}
+                            <Button
+                                variant="contained"
+                                size="small"
+                                onClick={() => handlePracticeClick()}
+                                sx={{
+                                    mt: 0.5,
+                                    backgroundColor: "#FFF44F",
+                                    color: "black",
+                                    textTransform: "none",
+                                    width: "90%",
+                                }}
+                            >
+                                Практика
+                            </Button>
+                        </Box>
+                    );
+                })}
             </Box>
 
             {/* Next */}
@@ -180,13 +224,14 @@ export const ClipsSlider: React.FC = () => {
                 onClick={() => setPage((p) => Math.min(maxPage, p + 1))}
                 disabled={page === maxPage}
                 style={{
-                    width: 64,
-                    height: 64,
+                    width: ARROW_SIZE,
+                    height: ARROW_SIZE,
                     fontSize: 28,
                     background: "none",
                     border: "none",
                     color: "#FFF44F",
                     cursor: page === maxPage ? "not-allowed" : "pointer",
+                    flexShrink: 0,
                 }}
             >
                 ›

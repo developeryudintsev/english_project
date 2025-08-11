@@ -2,6 +2,7 @@ import {VideoComponent} from "./smallCamponents/VideoCamponent";
 import {TheoryComponent} from "./smallCamponents/TheoryCamponent";
 import {Box} from "@mui/material";
 import {PracticeComponent} from "./smallCamponents/PracticeCamponent";
+import {useState} from "react";
 
 type PropsType = {
     time: "Present" | "Future"|"Past",
@@ -10,6 +11,8 @@ type PropsType = {
     getTheoryComponent: () => React.ReactNode
 }
 export const ThoriumComponent = (props: PropsType) => {
+    const [toggleVideo, setToggleVideo] = useState(false);
+    const toggleTheory = (toggle:boolean) => setToggleVideo(toggle);
     return (
         <Box
             sx={{
@@ -29,8 +32,8 @@ export const ThoriumComponent = (props: PropsType) => {
                 toggleTheory={props.toggleTheory}
                 time={props.time}
             />
-            <VideoComponent />
-            <PracticeComponent time={props.time}/>
+            <VideoComponent togglePractice={toggleVideo} toggleTheory={toggleTheory}/>
+            <PracticeComponent time={props.time} toggle={toggleVideo} toggleTheory={toggleTheory}/>
         </Box>
     );
 };
