@@ -21,7 +21,7 @@ export const VideoComponent = ({show,setShowPractice}:VideoComponentType) => {
                 padding: 2,
                 position: 'relative',
                 width: '100%',
-                maxWidth: '600px',
+                maxWidth: '780px',
                 marginBottom: 0,
                 textAlign: 'center',
                 backgroundColor:'#444447',
@@ -43,6 +43,8 @@ export const VideoComponent = ({show,setShowPractice}:VideoComponentType) => {
                     sx={{
                         mt: 0,
                         overflowX: "auto",
+                        width: '100%',
+                        maxWidth: '780px',
                     }}
                 >
                     <ClipsSlider show={show} setShowPractice={setShowPractice} />

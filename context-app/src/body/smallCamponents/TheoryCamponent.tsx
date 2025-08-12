@@ -16,7 +16,7 @@ export const TheoryComponent = (props: PropsType) => {
                 padding: 2,
                 position: 'relative',
                 width: '100%',
-                maxWidth: '600px',
+                maxWidth: '780px',
                 marginBottom: 0,
                 textAlign: 'center',
                 backgroundColor:'#444447',

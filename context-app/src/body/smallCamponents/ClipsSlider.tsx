@@ -25,7 +25,7 @@ export const ClipsSlider = ({show,setShowPractice}:ClipsSliderType) => {
     const ORIGINAL_H = 480;
     const GAP = 12;
     const ARROW_SIZE = 64;
-    const SCALE = 0.4;
+    const SCALE = 0.6;
     const MAX_VISIBLE = 4;
     const MIN_VISIBLE = 1;
 
@@ -39,11 +39,11 @@ export const ClipsSlider = ({show,setShowPractice}:ClipsSliderType) => {
     useEffect(() => {
         const handleResize = () => {
             const width = window.innerWidth;
-            if (width < 470) {
+            if (width < 570) {
                 setVisibleCount(MIN_VISIBLE);
-            } else if (width < 570) {
+            } else if (width < 690) {
                 setVisibleCount(2);
-            } else if (width < 630) {
+            } else if (width < 810) {
                 setVisibleCount(3);
             } else {
                 setVisibleCount(MAX_VISIBLE);

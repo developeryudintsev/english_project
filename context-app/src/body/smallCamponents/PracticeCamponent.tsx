@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import VolumeUpIcon from "@mui/icons-material/VolumeUp"; // иконка звука
+import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import { data } from "../../Data/Data";
 
 type TimeKey = "Present" | "Future" | "Past";
@@ -28,7 +28,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                                                         toggle = false,
                                                                         toggleTheory,
                                                                         setShowPractice,
-                                                                        show
+                                                                        show,
                                                                     }) => {
     const questions = data.simple[time][lessonKey];
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -37,6 +37,18 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
 
     const currentQuestion = questions[currentIndex];
     const isFinished = currentIndex >= questions.length;
+
+    // Озвучка текста
+    const speakText = (text: string) => {
+        if (!text) return;
+        // Останавливаем возможную прошлую озвучку
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = "en-US"; // Можешь поменять на "ru-RU", если надо русский
+        utterance.rate = 1; // Скорость
+        utterance.pitch = 1; // Высота голоса
+        window.speechSynthesis.speak(utterance);
+    };
 
     const handleAnswer = (answerText: string) => {
         if (answerStatus !== "none") return;
@@ -54,13 +66,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
         setCurrentIndex((prev) => prev + 1);
         setAnswerStatus("none");
         setSelectedAnswer(null);
-    };
-
-    // функция воспроизведения текста
-    const speakText = (text: string) => {
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = "en-US"; // язык
-        speechSynthesis.speak(utterance);
     };
 
     useEffect(() => {
@@ -91,7 +96,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                 padding: 2,
                 position: "relative",
                 width: "100%",
-                maxWidth: "600px",
+                maxWidth: "780px",
                 textAlign: "center",
                 backgroundColor: "#444447",
                 transition: "all 1s ease",
@@ -112,14 +117,14 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                         color: "#FFF44F",
                         fontFamily: "Roboto, sans-serif",
                         userSelect: "none",
+                        cursor: "pointer",
                     }}
                 >
                     {!toggle
                         ? `Практика – ${time} Simple`
                         : !isFinished
                             ? `Вопрос ${currentIndex + 1} из ${questions.length}`
-                            : "Поздравляем! Вы ответили на все вопросы."
-                    }
+                            : "Поздравляем! Вы ответили на все вопросы."}
                 </Typography>
 
                 <IconButton
@@ -132,7 +137,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                         transform: "translateY(-50%)",
                     }}
                     size="small"
-                    aria-label="toggle practice"
                 >
                     <InfoOutlinedIcon />
                 </IconButton>
@@ -168,7 +172,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                     >
                         {currentQuestion.answers.map((ans) => {
                             const isSelected = selectedAnswer === ans.text;
-
                             let bgColor = "transparent";
                             if (answerStatus !== "none") {
                                 if (ans.isCorrect) {
@@ -177,7 +180,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                     bgColor = "#ff6347";
                                 }
                             }
-
                             return (
                                 <Box
                                     key={ans.text}
@@ -198,7 +200,8 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                             backgroundColor: bgColor,
                                             textTransform: "none",
                                             "&:hover": {
-                                                backgroundColor: bgColor === "transparent" ? "#555" : bgColor,
+                                                backgroundColor:
+                                                    bgColor === "transparent" ? "#555" : bgColor,
                                             },
                                         }}
                                     >
@@ -239,6 +242,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
         </Paper>
     );
 };
+
 
 
 

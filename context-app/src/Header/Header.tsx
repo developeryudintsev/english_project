@@ -7,9 +7,9 @@ import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
-import { ArrowForwardIos } from '@mui/icons-material';
+import {ArrowForwardIos} from '@mui/icons-material';
 import Select from '@mui/material/Select';
-import type { timeType } from '../App';
+import type {timeType} from '../App';
 import cat from '../picture/cat.JPG';
 
 type HeaderType = {
@@ -20,17 +20,17 @@ type HeaderType = {
 
 export const Header = (props: HeaderType) => {
     return (
-        <AppBar position="static" sx={{ backgroundColor: '#444447' }}>
+        <AppBar position="static" sx={{backgroundColor: '#444447'}}>
             <Container maxWidth="xl">
                 <Toolbar
                     disableGutters
                     sx={{
                         display: 'flex',
-                        flexDirection: { xs: 'column', sm: 'row' },
-                        alignItems: { xs: 'center', sm: 'center' },
+                        flexDirection: {xs: 'column', sm: 'row'},
+                        alignItems: {xs: 'center', sm: 'center'},
                         justifyContent: 'space-between',
                         width: '100%',
-                        gap: { xs: 2, sm: 0 },
+                        gap: {xs: 0, sm: 0},
                     }}
                 >
                     <Box
@@ -38,7 +38,8 @@ export const Header = (props: HeaderType) => {
                             display: 'flex',
                             alignItems: 'center',
                             gap: 1,
-                            order: { xs: 1, sm: 2 },
+                            order: {xs: 1, sm: 2},
+                            margin:1
                         }}
                     >
                         <Tooltip title="Ссылка на наш сайт">
@@ -49,7 +50,7 @@ export const Header = (props: HeaderType) => {
                                     textDecoration: 'none',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    gap: 8,
+                                    gap: 4,
                                     color: 'inherit',
                                 }}
                             >
@@ -64,7 +65,7 @@ export const Header = (props: HeaderType) => {
                                     }}
                                 >
                                     English Practice cat v0.5
-                                    <ArrowForwardIos sx={{ fontSize: 16 }} />
+                                    <ArrowForwardIos sx={{fontSize: 16}}/>
                                 </Typography>
                                 <Avatar
                                     alt="User Avatar"
@@ -73,6 +74,7 @@ export const Header = (props: HeaderType) => {
                                         border: '2px solid white',
                                         width: 40,
                                         height: 40,
+
                                     }}
                                 />
                             </a>
@@ -83,24 +85,24 @@ export const Header = (props: HeaderType) => {
                             display: 'flex',
                             alignItems: 'center',
                             gap: 2,
-                            marginBottom:0,
-                            order: { xs: 2, sm: 1 },
+                            order: {xs: 2, sm: 1},
+                            margin: 1
                         }}
                     >
                         <Typography
                             variant="body1"
-                            sx={{ color: '#FFF44F', fontWeight: 500 }}
+                            sx={{color: '#FFF44F', fontWeight: 500}}
                         >
                             Simple
                         </Typography>
-                        <FormControl sx={{ minWidth: 160 }} size="small">
+                        <FormControl sx={{minWidth: 160}} size="small">
                             <Select
                                 value={props.time}
                                 onChange={(e) =>
                                     props.handleChange(e.target.value as timeType)
                                 }
                                 displayEmpty
-                                inputProps={{ 'aria-label': 'Select tense' }}
+                                inputProps={{'aria-label': 'Select tense'}}
                                 sx={{
                                     backgroundColor: 'white',
                                     borderRadius: 1,
