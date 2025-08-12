@@ -29,6 +29,11 @@ export const App = () => {
                 return null;
         }
     };
+    function testSpeech() {
+        const utterance = new SpeechSynthesisUtterance("Hello, this is a test.");
+        utterance.lang = "en-US";
+        speechSynthesis.speak(utterance);
+    }
     return (
         <>
             <Header time={time} setTime={setTime} handleChange={handleChange} />
@@ -38,6 +43,7 @@ export const App = () => {
                 toggleTheory={toggleTheory}
                 time={time}
             />
+            <button onClick={()=>testSpeech()}>ccc</button>
         </>
     );
 };
