@@ -61,15 +61,15 @@ export const PresentSimple = () => {
                     <TableBody>
                         <TableRow>
                             <TableCell>Утвердительное</TableCell>
-                            <TableCell>He plays football on Sundays.</TableCell>
+                            <TableCell>He loves</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell>Отрицательное</TableCell>
-                            <TableCell>She doesn’t watch TV in the morning.</TableCell>
+                            <TableCell>He does not (doesn't) love</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell>Вопросительное</TableCell>
-                            <TableCell>Do you like tea?</TableCell>
+                            <TableCell>Does he love?</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>

@@ -57,15 +57,15 @@ export const FutureSimple = () => {
                     <TableBody>
                         <TableRow>
                             <TableCell>Утвердительное</TableCell>
-                            <TableCell>I will help you with the project.</TableCell>
+                            <TableCell>She will love</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell>Отрицательное</TableCell>
-                            <TableCell>She won’t be late.</TableCell>
+                            <TableCell>She won't love</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell>Вопросительное</TableCell>
-                            <TableCell>Will they come to the party?</TableCell>
+                            <TableCell>Will she love?</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>

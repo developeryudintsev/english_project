@@ -1,15 +1,19 @@
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import { Box, Collapse, IconButton, Paper, Typography } from "@mui/material";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { ClipsSlider } from "./ClipsSlider";
 type VideoComponentType={
-    togglePractice:boolean,
-    toggleTheory:(togglePractice:boolean)=>void,
+    show:boolean,
+    setShowPractice:()=>void,
 }
-export const VideoComponent = (props:VideoComponentType) => {
+export const VideoComponent = ({show,setShowPractice}:VideoComponentType) => {
     const [toggle, setToggle] = useState(false);
-    const toggleTheory = () => setToggle((prev) => !prev);
-
+    const toggleVideo = (toggle:boolean) => setToggle(toggle);
+    useEffect(()=>{
+        if(!show){
+            toggleVideo(false)
+        }
+    },[show])
     return (
         <Paper
             elevation={3}
@@ -18,14 +22,14 @@ export const VideoComponent = (props:VideoComponentType) => {
                 position: 'relative',
                 width: '100%',
                 maxWidth: '600px',
-                marginBottom: 2,
+                marginBottom: 0,
                 textAlign: 'center',
                 backgroundColor:'#444447',
                 transition: 'all 0.3s ease',
             }}
         >
             <IconButton
-                onClick={toggleTheory}
+                onClick={()=>toggleVideo(!toggle)}
                 sx={{color: '#FFF44F', position: "absolute", top: 8, right: 8 }}
                 size="small"
             >
@@ -41,13 +45,13 @@ export const VideoComponent = (props:VideoComponentType) => {
                         overflowX: "auto",
                     }}
                 >
-                    <ClipsSlider togglePractice={props.togglePractice} toggleTheory={props.toggleTheory} />
+                    <ClipsSlider show={show} setShowPractice={setShowPractice} />
                 </Box>
             </Collapse>
 
             {!toggle && (
                 <span
-                    onClick={toggleTheory}
+                    onClick={()=>toggleVideo(!toggle)}
                     style={{
                         cursor: "pointer",
                         fontFamily: "Roboto, sans-serif",

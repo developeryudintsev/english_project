@@ -63,7 +63,7 @@ export const Header = (props: HeaderType) => {
                                         gap: 0.5,
                                     }}
                                 >
-                                    English Practice cat v0.4
+                                    English Practice cat v0.5
                                     <ArrowForwardIos sx={{ fontSize: 16 }} />
                                 </Typography>
                                 <Avatar
@@ -83,7 +83,7 @@ export const Header = (props: HeaderType) => {
                             display: 'flex',
                             alignItems: 'center',
                             gap: 2,
-                            marginBottom:2,
+                            marginBottom:0,
                             order: { xs: 2, sm: 1 },
                         }}
                     >

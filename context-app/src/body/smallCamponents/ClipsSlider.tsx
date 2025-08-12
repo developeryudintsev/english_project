@@ -15,10 +15,10 @@ export const clipsReverse = [
 ];
 export const clips = clipsReverse.reverse();
 type ClipsSliderType={
-    togglePractice:boolean,
-    toggleTheory:(togglePractice:boolean)=>void,
+    show:boolean
+    setShowPractice:(toggle:boolean)=>void
 }
-export const ClipsSlider = ({togglePractice,toggleTheory}:ClipsSliderType) => {
+export const ClipsSlider = ({show,setShowPractice}:ClipsSliderType) => {
     const containerRef = useRef<HTMLDivElement | null>(null);
 
     const ORIGINAL_W = 240;
@@ -69,12 +69,14 @@ export const ClipsSlider = ({togglePractice,toggleTheory}:ClipsSliderType) => {
     };
 
     const visibleClips = clips.slice(page, page + visibleCount);
+    let gobackFoo=()=>{
+        if(show===true){
+            setShowPractice(false)
+        }else{
+            console.log('no')
+        }
 
-    const handlePracticeClick = () => {
-        toggleTheory(true)
-        console.log(togglePractice)
-    };
-
+    }
     return (
         <Box
             ref={containerRef}
@@ -199,10 +201,11 @@ export const ClipsSlider = ({togglePractice,toggleTheory}:ClipsSliderType) => {
                             </Box>
 
                             {/* Кнопка Практика под видео */}
+                            {show &&
                             <Button
                                 variant="contained"
                                 size="small"
-                                onClick={() => handlePracticeClick()}
+                                onClick={() => gobackFoo()}
                                 sx={{
                                     mt: 0.5,
                                     backgroundColor: "#FFF44F",
@@ -213,6 +216,7 @@ export const ClipsSlider = ({togglePractice,toggleTheory}:ClipsSliderType) => {
                             >
                                 Практика
                             </Button>
+                            }
                         </Box>
                     );
                 })}

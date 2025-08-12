@@ -13,6 +13,10 @@ type PropsType = {
 export const ThoriumComponent = (props: PropsType) => {
     const [toggleVideo, setToggleVideo] = useState(false);
     const toggleTheory = (toggle:boolean) => setToggleVideo(toggle);
+    const [showPractice, setShowPractice] = useState(true);
+    let setShowPracticeFoo=()=>{
+        setShowPractice(!showPractice)
+    }
     return (
         <Box
             sx={{
@@ -24,6 +28,7 @@ export const ThoriumComponent = (props: PropsType) => {
                 minHeight: '10vh',
                 padding: 2,
                 boxSizing: 'border-box',
+                gap: "20px",
             }}
         >
             <TheoryComponent
@@ -32,8 +37,17 @@ export const ThoriumComponent = (props: PropsType) => {
                 toggleTheory={props.toggleTheory}
                 time={props.time}
             />
-            <VideoComponent togglePractice={toggleVideo} toggleTheory={toggleTheory}/>
-            <PracticeComponent time={props.time} toggle={toggleVideo} toggleTheory={toggleTheory}/>
+            {showPractice ? (
+                <VideoComponent show={true} setShowPractice={setShowPracticeFoo} />
+            ) : (
+                <PracticeComponent show={true} time={props.time} toggle={toggleVideo} toggleTheory={toggleTheory} setShowPractice={setShowPracticeFoo}/>
+            )}
+            {!showPractice ? (
+                <VideoComponent show={false} setShowPractice={setShowPracticeFoo}/>
+            ) : (
+                <PracticeComponent show={false} time={props.time} toggle={toggleVideo} toggleTheory={toggleTheory} setShowPractice={setShowPracticeFoo}/>
+            )}
+
         </Box>
     );
 };

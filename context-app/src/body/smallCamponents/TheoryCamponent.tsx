@@ -17,7 +17,7 @@ export const TheoryComponent = (props: PropsType) => {
                 position: 'relative',
                 width: '100%',
                 maxWidth: '600px',
-                marginBottom: 2,
+                marginBottom: 0,
                 textAlign: 'center',
                 backgroundColor:'#444447',
                 transition: 'all 0.3s ease',

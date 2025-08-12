@@ -57,15 +57,15 @@ export const PastSimple = () => {
                     <TableBody>
                         <TableRow>
                             <TableCell>Утвердительное</TableCell>
-                            <TableCell>They watched a movie yesterday.</TableCell>
+                            <TableCell>I loved</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell>Отрицательное</TableCell>
-                            <TableCell>He didn’t call me back.</TableCell>
+                            <TableCell>I did not (didn't) love</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell>Вопросительное</TableCell>
-                            <TableCell>Did you see the new episode?</TableCell>
+                            <TableCell>Did I love?</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
