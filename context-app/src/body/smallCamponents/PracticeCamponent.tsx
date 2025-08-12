@@ -38,15 +38,16 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
     const currentQuestion = questions[currentIndex];
     const isFinished = currentIndex >= questions.length;
 
-    // Озвучка текста
+    // Функция озвучки текста, вызывается только по клику
     const speakText = (text: string) => {
         if (!text) return;
-        // Останавливаем возможную прошлую озвучку
-        window.speechSynthesis.cancel();
+        if (window.speechSynthesis.speaking) {
+            window.speechSynthesis.cancel(); // Останавливаем если уже идет озвучка
+        }
         const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = "en-US"; // Можешь поменять на "ru-RU", если надо русский
-        utterance.rate = 1; // Скорость
-        utterance.pitch = 1; // Высота голоса
+        utterance.lang = "en-US"; // Можно поменять на нужный язык
+        utterance.rate = 1;
+        utterance.pitch = 1;
         window.speechSynthesis.speak(utterance);
     };
 
@@ -156,6 +157,13 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                         <Typography variant="h6">
                             {currentIndex + 1}. {currentQuestion.question}
                         </Typography>
+                        <IconButton
+                            onClick={() => speakText(currentQuestion.question)}
+                            sx={{ color: "#FFF44F" }}
+                            aria-label="Озвучить вопрос"
+                        >
+                            <VolumeUpIcon />
+                        </IconButton>
                         {answerStatus === "correct" && (
                             <CheckCircleIcon sx={{ color: "limegreen", fontSize: 28 }} />
                         )}
@@ -210,6 +218,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                     <IconButton
                                         onClick={() => speakText(ans.text)}
                                         sx={{ ml: 1, color: "#FFF44F" }}
+                                        aria-label="Озвучить ответ"
                                     >
                                         <VolumeUpIcon />
                                     </IconButton>
@@ -242,6 +251,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
         </Paper>
     );
 };
+
 
 
 
