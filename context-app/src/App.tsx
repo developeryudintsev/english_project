@@ -4,6 +4,7 @@ import {PresentSimple} from './Present/PresentSimple';
 import {PastSimple} from './Present/PasteSimple';
 import {FutureSimple} from './Present/FutureSimple';
 import {Body} from "./body/Body";
+import {ExperementFile} from "./ExperementFile";
 
 export type timeType='Present'|"Past"|"Future";
 export const App = () => {
@@ -29,7 +30,6 @@ export const App = () => {
                 return null;
         }
     };
-
     return (
         <>
             <Header time={time} setTime={setTime} handleChange={handleChange} />

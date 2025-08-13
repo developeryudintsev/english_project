@@ -73,8 +73,8 @@ export const Header = (props: HeaderType) => {
                                     src={cat}
                                     sx={{
                                         border: '2px solid white',
-                                        width: 40,
-                                        height: 40,
+                                        width: 60,
+                                        height: 60,
                                     }}
                                 />
                             </a>

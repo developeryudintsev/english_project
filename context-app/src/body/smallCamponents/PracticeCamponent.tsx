@@ -1,15 +1,9 @@
-import React, { useEffect, useState } from "react";
-import {
-    Box,
-    Button,
-    IconButton,
-    Paper,
-    Typography,
-} from "@mui/material";
+import React, {useEffect, useState} from "react";
+import {Box, Button, IconButton, Paper, Typography,} from "@mui/material";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
-import { data } from "../../Data/Data";
+import {data} from "../../Data/Data";
 
 type TimeKey = "Present" | "Future" | "Past";
 
@@ -40,28 +34,55 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
     const currentQuestion = questions[currentIndex];
     const isFinished = currentIndex >= questions.length;
 
-    // Загрузка голосов и выбор русского и английского голоса
     useEffect(() => {
         const loadVoices = () => {
             const voices = window.speechSynthesis.getVoices();
-            if (voices.length === 0) return; // Голоса ещё не загружены
-            // Найдём русский голос (ru или ru-RU)
-            const ruVoice = voices.find(voice => voice.lang.startsWith("ru"));
-            const enVoice = voices.find(voice => voice.lang.startsWith("en"));
-            setRussianVoice(ruVoice || null);
-            setEnglishVoice(enVoice || null);
+            console.log("Доступные голоса:", voices.map(v => `${v.name} (${v.lang})`));
+            const ruMale = voices.find(v => v.lang.startsWith("ru") && /male|man/i.test(v.name));
+            const ruAny = voices.find(v => v.lang.startsWith("ru"));
+            const enMale = voices.find(v => v.lang.startsWith("en") && /male|man/i.test(v.name));
+            const enAny = voices.find(v => v.lang.startsWith("en"));
+            setRussianVoice(ruMale || ruAny || null);
+            setEnglishVoice(enMale || enAny || null);
+        };
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+        loadVoices();
+    }, []);
+    useEffect(() => {
+        const loadVoices = () => {
+            const voices = window.speechSynthesis.getVoices();
+            if (voices.length === 0) return;
+
+            // Для русского — ищем мужской голос, иначе берём первый доступный ru
+            const ruMale = voices.find(
+                (v) =>
+                    v.lang.startsWith("ru") &&
+                    /male|man|муж/i.test(v.name) // проверка на "male", "man" или "муж"
+            );
+            const ruDefault = voices.find((v) => v.lang.startsWith("ru"));
+
+            // Для английского — ищем мужской голос
+            const enMale = voices.find(
+                (v) =>
+                    v.lang.startsWith("en") &&
+                    /male|man/i.test(v.name)
+            );
+            const enDefault = voices.find((v) => v.lang.startsWith("en"));
+
+            setRussianVoice(ruMale || ruDefault || null);
+            setEnglishVoice(enMale || enDefault || null);
         };
 
         loadVoices();
         window.speechSynthesis.onvoiceschanged = loadVoices;
     }, []);
-
     const speakText = (text: string, lang: "ru" | "en") => {
         if (!text) return;
         if (window.speechSynthesis.speaking) {
             window.speechSynthesis.cancel();
         }
         const utterance = new SpeechSynthesisUtterance(text);
+
         if (lang === "ru" && russianVoice) {
             utterance.voice = russianVoice;
             utterance.lang = russianVoice.lang;
@@ -69,11 +90,12 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
             utterance.voice = englishVoice;
             utterance.lang = englishVoice.lang;
         } else {
-            // fallback
             utterance.lang = lang === "ru" ? "ru-RU" : "en-US";
         }
-        utterance.rate = 1;
-        utterance.pitch = 1;
+
+        // Настройки для более естественного звучания
+        utterance.rate = 1; // скорость
+        utterance.pitch = 1; // высота
         window.speechSynthesis.speak(utterance);
     };
 
