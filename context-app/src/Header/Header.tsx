@@ -31,6 +31,7 @@ export const Header = (props: HeaderType) => {
                         justifyContent: 'space-between',
                         width: '100%',
                         gap: {xs: 0, sm: 0},
+                        py: { xs: 1.5, sm: 0.5 },
                     }}
                 >
                     <Box
@@ -64,7 +65,7 @@ export const Header = (props: HeaderType) => {
                                         gap: 0.5,
                                     }}
                                 >
-                                    English Practice cat v0.5
+                                    English Practice cat v0.6
                                     <ArrowForwardIos sx={{fontSize: 16}}/>
                                 </Typography>
                                 <Avatar
@@ -74,7 +75,6 @@ export const Header = (props: HeaderType) => {
                                         border: '2px solid white',
                                         width: 40,
                                         height: 40,
-
                                     }}
                                 />
                             </a>

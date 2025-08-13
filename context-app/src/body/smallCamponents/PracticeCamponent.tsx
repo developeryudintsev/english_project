@@ -123,7 +123,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                 padding: 2,
                 position: "relative",
                 width: "100%",
-                maxWidth: "780px",
+                maxWidth: "980px",
                 textAlign: "center",
                 backgroundColor: "#444447",
                 transition: "all 1s ease",
