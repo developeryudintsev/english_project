@@ -7,7 +7,6 @@ import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
-import {ArrowForwardIos} from '@mui/icons-material';
 import Select from '@mui/material/Select';
 import type {timeType} from '../App';
 import cat from '../picture/cat.JPG';
@@ -27,22 +26,72 @@ export const Header = (props: HeaderType) => {
                     sx={{
                         display: 'flex',
                         flexDirection: {xs: 'column', sm: 'row'},
-                        alignItems: {xs: 'center', sm: 'center'},
+                        alignItems: 'center',
                         justifyContent: 'space-between',
                         width: '100%',
-                        gap: {xs: 0, sm: 0},
-                        py: { xs: 1.5, sm: 0.5 },
+                        gap: {xs: 2, sm: 0},
+                        py: { xs: 1.5, sm: 1 },
                     }}
                 >
                     <Box
                         sx={{
                             display: 'flex',
                             alignItems: 'center',
-                            gap: 1,
-                            order: {xs: 1, sm: 2},
-                            margin:1
+                            justifyContent: { xs: 'space-around', sm: 'flex-start' },
+                            width: '100%',
+                            maxWidth: { sm: 'fit-content' },
+                            order: { xs: 2, sm: 1 },
+                            gap: 2,
+                            px: { xs: 2, sm: 1 }, // отступы слева и справа на мобилках
                         }}
                     >
+                        <Typography
+                            variant="body1"
+                            sx={{ color: '#FFF44F', fontWeight: 500 }}
+                        >
+                            Simple
+                        </Typography>
+                        <FormControl sx={{ minWidth: 160 }} size="small">
+                            <Select
+                                value={props.time}
+                                onChange={(e) =>
+                                    props.handleChange(e.target.value as timeType)
+                                }
+                                displayEmpty
+                                inputProps={{ 'aria-label': 'Select tense' }}
+                                sx={{
+                                    backgroundColor: 'white',
+                                    borderRadius: 1,
+                                }}
+                            >
+                                <MenuItem value="Present">Present</MenuItem>
+                                <MenuItem value="Past">Past</MenuItem>
+                                <MenuItem value="Future">Future</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Box>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: { xs: 'space-between', sm: 'flex-end' },
+                            width: '100%',
+                            maxWidth: { sm: 'fit-content' },
+                            order: {xs: 1, sm: 2},
+                            gap: 1,
+                        }}
+                    >
+                        <Typography
+                            variant="body1"
+                            sx={{
+                                color: '#FFF44F',
+                                fontWeight: 500,
+                                flexGrow: { xs: 1, sm: 0 },
+                            }}
+                        >
+                            English Practice cat v0.7
+                        </Typography>
+
                         <Tooltip title="Ссылка на наш сайт">
                             <a
                                 href="https://www.kiber-rus.ru/"
@@ -51,23 +100,8 @@ export const Header = (props: HeaderType) => {
                                     textDecoration: 'none',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    gap: 4,
-                                    color: 'inherit',
                                 }}
                             >
-                                <Typography
-                                    variant="body1"
-                                    sx={{
-                                        color: '#FFF44F',
-                                        fontWeight: 500,
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: 0.5,
-                                    }}
-                                >
-                                    English Practice cat v0.6
-                                    <ArrowForwardIos sx={{fontSize: 16}}/>
-                                </Typography>
                                 <Avatar
                                     alt="User Avatar"
                                     src={cat}
@@ -79,40 +113,6 @@ export const Header = (props: HeaderType) => {
                                 />
                             </a>
                         </Tooltip>
-                    </Box>
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 2,
-                            order: {xs: 2, sm: 1},
-                            margin: 1
-                        }}
-                    >
-                        <Typography
-                            variant="body1"
-                            sx={{color: '#FFF44F', fontWeight: 500}}
-                        >
-                            Simple
-                        </Typography>
-                        <FormControl sx={{minWidth: 160}} size="small">
-                            <Select
-                                value={props.time}
-                                onChange={(e) =>
-                                    props.handleChange(e.target.value as timeType)
-                                }
-                                displayEmpty
-                                inputProps={{'aria-label': 'Select tense'}}
-                                sx={{
-                                    backgroundColor: 'white',
-                                    borderRadius: 1,
-                                }}
-                            >
-                                <MenuItem value="Present">Present</MenuItem>
-                                <MenuItem value="Past">Past</MenuItem>
-                                <MenuItem value="Future">Future</MenuItem>
-                            </Select>
-                        </FormControl>
                     </Box>
                 </Toolbar>
             </Container>

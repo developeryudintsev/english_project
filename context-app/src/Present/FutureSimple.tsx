@@ -1,16 +1,30 @@
-import {Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper} from "@mui/material";
+import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
 
 export const FutureSimple = () => {
     return (
-        <Box>
-            <Typography  variant="body1"
-                         sx={{color: '#FFF44F',
-                             fontWeight: 500,minWidth: 100 ,margin:'10px', fontFamily: 'Roboto, sans-serif',
-                             fontSize: { xs: '0.75rem', sm: '1rem' },
-                         }}>🟢 3. Future Simple – будущее простое время</Typography>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 
-            <Typography mt={2} sx={{color: '#FFF44F'}} fontWeight="bold">Когда используется:</Typography>
-            <TableContainer component={Paper} sx={{ maxWidth: 600, marginY: 2 }}>
+            <Typography
+                variant="body1"
+                sx={{
+                    color: '#FFF44F',
+                    fontWeight: 500,
+                    width: '100%',
+                    maxWidth: 800,
+                    fontFamily: 'Roboto, sans-serif',
+                    fontSize: { xs: '0.75rem', sm: '1rem' },
+                    textAlign: 'center',
+                    my: 1
+                }}
+            >
+                🟢 3. Future Simple – будущее простое время
+            </Typography>
+
+            <Typography fontWeight="bold" sx={{ color: '#FFF44F', width: '100%', maxWidth: 800, textAlign: 'center', my: 1 }}>
+                Когда используется:
+            </Typography>
+
+            <TableContainer component={Paper} sx={{ width: '100%', maxWidth: 800, my: 2 }}>
                 <Table>
                     <TableBody>
                         <TableRow>
@@ -21,51 +35,70 @@ export const FutureSimple = () => {
                             <TableCell>Обещания, предсказания, надежды</TableCell>
                             <TableCell>It will rain tomorrow.</TableCell>
                         </TableRow>
+                        <TableRow>
+                            <TableCell>Состояния и чувства</TableCell>
+                            <TableCell>She will love chocolate.</TableCell>
+                        </TableRow>
                     </TableBody>
                 </Table>
             </TableContainer>
 
-            <Typography sx={{color: '#FFF44F'}} fontWeight="bold">Формула:</Typography>
-            <TableContainer component={Paper} sx={{ maxWidth: 600, marginY: 2 }}>
+            <Typography fontWeight="bold" sx={{ color: '#FFF44F', width: '100%', maxWidth: 800, textAlign: 'center' }}>
+                Формула:
+            </Typography>
+
+            <TableContainer component={Paper} sx={{ width: '100%', maxWidth: 800, my: 2 }}>
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell>Тип</TableCell>
-                            <TableCell>Формула</TableCell>
+                            <TableCell>Русский</TableCell>
+                            <TableCell>Английский (утверждение)</TableCell>
+                            <TableCell>Отрицание</TableCell>
+                            <TableCell>Вопрос</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         <TableRow>
-                            <TableCell>Утвердительное (+)</TableCell>
-                            <TableCell>Subject + will + V₁</TableCell>
+                            <TableCell>Я буду любить</TableCell>
+                            <TableCell>I will love</TableCell>
+                            <TableCell>I will not (won't) love</TableCell>
+                            <TableCell>Will I love?</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell>Отрицательное (-)</TableCell>
-                            <TableCell>Subject + will not (won’t) + V₁</TableCell>
+                            <TableCell>Он будет любить</TableCell>
+                            <TableCell>He will love</TableCell>
+                            <TableCell>He will not (won't) love</TableCell>
+                            <TableCell>Will he love?</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell>Вопросительное (?)</TableCell>
-                            <TableCell>Will + Subject + V₁?</TableCell>
-                        </TableRow>
-                    </TableBody>
-                </Table>
-            </TableContainer>
-
-            <Typography sx={{color: '#FFF44F'}} fontWeight="bold">Примеры:</Typography>
-            <TableContainer component={Paper} sx={{ maxWidth: 600, marginY: 2 }}>
-                <Table>
-                    <TableBody>
-                        <TableRow>
-                            <TableCell>Утвердительное</TableCell>
+                            <TableCell>Она будет любить</TableCell>
                             <TableCell>She will love</TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell>Отрицательное</TableCell>
                             <TableCell>She won't love</TableCell>
+                            <TableCell>Will she love?</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell>Вопросительное</TableCell>
-                            <TableCell>Will she love?</TableCell>
+                            <TableCell>Оно будет любить</TableCell>
+                            <TableCell>It will love</TableCell>
+                            <TableCell>It won't love</TableCell>
+                            <TableCell>Will it love?</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell>Мы будем любить</TableCell>
+                            <TableCell>We will love</TableCell>
+                            <TableCell>We won't love</TableCell>
+                            <TableCell>Will we love?</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell>Ты будешь любить</TableCell>
+                            <TableCell>You will love</TableCell>
+                            <TableCell>You won't love</TableCell>
+                            <TableCell>Will you love?</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell>Они будут любить</TableCell>
+                            <TableCell>They will love</TableCell>
+                            <TableCell>They won't love</TableCell>
+                            <TableCell>Will they love?</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>

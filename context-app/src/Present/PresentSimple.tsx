@@ -1,16 +1,30 @@
-import {Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper} from "@mui/material";
+import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
 
 export const PresentSimple = () => {
     return (
-        <Box>
-            <Typography variant="body1"
-                        sx={{color: '#FFF44F',
-                            fontWeight: 500,minWidth: 100 ,margin:'10px', fontFamily: 'Roboto, sans-serif',
-                            fontSize: { xs: '0.75rem', sm: '1rem' },
-                        }}>✅ 1. Present Simple – настоящее простое время</Typography>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 
-            <Typography mt={2} sx={{color: '#FFF44F'}} fontWeight="bold">Когда используется:</Typography>
-            <TableContainer component={Paper} sx={{ maxWidth: 600, marginY: 2 }}>
+            <Typography
+                variant="body1"
+                sx={{
+                    color: '#FFF44F',
+                    fontWeight: 500,
+                    width: '100%',
+                    maxWidth: 800,
+                    fontFamily: 'Roboto, sans-serif',
+                    fontSize: { xs: '0.75rem', sm: '1rem' },
+                    textAlign: 'center',
+                    my: 1
+                }}
+            >
+                ✅ 1. Present Simple – настоящее простое время
+            </Typography>
+
+            <Typography fontWeight="bold" sx={{ color: '#FFF44F', width: '100%', maxWidth: 800, textAlign: 'center', my: 1 }}>
+                Когда используется:
+            </Typography>
+
+            <TableContainer component={Paper} sx={{ width: '100%', maxWidth: 800, my: 2 }}>
                 <Table>
                     <TableBody>
                         <TableRow>
@@ -29,47 +43,62 @@ export const PresentSimple = () => {
                 </Table>
             </TableContainer>
 
-            <Typography fontWeight="bold" sx={{color: '#FFF44F'}}>Формула:</Typography>
-            <TableContainer component={Paper} sx={{ maxWidth: 600, marginY: 2 }}>
+            <Typography fontWeight="bold" sx={{ color: '#FFF44F', width: '100%', maxWidth: 800, textAlign: 'center' }}>
+                Формула:
+            </Typography>
+
+            <TableContainer component={Paper} sx={{ width: '100%', maxWidth: 800, my: 2 }}>
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell>Тип</TableCell>
-                            <TableCell>Формула</TableCell>
+                            <TableCell>Русский</TableCell>
+                            <TableCell>Английский (утверждение)</TableCell>
+                            <TableCell>Отрицание</TableCell>
+                            <TableCell>Вопрос</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         <TableRow>
-                            <TableCell>Утвердительное (+)</TableCell>
-                            <TableCell>Subject + V₁ / V(s)</TableCell>
+                            <TableCell>Я люблю</TableCell>
+                            <TableCell>I love</TableCell>
+                            <TableCell>I do not (don't) love</TableCell>
+                            <TableCell>Do I love?</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell>Отрицательное (-)</TableCell>
-                            <TableCell>Subject + do/does + not + V₁</TableCell>
+                            <TableCell sx={{ backgroundColor: 'red', color: '#fff' }}>He любит</TableCell>
+                            <TableCell sx={{ backgroundColor: 'red', color: '#fff' }}>He loves</TableCell>
+                            <TableCell sx={{ backgroundColor: 'red', color: '#fff' }}>He does not (doesn't) love</TableCell>
+                            <TableCell sx={{ backgroundColor: 'red', color: '#fff' }}>Does he love?</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell>Вопросительное (?)</TableCell>
-                            <TableCell>Do/Does + Subject + V₁?</TableCell>
-                        </TableRow>
-                    </TableBody>
-                </Table>
-            </TableContainer>
-
-            <Typography sx={{color: '#FFF44F'}} fontWeight="bold">Примеры:</Typography>
-            <TableContainer component={Paper} sx={{ maxWidth: 600, marginY: 2 }}>
-                <Table>
-                    <TableBody>
-                        <TableRow>
-                            <TableCell>Утвердительное</TableCell>
-                            <TableCell>He loves</TableCell>
+                            <TableCell sx={{ backgroundColor: 'red', color: '#fff' }}>She любит</TableCell>
+                            <TableCell sx={{ backgroundColor: 'red', color: '#fff' }}>She loves</TableCell>
+                            <TableCell sx={{ backgroundColor: 'red', color: '#fff' }}>She doesn't love</TableCell>
+                            <TableCell sx={{ backgroundColor: 'red', color: '#fff' }}>Does she love?</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell>Отрицательное</TableCell>
-                            <TableCell>He does not (doesn't) love</TableCell>
+                            <TableCell sx={{ backgroundColor: 'red', color: '#fff' }}>It любит</TableCell>
+                            <TableCell sx={{ backgroundColor: 'red', color: '#fff' }}>It loves</TableCell>
+                            <TableCell sx={{ backgroundColor: 'red', color: '#fff' }}>It doesn't love</TableCell>
+                            <TableCell sx={{ backgroundColor: 'red', color: '#fff' }}>Does it love?</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell>Вопросительное</TableCell>
-                            <TableCell>Does he love?</TableCell>
+                            <TableCell>Мы любим</TableCell>
+                            <TableCell>We love</TableCell>
+                            <TableCell>We don't love</TableCell>
+                            <TableCell>Do we love?</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell>Ты любишь</TableCell>
+                            <TableCell>You love</TableCell>
+                            <TableCell>You don't love</TableCell>
+                            <TableCell>Do you love?</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell>Они любят</TableCell>
+                            <TableCell>They love</TableCell>
+                            <TableCell>They don't love</TableCell>
+                            <TableCell>Do they love?</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>

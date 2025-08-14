@@ -1,16 +1,30 @@
-import {Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper} from "@mui/material";
+import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
 
 export const PastSimple = () => {
     return (
-        <Box>
-            <Typography variant="body1"
-                        sx={{color: '#FFF44F',
-                            fontWeight: 500,minWidth: 100 ,margin:'10px', fontFamily: 'Roboto, sans-serif',
-                            fontSize: { xs: '0.75rem', sm: '1rem' },
-                        }}>🔵 2. Past Simple – прошедшее простое время</Typography>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 
-            <Typography mt={2} sx={{color: '#FFF44F'}}fontWeight="bold">Когда используется:</Typography>
-            <TableContainer component={Paper} sx={{ maxWidth: 600, marginY: 2 }}>
+            <Typography
+                variant="body1"
+                sx={{
+                    color: '#FFF44F',
+                    fontWeight: 500,
+                    width: '100%',
+                    maxWidth: 800,
+                    fontFamily: 'Roboto, sans-serif',
+                    fontSize: { xs: '0.75rem', sm: '1rem' },
+                    textAlign: 'center',
+                    my: 1
+                }}
+            >
+                🔵 2. Past Simple – прошедшее простое время
+            </Typography>
+
+            <Typography fontWeight="bold" sx={{ color: '#FFF44F', width: '100%', maxWidth: 800, textAlign: 'center', my: 1 }}>
+                Когда используется:
+            </Typography>
+
+            <TableContainer component={Paper} sx={{ width: '100%', maxWidth: 800, my: 2 }}>
                 <Table>
                     <TableBody>
                         <TableRow>
@@ -25,51 +39,67 @@ export const PastSimple = () => {
                 </Table>
             </TableContainer>
 
-            <Typography sx={{color: '#FFF44F'}} fontWeight="bold">Формула:</Typography>
-            <TableContainer component={Paper} sx={{ maxWidth: 600, marginY: 2 }}>
+            <Typography fontWeight="bold" sx={{ color: '#FFF44F', width: '100%', maxWidth: 800, textAlign: 'center', my: 1 }}>
+                Формула:
+            </Typography>
+
+            <TableContainer component={Paper} sx={{ width: '100%', maxWidth: 800, my: 2 }}>
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell>Тип</TableCell>
-                            <TableCell>Формула</TableCell>
+                            <TableCell>Русский</TableCell>
+                            <TableCell>Английский (утверждение)</TableCell>
+                            <TableCell>Отрицание</TableCell>
+                            <TableCell>Вопрос</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         <TableRow>
-                            <TableCell>Утвердительное (+)</TableCell>
-                            <TableCell>Subject + V₂ / -ed</TableCell>
+                            <TableCell>Я любил</TableCell>
+                            <TableCell>I loved</TableCell>
+                            <TableCell>I did not (didn't) love</TableCell>
+                            <TableCell>Did I love?</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell>Отрицательное (-)</TableCell>
-                            <TableCell>Subject + did not + V₁</TableCell>
+                            <TableCell>He любил</TableCell>
+                            <TableCell>He loved</TableCell>
+                            <TableCell>He did not (didn't) love</TableCell>
+                            <TableCell>Did he love?</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell>Вопросительное (?)</TableCell>
-                            <TableCell>Did + Subject + V₁?</TableCell>
+                            <TableCell>She любила</TableCell>
+                            <TableCell>She loved</TableCell>
+                            <TableCell>She did not (didn't) love</TableCell>
+                            <TableCell>Did she love?</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell>It любило</TableCell>
+                            <TableCell>It loved</TableCell>
+                            <TableCell>It did not (didn't) love</TableCell>
+                            <TableCell>Did it love?</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell>Мы любили</TableCell>
+                            <TableCell>We loved</TableCell>
+                            <TableCell>We did not love</TableCell>
+                            <TableCell>Did we love?</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell>Ты любил</TableCell>
+                            <TableCell>You loved</TableCell>
+                            <TableCell>You did not love</TableCell>
+                            <TableCell>Did you love?</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell>Они любили</TableCell>
+                            <TableCell>They loved</TableCell>
+                            <TableCell>They did not love</TableCell>
+                            <TableCell>Did they love?</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
             </TableContainer>
 
-            <Typography sx={{color: '#FFF44F'}} fontWeight="bold">Примеры:</Typography>
-            <TableContainer component={Paper} sx={{ maxWidth: 600, marginY: 2 }}>
-                <Table>
-                    <TableBody>
-                        <TableRow>
-                            <TableCell>Утвердительное</TableCell>
-                            <TableCell>I loved</TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell>Отрицательное</TableCell>
-                            <TableCell>I did not (didn't) love</TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell>Вопросительное</TableCell>
-                            <TableCell>Did I love?</TableCell>
-                        </TableRow>
-                    </TableBody>
-                </Table>
-            </TableContainer>
         </Box>
     );
 };
