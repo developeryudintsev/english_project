@@ -1,6 +1,10 @@
-import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
+import {Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography} from "@mui/material";
 
-export const PresentSimple = () => {
+type PropsType = {
+    toggleTheory: () => void;
+};
+
+export const PresentSimple = (props:PropsType) => {
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 
@@ -14,8 +18,10 @@ export const PresentSimple = () => {
                     fontFamily: 'Roboto, sans-serif',
                     fontSize: { xs: '0.75rem', sm: '1rem' },
                     textAlign: 'center',
-                    my: 1
+                    my: 1,
+                    cursor: 'pointer',
                 }}
+                onClick={()=>props.toggleTheory()}
             >
                 ✅ 1. Present Simple – настоящее простое время
             </Typography>
@@ -65,22 +71,22 @@ export const PresentSimple = () => {
                             <TableCell>Do I love?</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{ backgroundColor: 'red', color: '#fff' }}>He любит</TableCell>
-                            <TableCell sx={{ backgroundColor: 'red', color: '#fff' }}>He loves</TableCell>
-                            <TableCell sx={{ backgroundColor: 'red', color: '#fff' }}>He does not (doesn't) love</TableCell>
-                            <TableCell sx={{ backgroundColor: 'red', color: '#fff' }}>Does he love?</TableCell>
+                            <TableCell sx={{ backgroundColor: '#FFF44F', color: '#000000' }}>He любит</TableCell>
+                            <TableCell sx={{ backgroundColor: '#FFF44F', color: '#000000' }}>He loves</TableCell>
+                            <TableCell sx={{ backgroundColor: '#FFF44F', color: '#000000' }}>He does not (doesn't) love</TableCell>
+                            <TableCell sx={{ backgroundColor: '#FFF44F', color: '#000000' }}>Does he love?</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{ backgroundColor: 'red', color: '#fff' }}>She любит</TableCell>
-                            <TableCell sx={{ backgroundColor: 'red', color: '#fff' }}>She loves</TableCell>
-                            <TableCell sx={{ backgroundColor: 'red', color: '#fff' }}>She doesn't love</TableCell>
-                            <TableCell sx={{ backgroundColor: 'red', color: '#fff' }}>Does she love?</TableCell>
+                            <TableCell sx={{ backgroundColor: '#FFF44F', color: '#000000' }}>She любит</TableCell>
+                            <TableCell sx={{ backgroundColor: '#FFF44F', color: '#000000' }}>She loves</TableCell>
+                            <TableCell sx={{ backgroundColor: '#FFF44F', color: '#000000' }}>She doesn't love</TableCell>
+                            <TableCell sx={{ backgroundColor: '#FFF44F', color: '#000000' }}>Does she love?</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{ backgroundColor: 'red', color: '#fff' }}>It любит</TableCell>
-                            <TableCell sx={{ backgroundColor: 'red', color: '#fff' }}>It loves</TableCell>
-                            <TableCell sx={{ backgroundColor: 'red', color: '#fff' }}>It doesn't love</TableCell>
-                            <TableCell sx={{ backgroundColor: 'red', color: '#fff' }}>Does it love?</TableCell>
+                            <TableCell sx={{ backgroundColor: '#FFF44F', color: '#000000' }}>It любит</TableCell>
+                            <TableCell sx={{ backgroundColor: '#FFF44F', color: '#000000' }}>It loves</TableCell>
+                            <TableCell sx={{ backgroundColor: '#FFF44F', color: '#000000' }}>It doesn't love</TableCell>
+                            <TableCell sx={{ backgroundColor: '#FFF44F', color: '#000000' }}>Does it love?</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell>Мы любим</TableCell>

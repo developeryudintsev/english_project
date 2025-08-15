@@ -8,7 +8,7 @@ type PropsType = {
     time: "Present" | "Future"|"Past",
     thorium: boolean,
     toggleTheory: () => void,
-    getTheoryComponent: () => React.ReactNode
+    getTheoryComponent: (toggleTheory: () => void) => React.ReactNode
 }
 export const ThoriumComponent = (props: PropsType) => {
     const [toggleVideo, setToggleVideo] = useState(false);

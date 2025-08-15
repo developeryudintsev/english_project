@@ -37,21 +37,32 @@ export const Header = (props: HeaderType) => {
                         sx={{
                             display: 'flex',
                             alignItems: 'center',
-                            justifyContent: { xs: 'space-around', sm: 'flex-start' },
+                            justifyContent: { xs: 'space-between', sm: 'flex-start' },
                             width: '100%',
                             maxWidth: { sm: 'fit-content' },
                             order: { xs: 2, sm: 1 },
                             gap: 2,
-                            px: { xs: 2, sm: 1 }, // отступы слева и справа на мобилках
+                            px: { xs: 2, sm: 1 }, // общий отступ слева/справа
                         }}
                     >
                         <Typography
                             variant="body1"
-                            sx={{ color: '#FFF44F', fontWeight: 500 }}
+                            sx={{ color: '#FFF44F', fontWeight: 500, flexShrink: 0,
+                                ml: { xs: '5%', sm: 0 },     // можно регулировать сдвиг
+                                mr: { xs: '5%', sm: 1 },
+                            }}
                         >
                             Simple
                         </Typography>
-                        <FormControl sx={{ minWidth: 160 }} size="small">
+
+                        <FormControl
+                            sx={{
+                                minWidth: 160,
+                                flexGrow: { xs: 1, sm: 0 }, // растягиваем на мобилках
+                                mr: { xs:'5%', sm: 0 },       // отступ справа для мобилок
+                            }}
+                            size="small"
+                        >
                             <Select
                                 value={props.time}
                                 onChange={(e) =>
@@ -62,6 +73,7 @@ export const Header = (props: HeaderType) => {
                                 sx={{
                                     backgroundColor: 'white',
                                     borderRadius: 1,
+                                    width: '100%',
                                 }}
                             >
                                 <MenuItem value="Present">Present</MenuItem>

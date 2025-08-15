@@ -87,9 +87,9 @@ export const ClipsSlider = ({show,setShowPractice}:ClipsSliderType) => {
         <Box
             ref={containerRef}
             sx={{
+                position: "relative", // чтобы позиционировать стрелки
                 width: "100%",
                 display: "flex",
-                alignItems: "center",
                 justifyContent: "center",
                 gap: `${GAP}px`,
                 boxSizing: "border-box",
@@ -103,6 +103,10 @@ export const ClipsSlider = ({show,setShowPractice}:ClipsSliderType) => {
                 onClick={() => setPage((p) => Math.max(0, p - 1))}
                 disabled={page === 0}
                 style={{
+                    position: "absolute",
+                    left: 0,
+                    top: "35%",
+                    transform: "translateY(-50%)",
                     width: ARROW_SIZE,
                     height: ARROW_SIZE,
                     fontSize: 90,
@@ -110,13 +114,12 @@ export const ClipsSlider = ({show,setShowPractice}:ClipsSliderType) => {
                     border: "none",
                     color: "#FFF44F",
                     cursor: page === 0 ? "not-allowed" : "pointer",
-                    flexShrink: 0,
                 }}
             >
                 ‹
             </button>
 
-            {/* Видео + кнопки (каждое видео в колонке: iframe сверху, кнопка снизу) */}
+            {/* Видео + кнопки */}
             <Box
                 sx={{
                     display: "flex",
@@ -145,18 +148,15 @@ export const ClipsSlider = ({show,setShowPractice}:ClipsSliderType) => {
                                 flexDirection: "column",
                                 alignItems: "center",
                                 gap: 1,
-                                overflow: "visible",
-                                position: "relative",
                                 flexShrink: 0,
                             }}
                         >
-                            {/* video wrapper (scaled content) */}
+                            {/* Видео */}
                             <Box
                                 sx={{
                                     width: ORIGINAL_W * SCALE,
                                     height: ORIGINAL_H * SCALE,
                                     overflow: "hidden",
-                                    position: "relative",
                                     borderRadius: 1,
                                     background: "#000",
                                     boxShadow: 3,
@@ -178,14 +178,12 @@ export const ClipsSlider = ({show,setShowPractice}:ClipsSliderType) => {
                                         }}
                                     />
                                 )}
-
                                 <div
                                     style={{
                                         width: ORIGINAL_W,
                                         height: ORIGINAL_H,
                                         transform: `scale(${SCALE})`,
                                         transformOrigin: "top left",
-                                        willChange: "transform",
                                     }}
                                 >
                                     <iframe
@@ -206,23 +204,23 @@ export const ClipsSlider = ({show,setShowPractice}:ClipsSliderType) => {
                                 </div>
                             </Box>
 
-                            {/* Кнопка Практика под видео */}
-                            {show &&
-                            <Button
-                                variant="contained"
-                                size="small"
-                                onClick={() => gobackFoo()}
-                                sx={{
-                                    mt: 0.5,
-                                    backgroundColor: "#FFF44F",
-                                    color: "black",
-                                    textTransform: "none",
-                                    width: "90%",
-                                }}
-                            >
-                                Практика
-                            </Button>
-                            }
+                            {/* Кнопка */}
+                            {show && (
+                                <Button
+                                    variant="contained"
+                                    size="small"
+                                    onClick={() => gobackFoo()}
+                                    sx={{
+                                        mt: 0.5,
+                                        backgroundColor: "#FFF44F",
+                                        color: "black",
+                                        textTransform: "none",
+                                        width: "90%",
+                                    }}
+                                >
+                                    Практика
+                                </Button>
+                            )}
                         </Box>
                     );
                 })}
@@ -234,6 +232,10 @@ export const ClipsSlider = ({show,setShowPractice}:ClipsSliderType) => {
                 onClick={() => setPage((p) => Math.min(maxPage, p + 1))}
                 disabled={page === maxPage}
                 style={{
+                    position: "absolute",
+                    right: 0,
+                    top: "35%",
+                    transform: "translateY(-50%)",
                     width: ARROW_SIZE,
                     height: ARROW_SIZE,
                     fontSize: 90,
@@ -241,7 +243,6 @@ export const ClipsSlider = ({show,setShowPractice}:ClipsSliderType) => {
                     border: "none",
                     color: "#FFF44F",
                     cursor: page === maxPage ? "not-allowed" : "pointer",
-                    flexShrink: 0,
                 }}
             >
                 ›

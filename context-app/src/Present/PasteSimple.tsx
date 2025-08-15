@@ -1,6 +1,8 @@
 import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
-
-export const PastSimple = () => {
+type PropsType = {
+    toggleTheory: () => void;
+};
+export const PastSimple = (props:PropsType) => {
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 
@@ -14,8 +16,10 @@ export const PastSimple = () => {
                     fontFamily: 'Roboto, sans-serif',
                     fontSize: { xs: '0.75rem', sm: '1rem' },
                     textAlign: 'center',
+                    cursor: 'pointer',
                     my: 1
                 }}
+                onClick={()=>props.toggleTheory()}
             >
                 🔵 2. Past Simple – прошедшее простое время
             </Typography>

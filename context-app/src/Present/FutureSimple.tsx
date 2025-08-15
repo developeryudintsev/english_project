@@ -1,6 +1,8 @@
 import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
-
-export const FutureSimple = () => {
+type PropsType = {
+    toggleTheory: () => void;
+};
+export const FutureSimple = (props:PropsType) => {
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 
@@ -14,8 +16,10 @@ export const FutureSimple = () => {
                     fontFamily: 'Roboto, sans-serif',
                     fontSize: { xs: '0.75rem', sm: '1rem' },
                     textAlign: 'center',
+                    cursor: 'pointer',
                     my: 1
                 }}
+                onClick={()=>props.toggleTheory()}
             >
                 🟢 3. Future Simple – будущее простое время
             </Typography>

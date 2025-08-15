@@ -6,7 +6,7 @@ type PropsType = {
     time: 'Present' | 'Past' | 'Future';
     thorium: boolean;
     toggleTheory: () => void;
-    getTheoryComponent: () => React.ReactNode;
+    getTheoryComponent: (toggleTheory: () => void) => React.ReactNode;
 };
 
 export const TheoryComponent = (props: PropsType) => {
@@ -27,7 +27,7 @@ export const TheoryComponent = (props: PropsType) => {
         >
             <IconButton
                 onClick={props.toggleTheory}
-                sx={{ color: '#FFF44F', position: 'absolute', top: 8, right: 8 }}
+                sx={{ color: '#FFF44F', position: 'absolute', top: 11, right: 8 }}
                 size="small"
             >
                 <InfoOutlinedIcon />
@@ -42,7 +42,7 @@ export const TheoryComponent = (props: PropsType) => {
                         px: { xs: 0.5, sm: 0 }, // небольшой padding слева/справа на мобильных
                     }}
                 >
-                    {props.getTheoryComponent()}
+                    {props.getTheoryComponent(props.toggleTheory)}
                 </Box>
             </Collapse>
 

@@ -17,14 +17,14 @@ export const App = () => {
     const toggleTheory = () => {
         setThorium(prev => !prev);
     };
-    const getTheoryComponent = () => {
+    const getTheoryComponent = (toggleTheory: () => void) => {
         switch (time) {
             case 'Present':
-                return <PresentSimple />;
+                return <PresentSimple toggleTheory={toggleTheory} />;
             case 'Past':
-                return <PastSimple />;
+                return <PastSimple toggleTheory={toggleTheory}/>;
             case 'Future':
-                return <FutureSimple />;
+                return <FutureSimple toggleTheory={toggleTheory}/>;
             default:
                 return null;
         }
