@@ -14,7 +14,7 @@ export const TheoryComponent = (props: PropsType) => {
         <Paper
             elevation={3}
             sx={{
-                padding: '10px 15px', // оставляем padding для толщины блока
+                padding: '10px 16px', // оставляем padding для толщины блока
                 position: 'relative',
                 width: '100%',
                 maxWidth: '980px', // сохраняем максимальную ширину
@@ -27,7 +27,7 @@ export const TheoryComponent = (props: PropsType) => {
         >
             <IconButton
                 onClick={props.toggleTheory}
-                sx={{ color: '#FFF44F', position: 'absolute', top: 11, right: 8 }}
+                sx={{ color: '#FFF44F', position: 'absolute', top: 10, right: 8 }}
                 size="small"
             >
                 <InfoOutlinedIcon />
@@ -39,7 +39,7 @@ export const TheoryComponent = (props: PropsType) => {
                         display: 'block',
                         width: '100%',
                         overflowX: 'auto',
-                        px: { xs: 0.5, sm: 0 }, // небольшой padding слева/справа на мобильных
+                        px: { xs: 10, sm: 2 }, // небольшой padding слева/справа на мобильных
                     }}
                 >
                     {props.getTheoryComponent(props.toggleTheory)}
