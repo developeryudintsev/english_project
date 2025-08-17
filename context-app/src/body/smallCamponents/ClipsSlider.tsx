@@ -156,6 +156,7 @@ export const ClipsSlider = ({show,setShowPractice}:ClipsSliderType) => {
                                 sx={{
                                     width: ORIGINAL_W * SCALE,
                                     height: ORIGINAL_H * SCALE,
+                                    position: "relative",
                                     overflow: "hidden",
                                     borderRadius: 1,
                                     background: "#000",
@@ -163,21 +164,30 @@ export const ClipsSlider = ({show,setShowPractice}:ClipsSliderType) => {
                                 }}
                             >
                                 {!isLoaded && (
-                                    <Skeleton
-                                        variant="rectangular"
-                                        width={ORIGINAL_W * SCALE}
-                                        height={ORIGINAL_H * SCALE}
-                                        animation="wave"
+                                    <Box
                                         sx={{
+                                            width: ORIGINAL_W,
+                                            height: ORIGINAL_H,
+                                            transform: `scale(${SCALE})`,
+                                            transformOrigin: "top left",
                                             position: "absolute",
-                                            left: 0,
-                                            top: 0,
+                                            inset: 0,
                                             zIndex: 2,
-                                            backgroundColor: "rgba(255,255,255,0.06)",
-                                            borderRadius: 1,
                                         }}
-                                    />
+                                    >
+                                        <Skeleton
+                                            variant="rectangular"
+                                            width={ORIGINAL_W}
+                                            height={ORIGINAL_H}
+                                            animation="wave"
+                                            sx={{
+                                                backgroundColor: "rgba(255,255,255,0.06)",
+                                                borderRadius: 1,
+                                            }}
+                                        />
+                                    </Box>
                                 )}
+
                                 <div
                                     style={{
                                         width: ORIGINAL_W,
@@ -225,8 +235,6 @@ export const ClipsSlider = ({show,setShowPractice}:ClipsSliderType) => {
                     );
                 })}
             </Box>
-
-            {/* Next */}
             <button
                 aria-label="next"
                 onClick={() => setPage((p) => Math.min(maxPage, p + 1))}

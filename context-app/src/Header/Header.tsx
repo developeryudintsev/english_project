@@ -48,7 +48,7 @@ export const Header = (props: HeaderType) => {
                         <Typography
                             variant="body1"
                             sx={{ color: '#FFF44F', fontWeight: 500, flexShrink: 0,
-                                ml: { xs: '5%', sm: 0 },     // можно регулировать сдвиг
+                                ml: { xs: '0%', sm: 0 },     // можно регулировать сдвиг
                                 mr: { xs: '5%', sm: 1 },
                             }}
                         >
@@ -59,7 +59,7 @@ export const Header = (props: HeaderType) => {
                             sx={{
                                 minWidth: 160,
                                 flexGrow: { xs: 1, sm: 0 }, // растягиваем на мобилках
-                                mr: { xs:'5%', sm: 0 },       // отступ справа для мобилок
+                                mr: { xs:'0%', sm: 0 },       // отступ справа для мобилок
                             }}
                             size="small"
                         >

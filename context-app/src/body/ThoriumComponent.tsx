@@ -27,7 +27,6 @@ export const ThoriumComponent = (props: PropsType) => {
                 width: '100%',
                 minHeight: '10vh',
                 padding: 2,
-                // margin:0,
                 boxSizing: 'border-box',
                 gap: "20px",
             }}

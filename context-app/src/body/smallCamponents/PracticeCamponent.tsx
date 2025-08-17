@@ -144,7 +144,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
             sx={{
                 padding: 2,
                 position: "relative",
-                width: "100%",
+                width: "95%",
                 maxWidth: "980px",
                 textAlign: "center",
                 backgroundColor: "#444447",

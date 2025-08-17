@@ -20,7 +20,7 @@ export const VideoComponent = ({show,setShowPractice}:VideoComponentType) => {
             sx={{
                 padding: 2,
                 position: 'relative',
-                width: '100%',
+                width: '95%',
                 maxWidth: '980px',
                 marginBottom: 0,
                 textAlign: 'center',

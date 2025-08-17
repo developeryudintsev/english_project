@@ -16,7 +16,7 @@ export const TheoryComponent = (props: PropsType) => {
             sx={{
                 padding: '10px 16px', // оставляем padding для толщины блока
                 position: 'relative',
-                width: '100%',
+                width: '95%',
                 maxWidth: '980px', // сохраняем максимальную ширину
                 marginBottom: 0,
                 textAlign: 'center',
@@ -38,8 +38,8 @@ export const TheoryComponent = (props: PropsType) => {
                     sx={{
                         display: 'block',
                         width: '100%',
-                        overflowX: 'auto',
-                        px: { xs: 10, sm: 2 }, // небольшой padding слева/справа на мобильных
+                        px: { xs: 0, sm: 0 }, // боковые отступы на мобилке и ПК
+                        // boxSizing: 'border-box',
                     }}
                 >
                     {props.getTheoryComponent(props.toggleTheory)}
