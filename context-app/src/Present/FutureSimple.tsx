@@ -24,13 +24,13 @@ export const FutureSimple = ({ toggleTheory }: PropsType) => {
                     color: "#FFF44F",
                     fontWeight: 500,
                     width: "100%",
-                    maxWidth: 800,
+                    maxWidth: '900px',
                     fontFamily: "Roboto, sans-serif",
-                    fontSize: { xs: "0.9rem", sm: "1rem" },
+                    fontSize: { xs: "1.1rem", sm: "1.3rem" },
                     textAlign: "center",
                     my: 1,
                     cursor: "pointer",
-                    pr: { xs: 5, sm: 0 },
+                    pr: { xs: 4, sm: 2.2 },
                     boxSizing: "border-box",
                 }}
                 onClick={toggleTheory}
