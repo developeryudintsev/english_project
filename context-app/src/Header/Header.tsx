@@ -106,7 +106,7 @@ export const Header = (props: HeaderType) => {
                                     color: '#FFF44F',
                                     fontWeight: 700,
                                     fontFamily: '"Comic Sans MS", "Comic Neue", cursive',
-                                    fontSize: { xs: '1rem', sm: '1.3rem' },
+                                    fontSize: { xs: '1.3rem', sm: '1.3rem' },
                                     textShadow: '2px 2px 0px #000, -1px -1px 0px #000',
                                 }}
                             >
@@ -117,7 +117,7 @@ export const Header = (props: HeaderType) => {
                                 sx={{
                                     color: '#FFF44F',
                                     fontWeight: 700,
-                                    fontSize: { xs: '1rem', sm: '1.3rem' },
+                                    fontSize: { xs: '1.3rem', sm: '1.3rem' },
                                     marginLeft: 1,
                                 }}
                             >
