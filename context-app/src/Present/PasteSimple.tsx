@@ -19,21 +19,23 @@ export const PastSimple = ({ toggleTheory }: PropsType) => {
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
             <Typography
                 variant="body1"
+                fontWeight="bold"
                 sx={{
                     color: "#FFF44F",
                     fontWeight: 500,
                     width: "100%",
                     maxWidth: 800,
                     fontFamily: "Roboto, sans-serif",
-                    fontSize: { xs: "0.75rem", sm: "1rem" },
+                    fontSize: { xs: "0.9rem", sm: "1rem" },
                     textAlign: "center",
                     my: 1,
                     cursor: "pointer",
                     pr: { xs: 4, sm: 0 },
+                    boxSizing: "border-box",
                 }}
                 onClick={toggleTheory}
             >
-                2. Past Simple – прошедшее простое время
+                2. PAST SIMPLE - ПРОШЕДШЕЕ ПРОСТОЕ ВРЕМЯ
             </Typography>
 
             <Typography

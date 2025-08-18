@@ -29,13 +29,14 @@ export const PresentSimple = ({ toggleTheory }: PropsType) => {
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                 <Typography
                     variant="body1"
+                    fontWeight="bold"
                     sx={{
                         color: "#FFF44F",
                         fontWeight: 500,
                         width: "100%",
                         maxWidth: 800,
                         fontFamily: "Roboto, sans-serif",
-                        fontSize: { xs: "0.7rem", sm: "1rem" },
+                        fontSize: { xs: "0.9rem", sm: "1rem" },
                         textAlign: "center",
                         my: 1,
                         cursor: "pointer",
