@@ -18,15 +18,17 @@ export const clipsReverse = [
     "https://vk.com/video_ext.php?oid=885405802&id=456239178&hd=2&autoplay=0",
     "https://vk.com/video_ext.php?oid=885405802&id=456239177&hd=2&autoplay=0",
 ];
-
 export const clips = clipsReverse.reverse();
-type ClipsSliderType={
-    show:boolean
-    setShowPractice:(toggle:boolean)=>void
-}
-export const ClipsSlider = ({show,setShowPractice}:ClipsSliderType) => {
-    const containerRef = useRef<HTMLDivElement | null>(null);
 
+type ClipsSliderType = {
+    show: boolean;
+    setShowPractice: (toggle: boolean) => void;
+    toggle:boolean
+};
+
+export const ClipsSlider = ({ show, setShowPractice,toggle }: ClipsSliderType) => {
+
+    const containerRef = useRef<HTMLDivElement | null>(null);
     const ORIGINAL_W = 240;
     const ORIGINAL_H = 480;
     const GAP = 12;
@@ -34,31 +36,43 @@ export const ClipsSlider = ({show,setShowPractice}:ClipsSliderType) => {
     const SCALE = 0.8;
     const MAX_VISIBLE = 4;
     const MIN_VISIBLE = 1;
-
     const [visibleCount, setVisibleCount] = useState<number>(4);
     const [page, setPage] = useState<number>(0);
-
     const maxPage = Math.max(0, clips.length - visibleCount);
-    // хранить загрузку по абсолютному индексу (для всех клипов)
+
     const [loaded, setLoaded] = useState<boolean[]>(() => Array(clips.length).fill(false));
 
+    const [clipSources, setClipSources] = useState<string[]>(clips);
+
+    // ресайз
     useEffect(() => {
         const handleResize = () => {
             const width = window.innerWidth;
-            if (width < 620) {
-                setVisibleCount(MIN_VISIBLE);
-            } else if (width < 820) {
-                setVisibleCount(2);
-            } else if (width < 1050) {
-                setVisibleCount(3);
-            } else {
-                setVisibleCount(MAX_VISIBLE);
-            }
+            if (width < 620) setVisibleCount(MIN_VISIBLE);
+            else if (width < 820) setVisibleCount(2);
+            else if (width < 1050) setVisibleCount(3);
+            else setVisibleCount(MAX_VISIBLE);
         };
-
         handleResize();
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    // следим за вкладкой
+    useEffect(() => {
+        const handleVisibility = () => {
+            setClipSources((prev) =>
+                prev.map((src) => {
+                    const url = new URL(src);
+                    url.searchParams.set("autoplay", document.hidden ? "0" : "1");
+                    return url.toString();
+                })
+            );
+        };
+
+        document.addEventListener("visibilitychange", handleVisibility);
+        return () =>
+            document.removeEventListener("visibilitychange", handleVisibility);
     }, []);
 
     useEffect(() => {
@@ -74,20 +88,20 @@ export const ClipsSlider = ({show,setShowPractice}:ClipsSliderType) => {
         });
     };
 
-    const visibleClips = clips.slice(page, page + visibleCount);
-    let gobackFoo=()=>{
-        if(show===true){
-            setShowPractice(false)
-        }else{
-            console.log('no')
-        }
+    const visibleClips = clipSources.slice(page, page + visibleCount);
 
-    }
+    let gobackFoo = () => {
+        if (show === true) {
+            setShowPractice(false);
+        } else {
+            console.log("no");
+        }
+    };
     return (
         <Box
             ref={containerRef}
             sx={{
-                position: "relative", // чтобы позиционировать стрелки
+                position: "relative",
                 width: "100%",
                 display: "flex",
                 justifyContent: "center",
@@ -97,7 +111,6 @@ export const ClipsSlider = ({show,setShowPractice}:ClipsSliderType) => {
                 py: 2,
             }}
         >
-            {/* Prev */}
             <button
                 aria-label="prev"
                 onClick={() => setPage((p) => Math.max(0, p - 1))}
@@ -118,8 +131,6 @@ export const ClipsSlider = ({show,setShowPractice}:ClipsSliderType) => {
             >
                 ‹
             </button>
-
-            {/* Видео + кнопки */}
             <Box
                 sx={{
                     display: "flex",
@@ -137,7 +148,6 @@ export const ClipsSlider = ({show,setShowPractice}:ClipsSliderType) => {
                 {visibleClips.map((clip, idx) => {
                     const absIndex = page + idx;
                     const isLoaded = Boolean(loaded[absIndex]);
-
                     return (
                         <Box
                             key={clip}
@@ -151,7 +161,6 @@ export const ClipsSlider = ({show,setShowPractice}:ClipsSliderType) => {
                                 flexShrink: 0,
                             }}
                         >
-                            {/* Видео */}
                             <Box
                                 sx={{
                                     width: ORIGINAL_W * SCALE,
@@ -187,7 +196,6 @@ export const ClipsSlider = ({show,setShowPractice}:ClipsSliderType) => {
                                         />
                                     </Box>
                                 )}
-
                                 <div
                                     style={{
                                         width: ORIGINAL_W,
@@ -197,14 +205,16 @@ export const ClipsSlider = ({show,setShowPractice}:ClipsSliderType) => {
                                     }}
                                 >
                                     <iframe
-                                        src={clip}
+                                        src={toggle==true?clip:''}
                                         width={ORIGINAL_W}
                                         height={ORIGINAL_H}
                                         frameBorder={0}
                                         allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
                                         allowFullScreen
-                                        title={`clip-${absIndex}`}
+                                        title={`${clip}-${absIndex}`}
                                         onLoad={() => handleLoad(absIndex)}
+                                        onPlay={() => console.log("Видео запущено")}
+                                        onPause={() => console.log("Видео на паузе")}
                                         style={{
                                             display: "block",
                                             border: 0,
@@ -235,6 +245,7 @@ export const ClipsSlider = ({show,setShowPractice}:ClipsSliderType) => {
                     );
                 })}
             </Box>
+
             <button
                 aria-label="next"
                 onClick={() => setPage((p) => Math.min(maxPage, p + 1))}
