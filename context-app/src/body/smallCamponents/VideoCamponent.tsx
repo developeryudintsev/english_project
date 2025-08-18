@@ -37,7 +37,7 @@ export const VideoComponent = ({show,setShowPractice}:VideoComponentType) => {
             </IconButton>
 
             <Collapse in={toggle}>
-                <Typography sx={{color:'#FFF44F'}}>Смотри наше видео прямо сейчас:</Typography>
+                <Typography sx={{color:'#FFF44F',pr: { xs: 4, sm: 0 },}}>Смотри наше видео прямо сейчас:</Typography>
 
                 <Box
                     sx={{
