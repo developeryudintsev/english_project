@@ -29,6 +29,7 @@ export const PastSimple = ({ toggleTheory }: PropsType) => {
                     textAlign: "center",
                     my: 1,
                     cursor: "pointer",
+                    pr: { xs: 4, sm: 0 },
                 }}
                 onClick={toggleTheory}
             >

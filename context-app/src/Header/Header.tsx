@@ -8,7 +8,7 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import type {timeType} from '../App';
+import type { timeType } from '../App';
 import cat from '../picture/cat.JPG';
 
 type HeaderType = {
@@ -19,17 +19,17 @@ type HeaderType = {
 
 export const Header = (props: HeaderType) => {
     return (
-        <AppBar position="static" sx={{backgroundColor: '#444447'}}>
+        <AppBar position="static" sx={{ backgroundColor: '#444447' }}>
             <Container maxWidth="xl">
                 <Toolbar
                     disableGutters
                     sx={{
                         display: 'flex',
-                        flexDirection: {xs: 'column', sm: 'row'},
+                        flexDirection: { xs: 'column', sm: 'row' },
                         alignItems: 'center',
                         justifyContent: 'space-between',
                         width: '100%',
-                        gap: {xs: 2, sm: 0},
+                        gap: { xs: 2, sm: 0 },
                         py: { xs: 1.5, sm: 1 },
                     }}
                 >
@@ -42,13 +42,16 @@ export const Header = (props: HeaderType) => {
                             maxWidth: { sm: 'fit-content' },
                             order: { xs: 2, sm: 1 },
                             gap: 2,
-                            px: { xs: 2, sm: 1 }, // общий отступ слева/справа
+                            px: { xs: 2, sm: 1 },
                         }}
                     >
                         <Typography
                             variant="body1"
-                            sx={{ color: '#FFF44F', fontWeight: 500, flexShrink: 0,
-                                ml: { xs: '0%', sm: 0 },     // можно регулировать сдвиг
+                            sx={{
+                                color: '#FFF44F',
+                                fontWeight: 500,
+                                flexShrink: 0,
+                                ml: { xs: '0%', sm: 0 },
                                 mr: { xs: '5%', sm: 1 },
                             }}
                         >
@@ -57,9 +60,10 @@ export const Header = (props: HeaderType) => {
 
                         <FormControl
                             sx={{
-                                minWidth: 160,
-                                flexGrow: { xs: 1, sm: 0 }, // растягиваем на мобилках
-                                mr: { xs:'0%', sm: 0 },       // отступ справа для мобилок
+                                maxWidth: '450px',
+                                minWidth: { xs: 160, sm: 240 },
+                                flexGrow: { xs: 1, sm: 0 },
+                                mr: { xs: '0%', sm: 0 },
                             }}
                             size="small"
                         >
@@ -82,6 +86,7 @@ export const Header = (props: HeaderType) => {
                             </Select>
                         </FormControl>
                     </Box>
+
                     <Box
                         sx={{
                             display: 'flex',
@@ -89,7 +94,7 @@ export const Header = (props: HeaderType) => {
                             justifyContent: { xs: 'space-between', sm: 'flex-end' },
                             width: '100%',
                             maxWidth: { sm: 'fit-content' },
-                            order: {xs: 1, sm: 2},
+                            order: { xs: 1, sm: 2 },
                             gap: 1,
                         }}
                     >
@@ -97,11 +102,14 @@ export const Header = (props: HeaderType) => {
                             variant="body1"
                             sx={{
                                 color: '#FFF44F',
-                                fontWeight: 500,
+                                fontWeight: 700,
+                                fontFamily: '"Comic Sans MS", "Comic Neue", cursive',
+                                fontSize: { xs: '1rem', sm: '1.3rem' },
+                                textShadow: '2px 2px 0px #000, -1px -1px 0px #000',
                                 flexGrow: { xs: 1, sm: 0 },
                             }}
                         >
-                            English Practice cat v0.7
+                            English cat(v0.7)
                         </Typography>
 
                         <Tooltip title="Ссылка на наш сайт">

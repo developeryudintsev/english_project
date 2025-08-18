@@ -35,14 +35,16 @@ export const PresentSimple = ({ toggleTheory }: PropsType) => {
                         width: "100%",
                         maxWidth: 800,
                         fontFamily: "Roboto, sans-serif",
-                        fontSize: { xs: "0.75rem", sm: "1rem" },
+                        fontSize: { xs: "0.7rem", sm: "1rem" },
                         textAlign: "center",
                         my: 1,
                         cursor: "pointer",
+                        pr: { xs: 4, sm: 0 }, 
+                        boxSizing: "border-box",
                     }}
                     onClick={toggleTheory}
                 >
-                    1. Present Simple – настоящее простое время
+                    1.PRESENT SIMPLE – НАСТОЯЩЕЕ ПРОСТОЕ ВРЕМЯ
                 </Typography>
 
                 <Typography
