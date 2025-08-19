@@ -88,19 +88,19 @@ export const PastSimple = ({ toggleTheory }: PropsType) => {
                                 <TableCell>Did I love?</TableCell>
                             </TableRow>
                             <TableRow>
-                                <TableCell>He любил</TableCell>
+                                <TableCell>Он любил</TableCell>
                                 <TableCell sx={{ px: '10%' }}>He loved</TableCell>
                                 <TableCell sx={{ px: 1 }}>He did not (didn't) love</TableCell>
                                 <TableCell>Did he love?</TableCell>
                             </TableRow>
                             <TableRow>
-                                <TableCell>She любила</TableCell>
+                                <TableCell>Она любила</TableCell>
                                 <TableCell sx={{ px: '10%' }}>She loved</TableCell>
                                 <TableCell sx={{ px: 1 }}>She did not (didn't) love</TableCell>
                                 <TableCell>Did she love?</TableCell>
                             </TableRow>
                             <TableRow>
-                                <TableCell>It любило</TableCell>
+                                <TableCell>Оно любило</TableCell>
                                 <TableCell sx={{ px: '10%' }}>It loved</TableCell>
                                 <TableCell sx={{ px: 1 }}>It did not (didn't) love</TableCell>
                                 <TableCell>Did it love?</TableCell>

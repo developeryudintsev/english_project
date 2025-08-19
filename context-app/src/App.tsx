@@ -9,7 +9,6 @@ export type timeType='Present'|"Past"|"Future";
 export const App = () => {
     const [time, setTime] = useState<timeType>('Present');
     const [thorium, setThorium] = useState(false);
-    console.log(time)
     const handleChange = (eValue: timeType) => {
         setTime(eValue);
         setThorium(false)

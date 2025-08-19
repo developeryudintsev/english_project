@@ -3,3 +3,9 @@ html, body, #root {
     padding: 0;
     height: 100%;
 }
+@font-face {
+    font-family: 'South Park Ext';
+    src: url('./fonts/south park.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}

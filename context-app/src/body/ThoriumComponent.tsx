@@ -13,6 +13,8 @@ type PropsType = {
 export const ThoriumComponent = (props: PropsType) => {
     const [toggleVideo, setToggleVideo] = useState(false);
     const toggleTheory = (toggle:boolean) => setToggleVideo(toggle);
+    const [firstClick, setFirstClick] = useState<boolean>(false);
+    // const OpenToggle = (toggle:boolean) => setOpen(toggle);
     const [showPractice, setShowPractice] = useState(true);
     let setShowPracticeFoo=()=>{
         setShowPractice(!showPractice)
@@ -38,14 +40,14 @@ export const ThoriumComponent = (props: PropsType) => {
                 time={props.time}
             />
             {showPractice ? (
-                <VideoComponent show={true} setShowPractice={setShowPracticeFoo} />
+                <VideoComponent firstClick={firstClick} setFirstClick={setFirstClick} open={true} show={true} setShowPractice={setShowPracticeFoo} />
             ) : (
-                <PracticeComponent show={true} time={props.time} toggle={toggleVideo} toggleTheory={toggleTheory} setShowPractice={setShowPracticeFoo}/>
+                <PracticeComponent firstClick={firstClick} setFirstClick={setFirstClick} open={true}  show={true} time={props.time} toggle={toggleVideo} toggleTheory={toggleTheory} setShowPractice={setShowPracticeFoo}/>
             )}
             {!showPractice ? (
-                <VideoComponent show={false} setShowPractice={setShowPracticeFoo}/>
+                <VideoComponent firstClick={firstClick} setFirstClick={setFirstClick} open={false}  show={false} setShowPractice={setShowPracticeFoo}/>
             ) : (
-                <PracticeComponent show={false} time={props.time} toggle={toggleVideo} toggleTheory={toggleTheory} setShowPractice={setShowPracticeFoo}/>
+                <PracticeComponent firstClick={firstClick} setFirstClick={setFirstClick} open={false} show={false} time={props.time} toggle={toggleVideo} toggleTheory={toggleTheory} setShowPractice={setShowPracticeFoo}/>
             )}
 
         </Box>

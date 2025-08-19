@@ -100,7 +100,7 @@ export const PresentSimple = ({ toggleTheory }: PropsType) => {
                                     <TableCell>Do I love?</TableCell>
                                 </TableRow>
                                 <TableRow>
-                                    <TableCell sx={{ backgroundColor: "#FFF44F", color: "#000" }}>He любит</TableCell>
+                                    <TableCell sx={{ backgroundColor: "#FFF44F", color: "#000" }}>Он любит</TableCell>
                                     <TableCell sx={{ backgroundColor: "#FFF44F", color: "#000", px: '10%' }}>He loves</TableCell>
                                     <TableCell sx={{ backgroundColor: "#FFF44F", color: "#000", px: 1 }}>
                                         He does not (doesn't) love
@@ -108,13 +108,13 @@ export const PresentSimple = ({ toggleTheory }: PropsType) => {
                                     <TableCell sx={{ backgroundColor: "#FFF44F", color: "#000" }}>Does he love?</TableCell>
                                 </TableRow>
                                 <TableRow>
-                                    <TableCell sx={{ backgroundColor: "#FFF44F", color: "#000" }}>She любит</TableCell>
+                                    <TableCell sx={{ backgroundColor: "#FFF44F", color: "#000" }}>Она любит</TableCell>
                                     <TableCell sx={{ backgroundColor: "#FFF44F", color: "#000", px: '10%' }}>She loves</TableCell>
                                     <TableCell sx={{ backgroundColor: "#FFF44F", color: "#000", px: 1 }}>She doesn't love</TableCell>
                                     <TableCell sx={{ backgroundColor: "#FFF44F", color: "#000" }}>Does she love?</TableCell>
                                 </TableRow>
                                 <TableRow>
-                                    <TableCell sx={{ backgroundColor: "#FFF44F", color: "#000" }}>It любит</TableCell>
+                                    <TableCell sx={{ backgroundColor: "#FFF44F", color: "#000" }}>Оно любит</TableCell>
                                     <TableCell sx={{ backgroundColor: "#FFF44F", color: "#000", px: '10%' }}>It loves</TableCell>
                                     <TableCell sx={{ backgroundColor: "#FFF44F", color: "#000", px: 1 }}>It doesn't love</TableCell>
                                     <TableCell sx={{ backgroundColor: "#FFF44F", color: "#000" }}>Does it love?</TableCell>

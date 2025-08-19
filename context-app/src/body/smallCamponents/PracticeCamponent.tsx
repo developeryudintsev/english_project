@@ -8,17 +8,21 @@ import {data} from "../../Data/Data";
 type TimeKey = "Present" | "Future" | "Past";
 
 type PracticeComponentProps = {
+    firstClick:  boolean,
+    setFirstClick: (firstClick:  boolean) => void,
     time: TimeKey;
     lessonKey?: string;
     toggle: boolean;
+    open: boolean;
     toggleTheory: (togglePractice: boolean) => void;
     setShowPractice: () => void;
     show: boolean;
 };
 
-export const PracticeComponent: React.FC<PracticeComponentProps> = ({
+export const PracticeComponent: React.FC<PracticeComponentProps> = ({firstClick,setFirstClick,
                                                                         time,
                                                                         lessonKey = "lesson1",
+                                                                        open,
                                                                         toggle = false,
                                                                         toggleTheory,
                                                                         setShowPractice,
@@ -116,7 +120,13 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
         setAnswerStatus("none");
         setSelectedAnswer(null);
     };
-
+    useEffect(() => {
+        if(firstClick===true){
+            if (open) {
+                toggleTheory(true)
+            }
+        }
+    }, [open,firstClick])
     useEffect(() => {
         if (!show) {
             toggleTheory(false);
@@ -137,7 +147,10 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
             </Typography>
         );
     }
-
+    const ButtonFoo = (toggle: boolean) => {
+        toggleTheory(!toggle)
+        setFirstClick(true)
+    }
     return (
         <Paper
             elevation={3}
@@ -161,7 +174,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                 }}
             >
                 <Typography
-                    onClick={() => toggleTheory(!toggle)}
+                    onClick={() => ButtonFoo(toggle)}
                     sx={{
                         color: "#FFF44F",
                         fontFamily: "Roboto, sans-serif",
@@ -177,7 +190,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                 </Typography>
 
                 <IconButton
-                    onClick={() => toggleTheory(!toggle)}
+                    onClick={() => ButtonFoo(toggle)}
                     sx={{
                         color: "#FFF44F",
                         position: "absolute",
