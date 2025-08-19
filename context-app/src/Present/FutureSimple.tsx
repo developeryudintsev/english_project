@@ -28,7 +28,7 @@ export const FutureSimple = ({ toggleTheory }: PropsType) => {
                     fontFamily: "Roboto, sans-serif",
                     fontSize: { xs: "1.1rem", sm: "1.3rem" },
                     textAlign: "center",
-                    my: 1,
+                    my: 0,
                     cursor: "pointer",
                     pr: { xs: 4, sm: 2.2 },
                     boxSizing: "border-box",

@@ -1,14 +1,7 @@
-import  {useEffect, useRef, useState} from "react";
-import {Box, Button, Skeleton} from "@mui/material";
+import { useEffect, useRef, useState } from "react";
+import { Box, Button, Skeleton, Typography } from "@mui/material";
 
 export const clipsReverse = [
-    "https://vk.com/video_ext.php?oid=885405802&id=456239214&hd=2&autoplay=0",
-    "https://vk.com/video_ext.php?oid=885405802&id=456239210&hd=2&autoplay=0",
-    "https://vk.com/video_ext.php?oid=885405802&id=456239209&hd=2&autoplay=0",
-    "https://vk.com/video_ext.php?oid=885405802&id=456239208&hd=2&autoplay=0",
-    "https://vk.com/video_ext.php?oid=885405802&id=456239205&hd=2&autoplay=0",
-    "https://vk.com/video_ext.php?oid=885405802&id=456239204&hd=2&autoplay=0",
-    "https://vk.com/video_ext.php?oid=885405802&id=456239202&hd=2&autoplay=0",
     "https://vk.com/video_ext.php?oid=885405802&id=456239187&hd=2&autoplay=0",
     "https://vk.com/video_ext.php?oid=885405802&id=456239185&hd=2&autoplay=0",
     "https://vk.com/video_ext.php?oid=885405802&id=456239184&hd=2&autoplay=0",
@@ -23,11 +16,10 @@ export const clips = clipsReverse.reverse();
 type ClipsSliderType = {
     show: boolean;
     setShowPractice: (toggle: boolean) => void;
-    toggle:boolean
+    toggle: boolean;
 };
 
-export const ClipsSlider = ({ show, setShowPractice,toggle }: ClipsSliderType) => {
-
+export const ClipsSlider = ({ show, setShowPractice, toggle }: ClipsSliderType) => {
     const containerRef = useRef<HTMLDivElement | null>(null);
     const ORIGINAL_W = 240;
     const ORIGINAL_H = 480;
@@ -41,6 +33,7 @@ export const ClipsSlider = ({ show, setShowPractice,toggle }: ClipsSliderType) =
     const maxPage = Math.max(0, clips.length - visibleCount);
 
     const [loaded, setLoaded] = useState<boolean[]>(() => Array(clips.length).fill(false));
+    const [ready, setReady] = useState<boolean[]>(() => Array(clips.length).fill(false)); // флаг "черный экран ушел"
 
     const [clipSources, setClipSources] = useState<string[]>(clips);
 
@@ -71,8 +64,7 @@ export const ClipsSlider = ({ show, setShowPractice,toggle }: ClipsSliderType) =
         };
 
         document.addEventListener("visibilitychange", handleVisibility);
-        return () =>
-            document.removeEventListener("visibilitychange", handleVisibility);
+        return () => document.removeEventListener("visibilitychange", handleVisibility);
     }, []);
 
     useEffect(() => {
@@ -86,6 +78,16 @@ export const ClipsSlider = ({ show, setShowPractice,toggle }: ClipsSliderType) =
             copy[absIndex] = true;
             return copy;
         });
+
+        // небольшой таймаут, чтобы убрать "черный экран"
+        setTimeout(() => {
+            setReady((prev) => {
+                if (prev[absIndex]) return prev;
+                const copy = [...prev];
+                copy[absIndex] = true;
+                return copy;
+            });
+        }, 2000); // ⬅️ можно менять время (2 сек)
     };
 
     const visibleClips = clipSources.slice(page, page + visibleCount);
@@ -97,6 +99,7 @@ export const ClipsSlider = ({ show, setShowPractice,toggle }: ClipsSliderType) =
             console.log("no");
         }
     };
+
     return (
         <Box
             ref={containerRef}
@@ -147,7 +150,9 @@ export const ClipsSlider = ({ show, setShowPractice,toggle }: ClipsSliderType) =
             >
                 {visibleClips.map((clip, idx) => {
                     const absIndex = page + idx;
-                    const isLoaded = Boolean(loaded[absIndex]);
+                    const isLoaded = loaded[absIndex];
+                    const isReady = ready[absIndex];
+
                     return (
                         <Box
                             key={clip}
@@ -172,6 +177,7 @@ export const ClipsSlider = ({ show, setShowPractice,toggle }: ClipsSliderType) =
                                     boxShadow: 3,
                                 }}
                             >
+                                {/* Skeleton */}
                                 {!isLoaded && (
                                     <Box
                                         sx={{
@@ -196,6 +202,26 @@ export const ClipsSlider = ({ show, setShowPractice,toggle }: ClipsSliderType) =
                                         />
                                     </Box>
                                 )}
+
+                                {/* Оверлей "Загрузка..." */}
+                                {isLoaded && !isReady && (
+                                    <Box
+                                        sx={{
+                                            position: "absolute",
+                                            inset: 0,
+                                            backgroundColor: "rgba(0,0,0,0.85)",
+                                            color: "white",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            fontSize: "1rem",
+                                            zIndex: 3,
+                                        }}
+                                    >
+                                        <Typography variant="body1">Загрузка...</Typography>
+                                    </Box>
+                                )}
+
                                 <div
                                     style={{
                                         width: ORIGINAL_W,
@@ -205,7 +231,7 @@ export const ClipsSlider = ({ show, setShowPractice,toggle }: ClipsSliderType) =
                                     }}
                                 >
                                     <iframe
-                                        src={toggle==true?clip:''}
+                                        src={toggle == true ? clip : ""}
                                         width={ORIGINAL_W}
                                         height={ORIGINAL_H}
                                         frameBorder={0}
@@ -213,8 +239,6 @@ export const ClipsSlider = ({ show, setShowPractice,toggle }: ClipsSliderType) =
                                         allowFullScreen
                                         title={`${clip}-${absIndex}`}
                                         onLoad={() => handleLoad(absIndex)}
-                                        onPlay={() => console.log("Видео запущено")}
-                                        onPause={() => console.log("Видео на паузе")}
                                         style={{
                                             display: "block",
                                             border: 0,

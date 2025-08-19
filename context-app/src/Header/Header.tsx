@@ -75,7 +75,7 @@ export const Header = (props: HeaderType) => {
                                         sx={{
                                             color: '#FFF44F',
                                             fontWeight: 400,
-                                            fontSize: '1.1rem',
+                                            fontSize: '1rem',
                                             whiteSpace: 'nowrap',
                                         }}
                                     >
@@ -227,7 +227,7 @@ export const Header = (props: HeaderType) => {
                                         sx={{
                                             color: '#FFF44F',
                                             fontWeight: 400,
-                                            fontSize: '1.5rem',
+                                            fontSize: '1rem',
                                             whiteSpace: 'nowrap',
                                         }}
                                     >
