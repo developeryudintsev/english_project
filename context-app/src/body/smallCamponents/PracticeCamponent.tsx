@@ -41,7 +41,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({firstClick,
     useEffect(() => {
         const loadVoices = () => {
             const voices = window.speechSynthesis.getVoices();
-            console.log("Доступные голоса:", voices.map(v => `${v.name} (${v.lang})`));
             const ruMale = voices.find(v => v.lang.startsWith("ru") && /male|man/i.test(v.name));
             const ruAny = voices.find(v => v.lang.startsWith("ru"));
             const enMale = voices.find(v => v.lang.startsWith("en") && /male|man/i.test(v.name));

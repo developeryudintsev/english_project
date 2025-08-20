@@ -14,7 +14,6 @@ export const ThoriumComponent = (props: PropsType) => {
     const [toggleVideo, setToggleVideo] = useState(false);
     const toggleTheory = (toggle:boolean) => setToggleVideo(toggle);
     const [firstClick, setFirstClick] = useState<boolean>(false);
-    // const OpenToggle = (toggle:boolean) => setOpen(toggle);
     const [showPractice, setShowPractice] = useState(true);
     let setShowPracticeFoo=()=>{
         setShowPractice(!showPractice)

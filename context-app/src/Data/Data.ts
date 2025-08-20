@@ -29,7 +29,7 @@ export const data: DataType = {
             ['lesson1']: [
                 {
                     id: v1(),
-                    question: "я говорю.",
+                    question: "Я говорю",
                     answers: [
                         {text: "I say", isCorrect: true},
                         {text: "I says", isCorrect: false},
@@ -38,7 +38,7 @@ export const data: DataType = {
                 },
                 {
                     id: v1(),
-                    question: "вы(ты) идете.",
+                    question: "Вы(ты) идете",
                     answers: [
                         {text: "I go", isCorrect: false},
                         {text: "she says", isCorrect: false},
@@ -47,142 +47,142 @@ export const data: DataType = {
                 },
                 {
                     id: v1(),
-                    question: "он получает.",
+                    question: "Он получает",
                     answers: [
-                        {text: "We love", isCorrect: false},
+                        {text: "We get", isCorrect: false},
                         {text: "I got", isCorrect: false},
                         {text: "He gets", isCorrect: true},
                     ],
                 },
                 {
                     id: v1(),
-                    question: "она делает(что-то руками)",
+                    question: "Oна делает(что-то руками)",
                     answers: [
-                        {text: "Will I said", isCorrect: false},
+                        {text: "I will make", isCorrect: false},
                         {text: "She makes", isCorrect: true},
-                        {text: "Do i say?", isCorrect: false},
+                        {text: "I maked", isCorrect: false},
                     ],
                 },
                 {
                     id: v1(),
-                    question: "оно знает.",
+                    question: "Оно знает",
                     answers: [
-                        {text: "It knews", isCorrect: false},
+                        {text: "It know", isCorrect: false},
                         {text: "Did it know?", isCorrect: false},
                         {text: "It knows", isCorrect: true},
                     ],
                 },
                 {
                     id: v1(),
-                    question: "мы берём.",
+                    question: "Мы берём",
                     answers: [
                         {text: "I take", isCorrect: false},
                         {text: "We take", isCorrect: true},
-                        {text: "Does you take?", isCorrect: false},
+                        {text: "You does take", isCorrect: false},
                     ],
                 },
                 {
                     id: v1(),
-                    question: "они видят.",
+                    question: "Они видят",
                     answers: [
                         {text: "They sees", isCorrect: false},
                         {text: "They see", isCorrect: true},
-                        {text: "Do They sees?", isCorrect: false},
+                        {text: "They saw", isCorrect: false},
                     ],
                 },
                 {
                     id: v1(),
-                    question: "Я пришел.",
+                    question: "Я прихожу",
                     answers: [
-                        {text: "I say", isCorrect: false},
+                        {text: "I cames", isCorrect: false},
                         {text: "I came", isCorrect: true},
-                        {text: "I didn't came", isCorrect: false},
+                        {text: "I do came", isCorrect: false},
                     ],
                 },
                 {
                     id: v1(),
-                    question: "ты думаешь.",
+                    question: "Ты думаешь",
                     answers: [
                         {text: "You think", isCorrect: true},
-                        {text: "Do you think?", isCorrect: false},
-                        {text: "you thinks", isCorrect: false},
+                        {text: "We think", isCorrect: false},
+                        {text: "You thinks", isCorrect: false},
                     ],
                 },
                 {
                     id: v1(),
-                    question: "она смотрит.",
+                    question: "Она смотрит",
                     answers: [
                         {text: "I looks", isCorrect: false},
-                        {text: "he looks", isCorrect: false},
-                        {text: "she looks", isCorrect: true},
+                        {text: "He looks", isCorrect: false},
+                        {text: "She looks", isCorrect: true},
                     ],
                 },
                 {
                     id: v1(),
-                    question: "оно хочет.",
+                    question: "Оно хочет",
                     answers: [
                         {text: "I wants", isCorrect: false},
                         {text: "It wants", isCorrect: true},
-                        {text: "I don't want", isCorrect: false},
+                        {text: "I want", isCorrect: false},
                     ],
                 },
                 {
                     id: v1(),
-                    question: "мы даём.",
+                    question: "Мы даём",
                     answers: [
                         {text: "We give", isCorrect: true},
                         {text: "We gives", isCorrect: false},
-                        {text: "Do We gives?", isCorrect: false},
+                        {text: "They gives", isCorrect: false},
                     ],
                 },
                 {
                     id: v1(),
-                    question: "они используют.",
+                    question: "Они используют",
                     answers: [
                         {text: "They use", isCorrect: true},
                         {text: "It use", isCorrect: false},
-                        {text: "Does They uses?", isCorrect: false},
+                        {text: "They uses", isCorrect: false},
                     ],
                 },
                 {
                     id: v1(),
-                    question: "Я нахожу.",
+                    question: "Я нахожу",
                     answers: [
-                        {text: "I found", isCorrect: false},
+                        {text: "I find", isCorrect: true},
                         {text: "I finds", isCorrect: false},
-                        {text: "I find?", isCorrect: true},
+                        {text: "We find", isCorrect: false},
                     ],
                 },
                 {
                     id: v1(),
-                    question: "ты расказываешь.",
+                    question: "Ты расказываешь",
                     answers: [
-                        {text: "I say", isCorrect: true},
+                        {text: "You say", isCorrect: true},
                         {text: "I says", isCorrect: false},
-                        {text: "Do i say?", isCorrect: false},
+                        {text: "We say", isCorrect: false},
                     ],
                 },
                 {
                     id: v1(),
-                    question: "он спрашивает.",
+                    question: "Он спрашивает",
                     answers: [
                         {text: "He ask", isCorrect: false},
                         {text: "He asks", isCorrect: true},
-                        {text: "Do i asks?", isCorrect: false},
+                        {text: "I asks", isCorrect: false},
                     ],
                 },
                 {
                     id: v1(),
-                    question: "она работает.",
+                    question: "Она работает",
                     answers: [
                         {text: "You works", isCorrect: false},
                         {text: "She works", isCorrect: true},
-                        {text: "Does they works?", isCorrect: false},
+                        {text: "She work", isCorrect: false},
                     ],
                 },
                 {
                     id: v1(),
-                    question: "оно чувствует.",
+                    question: "Оно чувствует",
                     answers: [
                         {text: "It feels", isCorrect: true},
                         {text: "I feels", isCorrect: false},
@@ -191,7 +191,7 @@ export const data: DataType = {
                 },
                 {
                     id: v1(),
-                    question: "мы пытаемся.",
+                    question: "Мы пытаемся",
                     answers: [
                         {text: "It try", isCorrect: false},
                         {text: "I trys", isCorrect: false},
@@ -200,25 +200,25 @@ export const data: DataType = {
                 },
                 {
                     id: v1(),
-                    question: "они уходят.",
+                    question: "Они уходят",
                     answers: [
                         {text: "We leave", isCorrect: false},
                         {text: "They leave", isCorrect: true},
-                        {text: "Do hey leave?", isCorrect: false},
+                        {text: "They leaves", isCorrect: false},
                     ],
                 },
                 {
                     id: v1(),
-                    question: "я званю.",
+                    question: "Я звоню",
                     answers: [
                         {text: "I call", isCorrect: true},
-                        {text: "I says", isCorrect: false},
-                        {text: "Do i calls?", isCorrect: false},
+                        {text: "I calls", isCorrect: false},
+                        {text: "It calls", isCorrect: false},
                     ],
                 },
                 {
                     id: v1(),
-                    question: "тебе нужно.",
+                    question: "Тебе нужно",
                     answers: [
                         {text: "They need", isCorrect: false},
                         {text: "She need", isCorrect: false},
@@ -227,38 +227,38 @@ export const data: DataType = {
                 },
                 {
                     id: v1(),
-                    question: "он хранит.",
+                    question: "Он хранит",
                     answers: [
                         {text: "He keep", isCorrect: false},
                         {text: "He keeps", isCorrect: true},
-                        {text: "Do He keep?", isCorrect: false},
+                        {text: "He kept", isCorrect: false},
                     ],
                 },
                 {
                     id: v1(),
-                    question: "она позволяет.",
+                    question: "Она позволяет",
                     answers: [
                         {text: "She lets", isCorrect: true},
-                        {text: "Do she lets?", isCorrect: false},
-                        {text: "She goes", isCorrect: false},
+                        {text: "She let", isCorrect: false},
+                        {text: "She leted", isCorrect: false},
                     ],
                 },
                 {
                     id: v1(),
-                    question: "мы начинаем.",
+                    question: "Мы начинаем",
                     answers: [
                         {text: "I begin", isCorrect: false},
-                        {text: "we begin", isCorrect: true},
-                        {text: "It begins", isCorrect: false},
+                        {text: "We begin", isCorrect: true},
+                        {text: "We begins", isCorrect: false},
                     ],
                 },
                 {
                     id: v1(),
-                    question: "они несут.",
+                    question: "Они несут",
                     answers: [
                         {text: "They bring", isCorrect: true},
                         {text: "She bring", isCorrect: false},
-                        {text: "Does they bring?", isCorrect: false},
+                        {text: "They brings", isCorrect: false},
                     ],
                 },
             ],

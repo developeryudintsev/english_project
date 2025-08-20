@@ -1,26 +1,45 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { Box, Button, Skeleton, Typography } from "@mui/material";
+import type { changeType } from "./VideoCamponent";
 
-export const clipsReverse = [
-    "https://vk.com/video_ext.php?oid=885405802&id=456239187&hd=2&autoplay=0",
-    "https://vk.com/video_ext.php?oid=885405802&id=456239185&hd=2&autoplay=0",
-    "https://vk.com/video_ext.php?oid=885405802&id=456239184&hd=2&autoplay=0",
-    "https://vk.com/video_ext.php?oid=885405802&id=456239183&hd=2&autoplay=0",
-    "https://vk.com/video_ext.php?oid=885405802&id=456239180&hd=2&autoplay=0",
-    "https://vk.com/video_ext.php?oid=885405802&id=456239179&hd=2&autoplay=0",
-    "https://vk.com/video_ext.php?oid=885405802&id=456239178&hd=2&autoplay=0",
-    "https://vk.com/video_ext.php?oid=885405802&id=456239177&hd=2&autoplay=0",
-];
-export const clips = clipsReverse.reverse();
+export const clipsReverse: Record<changeType, string[]> = {
+    'утвердительное': [
+        "https://vk.com/video_ext.php?oid=885405802&id=456239187&hd=2&autoplay=0",
+        "https://vk.com/video_ext.php?oid=885405802&id=456239185&hd=2&autoplay=0",
+        "https://vk.com/video_ext.php?oid=885405802&id=456239184&hd=2&autoplay=0",
+        "https://vk.com/video_ext.php?oid=885405802&id=456239183&hd=2&autoplay=0",
+        "https://vk.com/video_ext.php?oid=885405802&id=456239180&hd=2&autoplay=0",
+        "https://vk.com/video_ext.php?oid=885405802&id=456239179&hd=2&autoplay=0",
+        "https://vk.com/video_ext.php?oid=885405802&id=456239178&hd=2&autoplay=0",
+        "https://vk.com/video_ext.php?oid=885405802&id=456239177&hd=2&autoplay=0",
+    ],
+    'вопросительное': [
+        "https://vk.com/video_ext.php?oid=885405802&id=456239214&hd=2&autoplay=0",
+        "https://vk.com/video_ext.php?oid=885405802&id=456239210&hd=2&autoplay=0",
+        "https://vk.com/video_ext.php?oid=885405802&id=456239209&hd=2&autoplay=0",
+        "https://vk.com/video_ext.php?oid=885405802&id=456239208&hd=2&autoplay=0",
+        "https://vk.com/video_ext.php?oid=885405802&id=456239205&hd=2&autoplay=0",
+        "https://vk.com/video_ext.php?oid=885405802&id=456239204&hd=2&autoplay=0",
+        "https://vk.com/video_ext.php?oid=885405802&id=456239202&hd=2&autoplay=0"
+    ],
+    'отрицательное': [
+        "https://vk.com/video_ext.php?oid=885405802&id=456239177&hd=2&autoplay=0",
+    ]
+};
 
 type ClipsSliderType = {
+    type: changeType;
     show: boolean;
     setShowPractice: (toggle: boolean) => void;
     toggle: boolean;
 };
 
-export const ClipsSlider = ({ show, setShowPractice, toggle }: ClipsSliderType) => {
+export const ClipsSlider = ({ type, show, setShowPractice, toggle }: ClipsSliderType) => {
+    // 1) Источник — НЕ мутируем
+    const sourceList = useMemo(() => clipsReverse[type].slice().reverse(), [type]);
+
     const containerRef = useRef<HTMLDivElement | null>(null);
+
     const ORIGINAL_W = 240;
     const ORIGINAL_H = 480;
     const GAP = 12;
@@ -28,16 +47,22 @@ export const ClipsSlider = ({ show, setShowPractice, toggle }: ClipsSliderType) 
     const SCALE = 0.8;
     const MAX_VISIBLE = 4;
     const MIN_VISIBLE = 1;
+
     const [visibleCount, setVisibleCount] = useState<number>(4);
     const [page, setPage] = useState<number>(0);
-    const maxPage = Math.max(0, clips.length - visibleCount);
 
-    const [loaded, setLoaded] = useState<boolean[]>(() => Array(clips.length).fill(false));
-    const [ready, setReady] = useState<boolean[]>(() => Array(clips.length).fill(false)); // флаг "черный экран ушел"
+    // 2) Рабочие src и флаги загрузки
+    const [clipSources, setClipSources] = useState<string[]>(sourceList);
+    const [loaded, setLoaded] = useState<boolean[]>(Array(sourceList.length).fill(false));
 
-    const [clipSources, setClipSources] = useState<string[]>(clips);
+    // При смене type — сбрасываем всё связанное со списком
+    useEffect(() => {
+        setClipSources(sourceList);
+        setLoaded(Array(sourceList.length).fill(false));
+        setPage(0);
+    }, [sourceList]);
 
-    // ресайз
+    // Ресайз
     useEffect(() => {
         const handleResize = () => {
             const width = window.innerWidth;
@@ -51,53 +76,40 @@ export const ClipsSlider = ({ show, setShowPractice, toggle }: ClipsSliderType) 
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    // следим за вкладкой
+    // Видимость вкладки -> меняем autoplay
     useEffect(() => {
         const handleVisibility = () => {
-            setClipSources((prev) =>
-                prev.map((src) => {
+            setClipSources(prev =>
+                prev.map(src => {
                     const url = new URL(src);
                     url.searchParams.set("autoplay", document.hidden ? "0" : "1");
                     return url.toString();
                 })
             );
         };
-
         document.addEventListener("visibilitychange", handleVisibility);
         return () => document.removeEventListener("visibilitychange", handleVisibility);
     }, []);
+
+    const maxPage = Math.max(0, clipSources.length - visibleCount);
 
     useEffect(() => {
         if (page > maxPage) setPage(maxPage);
     }, [visibleCount, maxPage, page]);
 
     const handleLoad = (absIndex: number) => {
-        setLoaded((prev) => {
+        setLoaded(prev => {
             if (prev[absIndex]) return prev;
             const copy = [...prev];
             copy[absIndex] = true;
             return copy;
         });
-
-        // небольшой таймаут, чтобы убрать "черный экран"
-        setTimeout(() => {
-            setReady((prev) => {
-                if (prev[absIndex]) return prev;
-                const copy = [...prev];
-                copy[absIndex] = true;
-                return copy;
-            });
-        }, 2000); // ⬅️ можно менять время (2 сек)
     };
 
     const visibleClips = clipSources.slice(page, page + visibleCount);
 
-    let gobackFoo = () => {
-        if (show === true) {
-            setShowPractice(false);
-        } else {
-            console.log("no");
-        }
+    const gobackFoo = () => {
+        if (show) setShowPractice(false);
     };
 
     return (
@@ -114,9 +126,10 @@ export const ClipsSlider = ({ show, setShowPractice, toggle }: ClipsSliderType) 
                 py: 2,
             }}
         >
+            {/* Prev */}
             <button
                 aria-label="prev"
-                onClick={() => setPage((p) => Math.max(0, p - 1))}
+                onClick={() => setPage(p => Math.max(0, p - 1))}
                 disabled={page === 0}
                 style={{
                     position: "absolute",
@@ -134,6 +147,8 @@ export const ClipsSlider = ({ show, setShowPractice, toggle }: ClipsSliderType) 
             >
                 ‹
             </button>
+
+            {/* Видео + кнопки */}
             <Box
                 sx={{
                     display: "flex",
@@ -151,11 +166,10 @@ export const ClipsSlider = ({ show, setShowPractice, toggle }: ClipsSliderType) 
                 {visibleClips.map((clip, idx) => {
                     const absIndex = page + idx;
                     const isLoaded = loaded[absIndex];
-                    const isReady = ready[absIndex];
 
                     return (
                         <Box
-                            key={clip}
+                            key={`${type}-${clip}-${absIndex}`}
                             sx={{
                                 width: ORIGINAL_W * SCALE,
                                 height: ORIGINAL_H * SCALE + 56,
@@ -166,6 +180,7 @@ export const ClipsSlider = ({ show, setShowPractice, toggle }: ClipsSliderType) 
                                 flexShrink: 0,
                             }}
                         >
+                            {/* Видео */}
                             <Box
                                 sx={{
                                     width: ORIGINAL_W * SCALE,
@@ -177,7 +192,7 @@ export const ClipsSlider = ({ show, setShowPractice, toggle }: ClipsSliderType) 
                                     boxShadow: 3,
                                 }}
                             >
-                                {/* Skeleton */}
+                                {/* Skeleton + надпись */}
                                 {!isLoaded && (
                                     <Box
                                         sx={{
@@ -200,25 +215,20 @@ export const ClipsSlider = ({ show, setShowPractice, toggle }: ClipsSliderType) 
                                                 borderRadius: 1,
                                             }}
                                         />
-                                    </Box>
-                                )}
-
-                                {/* Оверлей "Загрузка..." */}
-                                {isLoaded && !isReady && (
-                                    <Box
-                                        sx={{
-                                            position: "absolute",
-                                            inset: 0,
-                                            backgroundColor: "rgba(0,0,0,0.85)",
-                                            color: "white",
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                            fontSize: "1rem",
-                                            zIndex: 3,
-                                        }}
-                                    >
-                                        <Typography variant="body1">Загрузка...</Typography>
+                                        <Box
+                                            sx={{
+                                                position: "absolute",
+                                                inset: 0,
+                                                color: "white",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "center",
+                                                fontSize: "1rem",
+                                                zIndex: 3,
+                                            }}
+                                        >
+                                            <Typography variant="body1">Загрузка...</Typography>
+                                        </Box>
                                     </Box>
                                 )}
 
@@ -231,7 +241,7 @@ export const ClipsSlider = ({ show, setShowPractice, toggle }: ClipsSliderType) 
                                     }}
                                 >
                                     <iframe
-                                        src={toggle == true ? clip : ""}
+                                        src={toggle ? clip : ""}
                                         width={ORIGINAL_W}
                                         height={ORIGINAL_H}
                                         frameBorder={0}
@@ -253,7 +263,7 @@ export const ClipsSlider = ({ show, setShowPractice, toggle }: ClipsSliderType) 
                                 <Button
                                     variant="contained"
                                     size="small"
-                                    onClick={() => gobackFoo()}
+                                    onClick={gobackFoo}
                                     sx={{
                                         mt: 0.5,
                                         backgroundColor: "#FFF44F",
@@ -270,9 +280,10 @@ export const ClipsSlider = ({ show, setShowPractice, toggle }: ClipsSliderType) 
                 })}
             </Box>
 
+            {/* Next */}
             <button
                 aria-label="next"
-                onClick={() => setPage((p) => Math.min(maxPage, p + 1))}
+                onClick={() => setPage(p => Math.min(maxPage, p + 1))}
                 disabled={page === maxPage}
                 style={{
                     position: "absolute",
