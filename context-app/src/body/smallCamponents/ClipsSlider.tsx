@@ -51,18 +51,15 @@ export const ClipsSlider = ({ type, show, setShowPractice, toggle }: ClipsSlider
     const [visibleCount, setVisibleCount] = useState<number>(4);
     const [page, setPage] = useState<number>(0);
 
-    // 2) Рабочие src и флаги загрузки
     const [clipSources, setClipSources] = useState<string[]>(sourceList);
     const [loaded, setLoaded] = useState<boolean[]>(Array(sourceList.length).fill(false));
 
-    // При смене type — сбрасываем всё связанное со списком
     useEffect(() => {
         setClipSources(sourceList);
         setLoaded(Array(sourceList.length).fill(false));
         setPage(0);
     }, [sourceList]);
 
-    // Ресайз
     useEffect(() => {
         const handleResize = () => {
             const width = window.innerWidth;
@@ -76,7 +73,6 @@ export const ClipsSlider = ({ type, show, setShowPractice, toggle }: ClipsSlider
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    // Видимость вкладки -> меняем autoplay
     useEffect(() => {
         const handleVisibility = () => {
             setClipSources(prev =>
@@ -126,7 +122,6 @@ export const ClipsSlider = ({ type, show, setShowPractice, toggle }: ClipsSlider
                 py: 2,
             }}
         >
-            {/* Prev */}
             <button
                 aria-label="prev"
                 onClick={() => setPage(p => Math.max(0, p - 1))}
@@ -148,7 +143,6 @@ export const ClipsSlider = ({ type, show, setShowPractice, toggle }: ClipsSlider
                 ‹
             </button>
 
-            {/* Видео + кнопки */}
             <Box
                 sx={{
                     display: "flex",
@@ -180,7 +174,6 @@ export const ClipsSlider = ({ type, show, setShowPractice, toggle }: ClipsSlider
                                 flexShrink: 0,
                             }}
                         >
-                            {/* Видео */}
                             <Box
                                 sx={{
                                     width: ORIGINAL_W * SCALE,
@@ -258,7 +251,6 @@ export const ClipsSlider = ({ type, show, setShowPractice, toggle }: ClipsSlider
                                 </div>
                             </Box>
 
-                            {/* Кнопка */}
                             {show && (
                                 <Button
                                     variant="contained"

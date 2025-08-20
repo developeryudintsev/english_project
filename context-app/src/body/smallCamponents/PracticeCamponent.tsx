@@ -1,17 +1,26 @@
-import React, {useEffect, useState} from "react";
-import {Box, Button, IconButton, Paper, Typography,} from "@mui/material";
+import React, { useEffect, useState } from "react";
+import {
+    Box,
+    Button,
+    IconButton,
+    Paper,
+    Typography,
+    Select,
+    MenuItem,
+    FormControl,
+} from "@mui/material";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
-import {data} from "../../Data/Data";
+import { data } from "../../Data/Data";
 
 type TimeKey = "Present" | "Future" | "Past";
+export type changeType = "." | "?" | "!";
 
 type PracticeComponentProps = {
-    firstClick:  boolean,
-    setFirstClick: (firstClick:  boolean) => void,
+    firstClick: boolean;
+    setFirstClick: (firstClick: boolean) => void;
     time: TimeKey;
-    lessonKey?: string;
     toggle: boolean;
     open: boolean;
     toggleTheory: (togglePractice: boolean) => void;
@@ -19,73 +28,53 @@ type PracticeComponentProps = {
     show: boolean;
 };
 
-export const PracticeComponent: React.FC<PracticeComponentProps> = ({firstClick,setFirstClick,
+export const PracticeComponent: React.FC<PracticeComponentProps> = ({
+                                                                        firstClick,
+                                                                        setFirstClick,
                                                                         time,
-                                                                        lessonKey = "lesson1",
                                                                         open,
                                                                         toggle = false,
                                                                         toggleTheory,
                                                                         setShowPractice,
                                                                         show,
                                                                     }) => {
-    const questions = data.simple[time][lessonKey];
-    const [currentIndex, setCurrentIndex] = useState(0);
+    const [type, setType] = useState<changeType>(".");
+    const [currentIndex, setCurrentIndex] = useState<Record<changeType, number>>({
+        ".": 0,
+        "?": 0,
+        "!": 0,
+    });
+
+    const questions = data.simple[time][type];
+    const [currentQuestion, setCurrentQuestion] = useState(questions[0]);
     const [answerStatus, setAnswerStatus] = useState<"none" | "correct" | "wrong">("none");
     const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
     const [russianVoice, setRussianVoice] = useState<SpeechSynthesisVoice | null>(null);
     const [englishVoice, setEnglishVoice] = useState<SpeechSynthesisVoice | null>(null);
 
-    const currentQuestion = questions[currentIndex];
-    const isFinished = currentIndex >= questions.length;
+    const isFinished = currentIndex[type] >= questions.length;
 
+    // --- загрузка голосов
     useEffect(() => {
         const loadVoices = () => {
             const voices = window.speechSynthesis.getVoices();
-            const ruMale = voices.find(v => v.lang.startsWith("ru") && /male|man/i.test(v.name));
-            const ruAny = voices.find(v => v.lang.startsWith("ru"));
-            const enMale = voices.find(v => v.lang.startsWith("en") && /male|man/i.test(v.name));
-            const enAny = voices.find(v => v.lang.startsWith("en"));
+            const ruMale = voices.find((v) => v.lang.startsWith("ru") && /male|man/i.test(v.name));
+            const ruAny = voices.find((v) => v.lang.startsWith("ru"));
+            const enMale = voices.find((v) => v.lang.startsWith("en") && /male|man/i.test(v.name));
+            const enAny = voices.find((v) => v.lang.startsWith("en"));
             setRussianVoice(ruMale || ruAny || null);
             setEnglishVoice(enMale || enAny || null);
         };
         window.speechSynthesis.onvoiceschanged = loadVoices;
         loadVoices();
     }, []);
-    useEffect(() => {
-        const loadVoices = () => {
-            const voices = window.speechSynthesis.getVoices();
-            if (voices.length === 0) return;
 
-            // Для русского — ищем мужской голос, иначе берём первый доступный ru
-            const ruMale = voices.find(
-                (v) =>
-                    v.lang.startsWith("ru") &&
-                    /male|man|муж/i.test(v.name) // проверка на "male", "man" или "муж"
-            );
-            const ruDefault = voices.find((v) => v.lang.startsWith("ru"));
-
-            // Для английского — ищем мужской голос
-            const enMale = voices.find(
-                (v) =>
-                    v.lang.startsWith("en") &&
-                    /male|man/i.test(v.name)
-            );
-            const enDefault = voices.find((v) => v.lang.startsWith("en"));
-
-            setRussianVoice(ruMale || ruDefault || null);
-            setEnglishVoice(enMale || enDefault || null);
-        };
-
-        loadVoices();
-        window.speechSynthesis.onvoiceschanged = loadVoices;
-    }, []);
     const speakText = (text: string, lang: "ru" | "en") => {
         if (!text) return;
         if (window.speechSynthesis.speaking) {
             window.speechSynthesis.cancel();
         }
         const utterance = new SpeechSynthesisUtterance(text);
-
         if (lang === "ru" && russianVoice) {
             utterance.voice = russianVoice;
             utterance.lang = russianVoice.lang;
@@ -95,14 +84,16 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({firstClick,
         } else {
             utterance.lang = lang === "ru" ? "ru-RU" : "en-US";
         }
-
-        // Настройки для более естественного звучания
-        utterance.rate = 1; // скорость
-        utterance.pitch = 1; // высота
+        utterance.rate = 1;
+        utterance.pitch = 1;
         window.speechSynthesis.speak(utterance);
     };
 
-    const handleAnswer = (answerText: string) => {
+    // --- обработка ответа
+    const handleAnswer = (answerText: string, id: string) => {
+        if (questions.find((f) => f.id === id)) {
+            questions.find((f) => (f.id === id ? (f.isDone = true) : false));
+        }
         if (answerStatus !== "none") return;
         setSelectedAnswer(answerText);
         if (!currentQuestion) return;
@@ -114,18 +105,30 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({firstClick,
         }
     };
 
+    // --- следующий вопрос
     const handleNextQuestion = () => {
-        setCurrentIndex((prev) => prev + 1);
+        const nextIndex = currentIndex[type] + 1;
+
+        setCurrentIndex((prev) => ({
+            ...prev,
+            [type]: nextIndex,
+        }));
+
         setAnswerStatus("none");
         setSelectedAnswer(null);
-    };
-    useEffect(() => {
-        if(firstClick===true){
-            if (open) {
-                toggleTheory(true)
-            }
+
+        if (questions[nextIndex]) {
+            setCurrentQuestion(questions[nextIndex]);
         }
-    }, [open,firstClick])
+    };
+
+    // --- эффекты
+    useEffect(() => {
+        if (firstClick === true && open) {
+            toggleTheory(true);
+        }
+    }, [open, firstClick]);
+
     useEffect(() => {
         if (!show) {
             toggleTheory(false);
@@ -146,10 +149,23 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({firstClick,
             </Typography>
         );
     }
+
     const ButtonFoo = (toggle: boolean) => {
-        toggleTheory(!toggle)
-        setFirstClick(true)
-    }
+        toggleTheory(!toggle);
+        setFirstClick(false);
+    };
+
+    const wordFoo = (id: string) => {
+        const found = questions.find((f) => f.id === id);
+        if (found) {
+            setCurrentQuestion(found);
+            setCurrentIndex((prev) => ({
+                ...prev,
+                [type]: questions.indexOf(found),
+            }));
+        }
+    };
+
     return (
         <Paper
             elevation={3}
@@ -173,7 +189,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({firstClick,
                 }}
             >
                 <Typography
-                    onClick={() => ButtonFoo(toggle)}
                     sx={{
                         color: "#FFF44F",
                         fontFamily: "Roboto, sans-serif",
@@ -182,9 +197,70 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({firstClick,
                     }}
                 >
                     {!toggle
-                        ? `Практика – ${time} Simple`
+                        ? <div onClick={() => ButtonFoo(toggle)}>Практика – {time} Simple</div>
                         : !isFinished
-                            ? `Вопрос ${currentIndex + 1} из ${questions.length}`
+                            ? (
+                                <div>
+                                    <div onClick={() => ButtonFoo(toggle)}>
+                                        Вопрос {currentIndex[type] + 1} из {questions.length}
+                                    </div>
+                                    <Box>
+                                        <FormControl
+                                            sx={{
+                                                flexGrow: 1,
+                                                minWidth: 160,
+                                                marginLeft: "0px",
+                                            }}
+                                            size="small"
+                                        >
+                                            <Select
+                                                value={type}
+                                                onChange={(e) => {
+                                                    const newType = e.target.value as changeType;
+                                                    setType(newType);
+                                                    setCurrentQuestion(
+                                                        data.simple[time][newType][currentIndex[newType]]
+                                                    );
+                                                }}
+                                                displayEmpty
+                                                inputProps={{ "aria-label": "Select tense" }}
+                                                sx={{
+                                                    backgroundColor: "white",
+                                                    borderRadius: 1,
+                                                    width: "100%",
+                                                    margin: 1,
+                                                }}
+                                            >
+                                                <MenuItem value=".">утвердительное</MenuItem>
+                                                <MenuItem value="?">вопросительное</MenuItem>
+                                                <MenuItem value="!">отрицательное</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    </Box>
+                                    <Box>
+                                        {data.simple[time][type].map((m) => {
+                                            return (
+                                                <Button
+                                                    key={m.id}
+                                                    variant={m.isDone ? "contained" : "outlined"}
+                                                    onClick={() => wordFoo(m.id)}
+                                                    size="small"
+                                                    sx={{
+                                                        mt: 0.5,
+                                                        backgroundColor: m.isDone ? "#FFF44F" : "none",
+                                                        borderColor: "#FFF44F",
+                                                        color: "black",
+                                                        textTransform: "none",
+                                                        width: "10%",
+                                                    }}
+                                                >
+                                                    {m.word}
+                                                </Button>
+                                            );
+                                        })}
+                                    </Box>
+                                </div>
+                            )
                             : "Поздравляем! Вы ответили на все вопросы."}
                 </Typography>
 
@@ -194,7 +270,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({firstClick,
                         color: "#FFF44F",
                         position: "absolute",
                         right: -8,
-                        top: "50%",
+                        top: "12px",
                         transform: "translateY(-50%)",
                     }}
                     size="small"
@@ -216,7 +292,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({firstClick,
                         }}
                     >
                         <Typography variant="h6">
-                            {currentIndex + 1}. {currentQuestion.question}
+                            {currentIndex[type] + 1}. {currentQuestion.question}
                         </Typography>
                         <IconButton
                             onClick={() => speakText(currentQuestion.question, "ru")}
@@ -245,7 +321,11 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({firstClick,
                             if (answerStatus !== "none") {
                                 if (ans.isCorrect) {
                                     bgColor = "limegreen";
-                                } else if (isSelected && !ans.isCorrect && answerStatus === "wrong") {
+                                } else if (
+                                    isSelected &&
+                                    !ans.isCorrect &&
+                                    answerStatus === "wrong"
+                                ) {
                                     bgColor = "#ff6347";
                                 }
                             }
@@ -260,7 +340,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({firstClick,
                                 >
                                     <Button
                                         variant={isSelected ? "contained" : "outlined"}
-                                        onClick={() => handleAnswer(ans.text)}
+                                        onClick={() => handleAnswer(ans.text, currentQuestion.id)}
                                         disabled={answerStatus !== "none"}
                                         sx={{
                                             flexGrow: 1,
