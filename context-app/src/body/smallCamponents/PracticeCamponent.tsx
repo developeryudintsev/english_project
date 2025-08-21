@@ -53,7 +53,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
     const [englishVoice, setEnglishVoice] = useState<SpeechSynthesisVoice | null>(null);
     const [congratulation, setCongratulation] = useState(false);
 
-    // проверка: все ли вопросы выполнены
     useEffect(() => {
         const allDone = questions.every((q) => q.isDone);
         setCongratulation(allDone);
@@ -74,7 +73,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
         window.speechSynthesis.onvoiceschanged = loadVoices;
         loadVoices();
     }, []);
-
     const speakText = (text: string, lang: "ru" | "en") => {
         if (!text) return;
         if (window.speechSynthesis.speaking) {
@@ -94,7 +92,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
         utterance.pitch = 1;
         window.speechSynthesis.speak(utterance);
     };
-
     const handleAnswer = (answerText: string, id: string) => {
         if (answerStatus !== "none") return;
         setSelectedAnswer(answerText);
@@ -108,8 +105,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
             setAnswerStatus("wrong");
         }
     };
-
-    // переход на следующий невыполненный вопрос
     const handleNextQuestion = () => {
         const next = questions.find((q) => !q.isDone);
         if (next) {
@@ -124,19 +119,16 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
         setAnswerStatus("none");
         setSelectedAnswer(null);
     };
-
     useEffect(() => {
         if (firstClick === true && open) {
             toggleTheory(true);
         }
     }, [open, firstClick]);
-
     useEffect(() => {
         if (!show) {
             toggleTheory(false);
         }
     }, [show]);
-
     const gobackFoo = () => {
         if (show === true) {
             setShowPractice();
@@ -166,6 +158,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                 [type]: questions.indexOf(found),
             }));
         }
+        setAnswerStatus('none')
     };
 
     return (
