@@ -51,10 +51,16 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
     const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
     const [russianVoice, setRussianVoice] = useState<SpeechSynthesisVoice | null>(null);
     const [englishVoice, setEnglishVoice] = useState<SpeechSynthesisVoice | null>(null);
+    const [congratulation, setCongratulation] = useState(false);
 
-    const isFinished = currentIndex[type] >= questions.length;
+    // проверка: все ли вопросы выполнены
+    useEffect(() => {
+        const allDone = questions.every((q) => q.isDone);
+        setCongratulation(allDone);
+    }, [questions, type]);
 
-    // --- загрузка голосов
+    const isFinished = congratulation;
+
     useEffect(() => {
         const loadVoices = () => {
             const voices = window.speechSynthesis.getVoices();
@@ -89,40 +95,36 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
         window.speechSynthesis.speak(utterance);
     };
 
-    // --- обработка ответа
     const handleAnswer = (answerText: string, id: string) => {
-        if (questions.find((f) => f.id === id)) {
-            questions.find((f) => (f.id === id ? (f.isDone = true) : false));
-        }
         if (answerStatus !== "none") return;
         setSelectedAnswer(answerText);
-        if (!currentQuestion) return;
+
         const correctAnswer = currentQuestion.answers.find((ans) => ans.isCorrect);
         if (correctAnswer && correctAnswer.text === answerText) {
             setAnswerStatus("correct");
+            const q = questions.find((f) => f.id === id);
+            if (q) q.isDone = true;
         } else {
             setAnswerStatus("wrong");
         }
     };
 
-    // --- следующий вопрос
+    // переход на следующий невыполненный вопрос
     const handleNextQuestion = () => {
-        const nextIndex = currentIndex[type] + 1;
-
-        setCurrentIndex((prev) => ({
-            ...prev,
-            [type]: nextIndex,
-        }));
-
+        const next = questions.find((q) => !q.isDone);
+        if (next) {
+            setCurrentQuestion(next);
+            setCurrentIndex((prev) => ({
+                ...prev,
+                [type]: questions.indexOf(next),
+            }));
+        } else {
+            setCongratulation(true);
+        }
         setAnswerStatus("none");
         setSelectedAnswer(null);
-
-        if (questions[nextIndex]) {
-            setCurrentQuestion(questions[nextIndex]);
-        }
     };
 
-    // --- эффекты
     useEffect(() => {
         if (firstClick === true && open) {
             toggleTheory(true);
@@ -197,46 +199,37 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                     }}
                 >
                     {!toggle
-                        ? <div onClick={() => ButtonFoo(toggle)}>Практика – {time} Simple</div>
+                        ? <span onClick={() => ButtonFoo(toggle)}>Практика – {time} Simple</span>
                         : !isFinished
                             ? (
                                 <div>
-                                    <div onClick={() => ButtonFoo(toggle)}>
-                                        Вопрос {currentIndex[type] + 1} из {questions.length}
-                                    </div>
-                                    <Box>
-                                        <FormControl
-                                            sx={{
-                                                flexGrow: 1,
-                                                minWidth: 160,
-                                                marginLeft: "0px",
+                                    <FormControl sx={{ minWidth: 160, marginTop: "-15px" }} size="small">
+                                        <Select
+                                            value={type}
+                                            onChange={(e) => {
+                                                const newType = e.target.value as changeType;
+                                                setType(newType);
+                                                setCurrentQuestion(
+                                                    data.simple[time][newType][currentIndex[newType]]
+                                                );
                                             }}
-                                            size="small"
+                                            displayEmpty
+                                            inputProps={{ "aria-label": "Select tense" }}
+                                            sx={{
+                                                backgroundColor: "white",
+                                                borderRadius: 1,
+                                                width: "100%",
+                                                margin: 1,
+                                            }}
                                         >
-                                            <Select
-                                                value={type}
-                                                onChange={(e) => {
-                                                    const newType = e.target.value as changeType;
-                                                    setType(newType);
-                                                    setCurrentQuestion(
-                                                        data.simple[time][newType][currentIndex[newType]]
-                                                    );
-                                                }}
-                                                displayEmpty
-                                                inputProps={{ "aria-label": "Select tense" }}
-                                                sx={{
-                                                    backgroundColor: "white",
-                                                    borderRadius: 1,
-                                                    width: "100%",
-                                                    margin: 1,
-                                                }}
-                                            >
-                                                <MenuItem value=".">утвердительное</MenuItem>
-                                                <MenuItem value="?">вопросительное</MenuItem>
-                                                <MenuItem value="!">отрицательное</MenuItem>
-                                            </Select>
-                                        </FormControl>
-                                    </Box>
+                                            <MenuItem value=".">утвердительное</MenuItem>
+                                            <MenuItem value="?">вопросительное</MenuItem>
+                                            <MenuItem value="!">отрицательное</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                    <div style={{ margin: 3 }} onClick={() => ButtonFoo(toggle)}>
+                                        Выбери глагол или просто иди по порядку
+                                    </div>
                                     <Box>
                                         {data.simple[time][type].map((m) => {
                                             return (
@@ -246,7 +239,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                                     onClick={() => wordFoo(m.id)}
                                                     size="small"
                                                     sx={{
-                                                        mt: 0.5,
+                                                        margin: 0.5,
                                                         backgroundColor: m.isDone ? "#FFF44F" : "none",
                                                         borderColor: "#FFF44F",
                                                         color: "black",
@@ -371,7 +364,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                     {(answerStatus === "correct" || answerStatus === "wrong") && (
                         <Button
                             variant="contained"
-                            sx={{ mt: 3, backgroundColor: "#FFF44F", color: "black" }}
+                            sx={{ mt: 1.5, backgroundColor: "#FFF44F", color: "black" }}
                             onClick={handleNextQuestion}
                         >
                             Следующий вопрос
@@ -379,13 +372,15 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                     )}
 
                     {show && (
-                        <Button
-                            variant="contained"
-                            sx={{ mt: 3, backgroundColor: "#FFF44F", color: "black" }}
-                            onClick={() => gobackFoo()}
-                        >
-                            Вернуться к видео
-                        </Button>
+                        <Box>
+                            <Button
+                                variant="contained"
+                                sx={{ mt: 2, backgroundColor: "#FFF44F", color: "black" }}
+                                onClick={() => gobackFoo()}
+                            >
+                                Вернуться к видео
+                            </Button>
+                        </Box>
                     )}
                 </>
             )}
