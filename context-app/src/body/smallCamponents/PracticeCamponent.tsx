@@ -304,17 +304,16 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                         {currentQuestion.answers.map((ans) => {
                             const isSelected = selectedAnswer === ans.text;
                             let bgColor = "transparent";
+
                             if (answerStatus !== "none") {
                                 if (ans.isCorrect) {
-                                    bgColor = "limegreen";
-                                } else if (
-                                    isSelected &&
-                                    !ans.isCorrect &&
-                                    answerStatus === "wrong"
-                                ) {
-                                    bgColor = "#ff6347";
+                                    bgColor = "limegreen"; // ✅ правильный всегда зелёный
+                                }
+                                if (isSelected && !ans.isCorrect) {
+                                    bgColor = "#ff4c4c"; // ❌ выбранный неправильный красный
                                 }
                             }
+
                             return (
                                 <Box
                                     key={ans.text}
@@ -330,13 +329,20 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                         disabled={answerStatus !== "none"}
                                         sx={{
                                             flexGrow: 1,
-                                            color: "white",
+                                            color: "white !important",
                                             borderColor: "#FFF44F",
                                             backgroundColor: bgColor,
                                             textTransform: "none",
                                             "&:hover": {
                                                 backgroundColor:
                                                     bgColor === "transparent" ? "#555" : bgColor,
+                                                color: "white !important",
+                                            },
+                                            "&.Mui-disabled": {
+                                                backgroundColor: bgColor, // ⬅️ фикс для отключённого состояния
+                                                color: "white !important",
+                                                borderColor: "#FFF44F",
+                                                opacity: 1, // убираем серый фильтр MUI
                                             },
                                         }}
                                     >
@@ -354,13 +360,22 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                         })}
                     </Box>
 
-                    {(answerStatus === "correct" || answerStatus === "wrong") && (
+                    {(answerStatus === "correct") && (
                         <Button
                             variant="contained"
                             sx={{ mt: 1.5, backgroundColor: "#FFF44F", color: "black" }}
                             onClick={handleNextQuestion}
                         >
                             Следующий вопрос
+                        </Button>
+                    )}
+                    {( answerStatus === "wrong") && (
+                        <Button
+                            variant="contained"
+                            sx={{ mt: 1.5, backgroundColor: "#FFF44F", color: "black" }}
+                            onClick={handleNextQuestion}
+                        >
+                            попробуй сново
                         </Button>
                     )}
 

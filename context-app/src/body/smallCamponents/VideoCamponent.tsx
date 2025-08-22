@@ -56,7 +56,7 @@ export const VideoComponent = ({firstClick,setFirstClick,open, show, setShowPrac
             </IconButton>
 
             <Collapse in={toggle}>
-                <Typography sx={{color: '#FFF44F', pr: {xs: 4, sm: 0},}}>Выбери тип предложения:</Typography>
+                <Typography sx={{color: '#FFF44F', pr: {xs: 4, sm: 0}, cursor: "pointer",}}  onClick={() => toggleVideo(!toggle)}>Выбери тип предложения:</Typography>
                 <FormControl
                     sx={{
                         flexGrow: 1,
