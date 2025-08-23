@@ -48,7 +48,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
 
     // const questions = data.simple[time][type];
     // const [currentQuestion, setCurrentQuestion] = useState(questions[0]);
-    const [fullData, setFullData] = useState<DataType | null>(null);
+    const [fullData, setFullData] = useState<DataType>(data);
     const [questions, setQuestions] = useState<QuestionType[]>([]);
     const [currentQuestion, setCurrentQuestion] = useState<QuestionType | null>(null);
     const [answerStatus, setAnswerStatus] = useState<"none" | "correct" | "wrong">("none");
