@@ -46,9 +46,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
         "!": 0,
     });
 
-    // const questions = data.simple[time][type];
-    // const [currentQuestion, setCurrentQuestion] = useState(questions[0]);
-    const [fullData, setFullData] = useState<DataType>(data);
+    const [fullData, setFullData] = useState<DataType | null>(null); // ✅ nullable
     const [questions, setQuestions] = useState<QuestionType[]>([]);
     const [currentQuestion, setCurrentQuestion] = useState<QuestionType | null>(null);
     const [answerStatus, setAnswerStatus] = useState<"none" | "correct" | "wrong">("none");
@@ -62,20 +60,17 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
             const stored = await getQuestions();
 
             if (!stored || !stored.simple) {
-                // если в IndexedDB ничего нет, то добавляем
                 await addQuestions(data);
-
                 const fresh = await getQuestions();
-                console.log(fresh)
                 if (fresh) {
                     const loaded = fresh.simple[time][type];
                     setQuestions(loaded);
-                    setFullData(stored)
+                    setFullData(fresh); // ✅ теперь можно
                     setCurrentQuestion(loaded[0]);
                 }
             } else {
                 const loaded = stored.simple[time][type];
-                setFullData(stored)
+                setFullData(stored);
                 setQuestions(loaded);
                 setCurrentQuestion(loaded[0]);
             }
@@ -104,6 +99,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
         window.speechSynthesis.onvoiceschanged = loadVoices;
         loadVoices();
     }, []);
+
     const speakText = (text: string, lang: "ru" | "en") => {
         if (!text) return;
         if (window.speechSynthesis.speaking) {
@@ -123,20 +119,22 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
         utterance.pitch = 1;
         window.speechSynthesis.speak(utterance);
     };
+
     const handleAnswer = async (answerText: string, id: string) => {
         if (answerStatus !== "none") return;
         setSelectedAnswer(answerText);
 
-        if (currentQuestion) {
+        if (currentQuestion && fullData) { // ✅ проверка
             const correctAnswer = currentQuestion.answers.find((ans) => ans.isCorrect);
 
             if (correctAnswer && correctAnswer.text === answerText) {
                 setAnswerStatus("correct");
-                const updatedQuestion = { ...currentQuestion, isDone: true };
+                const updatedQuestion = {...currentQuestion, isDone: true};
                 setQuestions((prev) =>
                     prev.map((q) => (q.id === id ? updatedQuestion : q))
                 );
                 setCurrentQuestion(updatedQuestion);
+
                 const updatedData: DataType = {
                     ...fullData,
                     simple: {
@@ -149,15 +147,14 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                         },
                     },
                 };
-                console.log(updatedData)
-                await updateQuestion(updatedData);
 
+                setFullData(updatedData); // ✅ обновляем локально
+                await updateQuestion(updatedData); // ✅ в IndexedDB
             } else {
                 setAnswerStatus("wrong");
             }
         }
     };
-
 
     const handleNextQuestion = () => {
         const next = questions.find((q) => !q.isDone);
@@ -173,37 +170,31 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
         setAnswerStatus("none");
         setSelectedAnswer(null);
     };
+
     useEffect(() => {
         if (firstClick === true && open) {
             toggleTheory(true);
         }
     }, [open, firstClick]);
+
     useEffect(() => {
         if (!show) {
             toggleTheory(false);
         }
     }, [show]);
+
     const gobackFoo = () => {
         if (show === true) {
             setShowPractice();
         }
         toggleTheory(false);
     };
-setTimeout(() => {
-    if (!questions || questions.length === 0) {
-        return (
-            <Typography sx={{textAlign: "center", mt: 2, color: "white"}}>
-                Нет данных для отображения
-            </Typography>
-        );
-    }
-},2000)
 
     const ButtonFoo = (toggle: boolean) => {
-        console.log()
         toggleTheory(!toggle);
         setFirstClick(false);
     };
+
     const wordFoo = (id: string) => {
         const found = questions.find((f) => f.id === id);
         if (found) {
@@ -213,7 +204,7 @@ setTimeout(() => {
                 [type]: questions.indexOf(found),
             }));
         }
-        setAnswerStatus('none')
+        setAnswerStatus("none");
     };
 
     return (
