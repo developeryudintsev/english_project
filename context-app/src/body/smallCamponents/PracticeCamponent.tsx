@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
     Box,
     Button,
@@ -12,7 +12,8 @@ import {
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
-import { data } from "../../Data/Data";
+import {addQuestions, data,getQuestions, updateQuestion} from "../../Data/Data";
+import type {DataType,QuestionType} from "../../Data/Data";
 
 type TimeKey = "Present" | "Future" | "Past";
 export type changeType = "." | "?" | "!";
@@ -45,13 +46,43 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
         "!": 0,
     });
 
-    const questions = data.simple[time][type];
-    const [currentQuestion, setCurrentQuestion] = useState(questions[0]);
+    // const questions = data.simple[time][type];
+    // const [currentQuestion, setCurrentQuestion] = useState(questions[0]);
+    const [fullData,setFullData]=useState<DataType>();
+    const [questions, setQuestions] = useState<QuestionType[]>([]);
+    const [currentQuestion, setCurrentQuestion] = useState<QuestionType | null>(null);
     const [answerStatus, setAnswerStatus] = useState<"none" | "correct" | "wrong">("none");
     const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
     const [russianVoice, setRussianVoice] = useState<SpeechSynthesisVoice | null>(null);
     const [englishVoice, setEnglishVoice] = useState<SpeechSynthesisVoice | null>(null);
     const [congratulation, setCongratulation] = useState(false);
+
+    useEffect(() => {
+        const init = async () => {
+            const stored = await getQuestions();
+
+            if (!stored || !stored.simple) {
+                // если в IndexedDB ничего нет, то добавляем
+                await addQuestions(data);
+
+                const fresh = await getQuestions();
+                console.log(fresh)
+                if (fresh) {
+                    const loaded = fresh.simple[time][type];
+                    setQuestions(loaded);
+                    setFullData(stored)
+                    setCurrentQuestion(loaded[0]);
+                }
+            } else {
+                const loaded = stored.simple[time][type];
+                setFullData(stored)
+                setQuestions(loaded);
+                setCurrentQuestion(loaded[0]);
+            }
+        };
+
+        init();
+    }, [time, type]);
 
     useEffect(() => {
         const allDone = questions.every((q) => q.isDone);
@@ -92,19 +123,42 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
         utterance.pitch = 1;
         window.speechSynthesis.speak(utterance);
     };
-    const handleAnswer = (answerText: string, id: string) => {
+    const handleAnswer = async (answerText: string, id: string) => {
         if (answerStatus !== "none") return;
         setSelectedAnswer(answerText);
 
-        const correctAnswer = currentQuestion.answers.find((ans) => ans.isCorrect);
-        if (correctAnswer && correctAnswer.text === answerText) {
-            setAnswerStatus("correct");
-            const q = questions.find((f) => f.id === id);
-            if (q) q.isDone = true;
-        } else {
-            setAnswerStatus("wrong");
+        if (currentQuestion) {
+            const correctAnswer = currentQuestion.answers.find((ans) => ans.isCorrect);
+
+            if (correctAnswer && correctAnswer.text === answerText) {
+                setAnswerStatus("correct");
+                const updatedQuestion = { ...currentQuestion, isDone: true };
+                setQuestions((prev) =>
+                    prev.map((q) => (q.id === id ? updatedQuestion : q))
+                );
+                setCurrentQuestion(updatedQuestion);
+                const updatedData: DataType = {
+                    ...fullData,
+                    simple: {
+                        ...fullData.simple,
+                        [time]: {
+                            ...fullData.simple[time],
+                            [type]: questions.map((q) =>
+                                q.id === id ? updatedQuestion : q
+                            ),
+                        },
+                    },
+                };
+                console.log(updatedData)
+                await updateQuestion(updatedData);
+
+            } else {
+                setAnswerStatus("wrong");
+            }
         }
     };
+
+
     const handleNextQuestion = () => {
         const next = questions.find((q) => !q.isDone);
         if (next) {
@@ -135,20 +189,21 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
         }
         toggleTheory(false);
     };
-
+setTimeout(() => {
     if (!questions || questions.length === 0) {
         return (
-            <Typography sx={{ textAlign: "center", mt: 2, color: "white" }}>
+            <Typography sx={{textAlign: "center", mt: 2, color: "white"}}>
                 Нет данных для отображения
             </Typography>
         );
     }
+},2000)
 
     const ButtonFoo = (toggle: boolean) => {
+        console.log()
         toggleTheory(!toggle);
         setFirstClick(false);
     };
-
     const wordFoo = (id: string) => {
         const found = questions.find((f) => f.id === id);
         if (found) {
@@ -196,7 +251,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                         : !isFinished
                             ? (
                                 <div>
-                                    <FormControl sx={{ minWidth: 160, marginTop: "-15px" }} size="small">
+                                    <FormControl sx={{minWidth: 160, marginTop: "-15px"}} size="small">
                                         <Select
                                             value={type}
                                             onChange={(e) => {
@@ -207,7 +262,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                                 );
                                             }}
                                             displayEmpty
-                                            inputProps={{ "aria-label": "Select tense" }}
+                                            inputProps={{"aria-label": "Select tense"}}
                                             sx={{
                                                 backgroundColor: "white",
                                                 borderRadius: 1,
@@ -220,11 +275,11 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                             <MenuItem value="!">отрицательное</MenuItem>
                                         </Select>
                                     </FormControl>
-                                    <div style={{ margin: 3 }} onClick={() => ButtonFoo(toggle)}>
+                                    <div style={{margin: 3}} onClick={() => ButtonFoo(toggle)}>
                                         Выбери глагол или просто иди по порядку
                                     </div>
                                     <Box>
-                                        {data.simple[time][type].map((m) => {
+                                        {questions.map((m) => {
                                             return (
                                                 <Button
                                                     key={m.id}
@@ -262,7 +317,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                     size="small"
                     aria-label="Toggle practice info"
                 >
-                    <InfoOutlinedIcon />
+                    <InfoOutlinedIcon/>
                 </IconButton>
             </Box>
 
@@ -282,13 +337,13 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                         </Typography>
                         <IconButton
                             onClick={() => speakText(currentQuestion.question, "ru")}
-                            sx={{ color: "#FFF44F" }}
+                            sx={{color: "#FFF44F"}}
                             aria-label="Озвучить вопрос"
                         >
-                            <VolumeUpIcon />
+                            <VolumeUpIcon/>
                         </IconButton>
                         {answerStatus === "correct" && (
-                            <CheckCircleIcon sx={{ color: "limegreen", fontSize: 28 }} />
+                            <CheckCircleIcon sx={{color: "limegreen", fontSize: 28}}/>
                         )}
                     </Box>
 
@@ -350,10 +405,10 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                     </Button>
                                     <IconButton
                                         onClick={() => speakText(ans.text, "en")}
-                                        sx={{ ml: 1, color: "#FFF44F" }}
+                                        sx={{ml: 1, color: "#FFF44F"}}
                                         aria-label="Озвучить ответ"
                                     >
-                                        <VolumeUpIcon />
+                                        <VolumeUpIcon/>
                                     </IconButton>
                                 </Box>
                             );
@@ -363,16 +418,16 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                     {(answerStatus === "correct") && (
                         <Button
                             variant="contained"
-                            sx={{ mt: 1.5, backgroundColor: "#FFF44F", color: "black" }}
+                            sx={{mt: 1.5, backgroundColor: "#FFF44F", color: "black"}}
                             onClick={handleNextQuestion}
                         >
                             Следующий вопрос
                         </Button>
                     )}
-                    {( answerStatus === "wrong") && (
+                    {(answerStatus === "wrong") && (
                         <Button
                             variant="contained"
-                            sx={{ mt: 1.5, backgroundColor: "#FFF44F", color: "black" }}
+                            sx={{mt: 1.5, backgroundColor: "#FFF44F", color: "black"}}
                             onClick={handleNextQuestion}
                         >
                             попробуй сново
@@ -383,7 +438,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                         <Box>
                             <Button
                                 variant="contained"
-                                sx={{ mt: 2, backgroundColor: "#FFF44F", color: "black" }}
+                                sx={{mt: 2, backgroundColor: "#FFF44F", color: "black"}}
                                 onClick={() => gobackFoo()}
                             >
                                 Вернуться к видео

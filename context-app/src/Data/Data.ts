@@ -1,4 +1,5 @@
 import {v1} from "uuid";
+import {openDB} from "idb";
 
 export type AnswerType = {
     text: string;
@@ -22,7 +23,7 @@ export type DataType = {
     };
 };
 
-export const data:DataType ={
+export const data: DataType = {
     simple: {
         ['Present']: {
             ['.']: [
@@ -987,3 +988,47 @@ export const data:DataType ={
         },
     },
 }
+
+const DB_NAME = "englishApp";
+const STORE_NAME = "answers";
+const ROOT_ID = "DATA_V1"; // всегда одна запись
+
+type DBRecord = {
+    id: string;
+    payload: DataType;
+};
+
+export const initDB = async () => {
+    return openDB(DB_NAME, 1, {
+        upgrade(db) {
+            if (!db.objectStoreNames.contains(STORE_NAME)) {
+                db.createObjectStore(STORE_NAME, { keyPath: "id" });
+            }
+        },
+    });
+};
+
+// 1️⃣ Добавляем один раз (если нет)
+export const addQuestions = async (data: DataType) => {
+    const db = await initDB();
+    const exists = await db.get(STORE_NAME, ROOT_ID);
+    console.log(exists)
+    if (!exists) {
+        const rec: DBRecord = { id: ROOT_ID, payload: data };
+        await db.add(STORE_NAME, rec);
+    }
+};
+
+// 2️⃣ Получаем данные
+export const getQuestions = async (): Promise<DataType | null> => {
+    const db = await initDB();
+    const rec = (await db.get(STORE_NAME, ROOT_ID)) as DBRecord | undefined;
+    return rec?.payload ?? null;
+};
+
+// 3️⃣ Обновляем данные
+export const updateQuestion = async (updatedData: DataType) => {
+    const db = await initDB();
+    const rec: DBRecord = { id: ROOT_ID, payload: updatedData };
+    return await db.put(STORE_NAME, rec);
+};
