@@ -45,7 +45,7 @@ export const data: DataType = {
                     word: 'go',
                     answers: [
                         {text: "I go", isCorrect: false},
-                        {text: "she says", isCorrect: false},
+                        {text: "She says", isCorrect: false},
                         {text: "You go", isCorrect: true},
                     ],
                 },

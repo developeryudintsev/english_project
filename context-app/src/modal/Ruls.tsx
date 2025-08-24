@@ -1,5 +1,5 @@
 import React from "react";
-import { Paper, IconButton, Typography } from "@mui/material";
+import { Paper, IconButton, Typography, Box } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
 export type changeType = "." | "?" | "!";
@@ -23,49 +23,64 @@ export const Ruls: React.FC<RulsProps> = ({ type, time, setAnswerStatus }) => {
         <Paper
             elevation={6}
             sx={{
-                padding: 3,
                 position: "fixed",
                 top: "50%",
                 left: "50%",
-                transform: "translate(-50%, -50%)", // центр по вертикали и горизонтали
+                transform: "translate(-50%, -50%)",
                 width: "95%",
-                maxWidth: "520px",
-                textAlign: "left",
-                backgroundColor: "#7bee43",
+                maxWidth: "530px",
+                backgroundColor: "#FFF44F",
                 color: "#222",
                 borderRadius: 2,
                 fontFamily: "Roboto, sans-serif",
                 zIndex: 1000,
                 boxShadow: "0px 6px 20px rgba(0,0,0,0.4)",
+                overflow: "hidden",
             }}
         >
-            {/* Красный крестик слева сверху */}
-            <IconButton
-                onClick={() => setAnswerStatus("none")}
+            {/* 🔹 Шапка */}
+            <Box
                 sx={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    color: "red",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: "#444447",
+                    color: "#fff",
+                    padding: "12px",
+                    position: "relative",
                 }}
             >
-                <CloseIcon />
-            </IconButton>
+                {/* Крестик всегда сверху слева */}
+                <IconButton
+                    onClick={() => setAnswerStatus("none")}
+                    sx={{
+                        position: "absolute",
+                        left: "8px",
+                        top: "8px",
+                        color: "red",
+                    }}
+                >
+                    <CloseIcon />
+                </IconButton>
 
-            <Typography
-                variant="h6"
-                sx={{
-                    textAlign: "center",
-                    fontWeight: "bold",
-                    marginBottom: 2,
-                    color: "#005500",
-                }}
-            >
-                {typeSentence} предложение в {time} Simple строиться так:
-            </Typography>
+                {/* Заголовок */}
+                <Typography
+                    variant="h6"
+                    sx={{
+                        fontWeight: "bold",
+                        textAlign: "center",
+                        color: "#00ff88",
+                        width: "100%",
+                        pl: 4, // чтобы текст не налезал на крестик
+                        pr: 4,
+                    }}
+                >
+                    {typeSentence} предложение в {time} Simple строиться так:
+                </Typography>
+            </Box>
 
-            {/* Секция правил */}
-            <div>
+            {/* 🔹 Контент */}
+            <Box sx={{ padding: 3 }}>
                 {time === "Present" && (
                     <div>
                         <Typography sx={{ mt: 2, fontWeight: "bold" }}>
@@ -81,19 +96,19 @@ export const Ruls: React.FC<RulsProps> = ({ type, time, setAnswerStatus }) => {
                         <Typography>She loves.</Typography>
 
                         <Typography sx={{ mt: 2, fontWeight: "bold" }}>
-                             Отрицания (любить):
+                            Отрицания (любить):
                         </Typography>
                         <Typography>I do not (don’t) love.</Typography>
                         <Typography>She does not (doesn’t) love.</Typography>
 
                         <Typography sx={{ mt: 2, fontWeight: "bold" }}>
-                             Вопросы (любить):
+                            Вопросы (любить):
                         </Typography>
                         <Typography>Do you love?</Typography>
                         <Typography>Does she love?</Typography>
                     </div>
                 )}
-            </div>
+            </Box>
         </Paper>
     );
 };

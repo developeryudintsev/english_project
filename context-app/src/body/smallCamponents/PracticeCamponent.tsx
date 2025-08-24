@@ -1,20 +1,15 @@
 import React, {useEffect, useState} from "react";
-import {
-    Box,
-    Button,
-    IconButton,
-    Paper,
-    Typography,
-    Select,
-    MenuItem,
-    FormControl,
-} from "@mui/material";
+import {Box, Button, FormControl, IconButton, MenuItem, Paper, Select, Typography,} from "@mui/material";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
-import {addQuestions, data,getQuestions, updateQuestion} from "../../Data/Data";
-import type {DataType,QuestionType} from "../../Data/Data";
+import type {DataType, QuestionType} from "../../Data/Data";
+import {addQuestions, data, getQuestions, updateQuestion} from "../../Data/Data";
 import {Ruls} from "../../modal/Ruls";
+import zvuki from "../../picture/zvuki2.mp3";
+import Right from "../../picture/Right.mp4";
+import wrong from "../../picture/wrong.mp4";
+
 
 type TimeKey = "Present" | "Future" | "Past";
 export type changeType = "." | "?" | "!";
@@ -29,6 +24,7 @@ type PracticeComponentProps = {
     setShowPractice: () => void;
     show: boolean;
 };
+
 const blinkAnimation = {
     "@keyframes blink": {
         "0%": { boxShadow: "0 0 10px 2px #00ff00" },
@@ -53,7 +49,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
         "?": 0,
         "!": 0,
     });
-    const [fullData, setFullData] = useState<DataType | null>(null); // ✅ nullable
+    const [fullData, setFullData] = useState<DataType | null>(null);
     const [questions, setQuestions] = useState<QuestionType[]>([]);
     const [currentQuestion, setCurrentQuestion] = useState<QuestionType | null>(null);
     const [answerStatus, setAnswerStatus] = useState<"none" | "correct" | "wrong">("none");
@@ -61,6 +57,9 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
     const [russianVoice, setRussianVoice] = useState<SpeechSynthesisVoice | null>(null);
     const [englishVoice, setEnglishVoice] = useState<SpeechSynthesisVoice | null>(null);
     const [congratulation, setCongratulation] = useState(false);
+    const isFinished = congratulation;
+    // 🎵 создаём объект Audio один раз
+    const successAudio = new Audio(zvuki);
 
     useEffect(() => {
         const init = async () => {
@@ -92,18 +91,18 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                 setCongratulation(firstUnfinishedIndex === -1);
             }
 
-            // при загрузке сбрасываем состояние ответа
             setAnswerStatus("none");
             setSelectedAnswer(null);
         };
 
         init();
     }, [time, type]);
+
     useEffect(() => {
         const allDone = questions.every((q) => q.isDone);
         setCongratulation(allDone);
     }, [questions, type]);
-    const isFinished = congratulation;
+
     useEffect(() => {
         const loadVoices = () => {
             const voices = window.speechSynthesis.getVoices();
@@ -117,6 +116,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
         window.speechSynthesis.onvoiceschanged = loadVoices;
         loadVoices();
     }, []);
+
     const speakText = (text: string, lang: "ru" | "en") => {
         if (!text) return;
         if (window.speechSynthesis.speaking) {
@@ -136,16 +136,22 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
         utterance.pitch = 1;
         window.speechSynthesis.speak(utterance);
     };
+
     const handleAnswer = async (answerText: string, id: string) => {
         if (answerStatus !== "none") return;
         setSelectedAnswer(answerText);
 
-        if (currentQuestion && fullData) { // ✅ проверка
+        if (currentQuestion && fullData) {
             const correctAnswer = currentQuestion.answers.find((ans) => ans.isCorrect);
 
             if (correctAnswer && correctAnswer.text === answerText) {
                 setAnswerStatus("correct");
-                const updatedQuestion = {...currentQuestion, isDone: true};
+
+                // 🔊 звук правильного ответа
+                successAudio.currentTime = 0;
+                successAudio.play();
+
+                const updatedQuestion = { ...currentQuestion, isDone: true };
                 setQuestions((prev) =>
                     prev.map((q) => (q.id === id ? updatedQuestion : q))
                 );
@@ -164,13 +170,14 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                     },
                 };
 
-                setFullData(updatedData); // ✅ обновляем локально
-                await updateQuestion(updatedData); // ✅ в IndexedDB
+                setFullData(updatedData);
+                await updateQuestion(updatedData);
             } else {
                 setAnswerStatus("wrong");
             }
         }
     };
+
     const handleNextQuestion = () => {
         const next = questions.find((q) => !q.isDone);
         if (next) {
@@ -185,30 +192,36 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
         setAnswerStatus("none");
         setSelectedAnswer(null);
     };
+
     const tryAgain = () => {
         setAnswerStatus("none");
         setSelectedAnswer(null);
     };
+
     useEffect(() => {
         if (firstClick === true && open) {
             toggleTheory(true);
         }
     }, [open, firstClick]);
+
     useEffect(() => {
         if (!show) {
             toggleTheory(false);
         }
     }, [show]);
+
     const gobackFoo = () => {
         if (show === true) {
             setShowPractice();
         }
         toggleTheory(false);
     };
+
     const ButtonFoo = (toggle: boolean) => {
         toggleTheory(!toggle);
         setFirstClick(false);
     };
+
     const wordFoo = (id: string) => {
         const found = questions.find((f) => f.id === id);
         if (found) {
@@ -241,7 +254,51 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                     : { border: "2px solid transparent" }),
             }}
         >
-            {answerStatus=='wrong'&&<Ruls type={type} time={time} setAnswerStatus={setAnswerStatus}/>}
+            {answerStatus === "wrong" && (
+                <Ruls type={type} time={time} setAnswerStatus={setAnswerStatus}/>
+            )}
+
+            {/* Заголовок */}
+            {answerStatus === "correct" && (
+                <video
+                    src={Right}
+                    autoPlay
+                    loop
+                    muted
+                    style={{
+                        position: "fixed",
+                        top: "10px",
+                        left: "50%",
+                        transform: "translateX(-50%)",
+                        width: "100px",
+                        height: "100px",
+                        borderRadius: "50%",
+                        objectFit: "cover",
+                        objectPosition: "top center",
+                        zIndex: 2000,
+                    }}
+                />
+            )}
+            {answerStatus === "wrong" && (
+                <video
+                    src={wrong}
+                    autoPlay
+                    loop
+                    muted
+                    style={{
+                        position: "fixed",
+                        top: "10px",
+                        left: "50%",
+                        transform: "translateX(-50%)",
+                        width: "100px",
+                        height: "100px",
+                        borderRadius: "50%",
+                        objectFit: "cover",
+                        objectPosition: "top center",
+                        zIndex: 2000,
+                    }}
+                />
+            )}
 
             <Box
                 sx={{
@@ -335,8 +392,9 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                 </IconButton>
             </Box>
 
+            {/* Вопросы */}
             {toggle && !isFinished && currentQuestion && (
-                <span style={{borderColor:answerStatus==='correct'?"#39ff00":'none'}}>
+                <span>
                     <Box
                         sx={{
                             display: "flex",
@@ -344,7 +402,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                             justifyContent: "center",
                             gap: 1,
                             mb: 1,
-                            borderColor:"#39ff00"
                         }}
                     >
                         <Typography variant="h6">
@@ -376,10 +433,10 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                             let bgColor = "transparent";
                             if (answerStatus !== "none") {
                                 if (ans.isCorrect) {
-                                    bgColor = "limegreen"; // ✅ правильный всегда зелёный
+                                    bgColor = "limegreen";
                                 }
                                 if (isSelected && !ans.isCorrect) {
-                                    bgColor = "#ff4c4c"; // ❌ выбранный неправильный красный
+                                    bgColor = "#ff4c4c";
                                 }
                             }
 
@@ -399,7 +456,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                         sx={{
                                             flexGrow: 1,
                                             color: "white !important",
-                                            borderColor: "#FFF44F",
+                                            border: "1px solid #FFF44F",
                                             backgroundColor: bgColor,
                                             textTransform: "none",
                                             "&:hover": {
@@ -408,10 +465,10 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                                 color: "white !important",
                                             },
                                             "&.Mui-disabled": {
-                                                backgroundColor: bgColor, // ⬅️ фикс для отключённого состояния
+                                                backgroundColor: bgColor,
                                                 color: "white !important",
                                                 borderColor: "#FFF44F",
-                                                opacity: 1, // убираем серый фильтр MUI
+                                                opacity: 1,
                                             },
                                         }}
                                     >
@@ -429,7 +486,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                         })}
                     </Box>
 
-                    {(answerStatus === "correct") && (
+                    {answerStatus === "correct" && (
                         <Button
                             variant="contained"
                             sx={{mt: 1.5, backgroundColor: "#FFF44F", color: "black"}}
@@ -438,7 +495,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                             Следующий вопрос
                         </Button>
                     )}
-                    {(answerStatus === "wrong") && (
+                    {answerStatus === "wrong" && (
                         <Button
                             variant="contained"
                             sx={{mt: 1.5, backgroundColor: "#FFF44F", color: "black"}}
