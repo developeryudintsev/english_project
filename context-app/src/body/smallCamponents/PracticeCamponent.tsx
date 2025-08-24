@@ -169,8 +169,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                 setAnswerStatus("correct");
                 const audio = new Audio("public/zvuki2.mp3");
                 audio.play();
-
-
                 const updatedQuestion = { ...currentQuestion, isDone: true };
                 setQuestions((prev) =>
                     prev.map((q) => (q.id === id ? updatedQuestion : q))
