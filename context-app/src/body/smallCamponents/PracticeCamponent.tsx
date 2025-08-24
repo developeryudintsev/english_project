@@ -59,7 +59,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
     const [congratulation, setCongratulation] = useState(false);
     const isFinished = congratulation;
     // 🎵 создаём объект Audio один раз
-    const successAudio = new Audio('../../../public/zvuki2.mp3');
+    const successAudio = new Audio("/zvuki2.mp3");
 
     useEffect(() => {
         const init = async () => {
@@ -97,12 +97,10 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
 
         init();
     }, [time, type]);
-
     useEffect(() => {
         const allDone = questions.every((q) => q.isDone);
         setCongratulation(allDone);
     }, [questions, type]);
-
     useEffect(() => {
         const loadVoices = () => {
             const voices = window.speechSynthesis.getVoices();
@@ -116,7 +114,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
         window.speechSynthesis.onvoiceschanged = loadVoices;
         loadVoices();
     }, []);
-
     const speakText = (text: string, lang: "ru" | "en") => {
         if (!text) return;
         if (window.speechSynthesis.speaking) {
@@ -136,7 +133,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
         utterance.pitch = 1;
         window.speechSynthesis.speak(utterance);
     };
-
     const handleAnswer = async (answerText: string, id: string) => {
         if (answerStatus !== "none") return;
         setSelectedAnswer(answerText);
@@ -177,7 +173,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
             }
         }
     };
-
     const handleNextQuestion = () => {
         const next = questions.find((q) => !q.isDone);
         if (next) {
@@ -192,36 +187,30 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
         setAnswerStatus("none");
         setSelectedAnswer(null);
     };
-
     const tryAgain = () => {
         setAnswerStatus("none");
         setSelectedAnswer(null);
     };
-
     useEffect(() => {
         if (firstClick === true && open) {
             toggleTheory(true);
         }
     }, [open, firstClick]);
-
     useEffect(() => {
         if (!show) {
             toggleTheory(false);
         }
     }, [show]);
-
     const gobackFoo = () => {
         if (show === true) {
             setShowPractice();
         }
         toggleTheory(false);
     };
-
     const ButtonFoo = (toggle: boolean) => {
         toggleTheory(!toggle);
         setFirstClick(false);
     };
-
     const wordFoo = (id: string) => {
         const found = questions.find((f) => f.id === id);
         if (found) {
@@ -261,7 +250,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
             {/* Заголовок */}
             {answerStatus === "correct" && (
                 <video
-                    src={'../../../public/Right.mp4'}
+                    src={"/Right.mp4"}
                     autoPlay
                     loop
                     muted
@@ -281,7 +270,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
             )}
             {answerStatus === "wrong" && (
                 <video
-                    src={'../../../public/wrong.mp4'}
+                    src={"/wrong.mp4"}
                     autoPlay
                     loop
                     muted
