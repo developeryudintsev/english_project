@@ -6,9 +6,6 @@ import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import type {DataType, QuestionType} from "../../Data/Data";
 import {addQuestions, data, getQuestions, updateQuestion} from "../../Data/Data";
 import {Ruls} from "../../modal/Ruls";
-import zvuki from '../../../public/zvuki2.mp3'
-import Right from '../../../public/Right.mp4'
-import wrong from '../../../public/wrong.mp4'
 
 // const zvuki = "../../../public/zvuki2.MP3";
 // const Right = "../../../public/Right.mp4";
@@ -62,7 +59,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
     const [congratulation, setCongratulation] = useState(false);
     const isFinished = congratulation;
     // 🎵 создаём объект Audio один раз
-    const successAudio = new Audio(zvuki);
+    const successAudio = new Audio('../../../public/zvuki2.mp3');
 
     useEffect(() => {
         const init = async () => {
@@ -264,7 +261,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
             {/* Заголовок */}
             {answerStatus === "correct" && (
                 <video
-                    src={Right}
+                    src={'../../../public/Right.mp4'}
                     autoPlay
                     loop
                     muted
@@ -284,7 +281,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
             )}
             {answerStatus === "wrong" && (
                 <video
-                    src={wrong}
+                    src={'../../../public/wrong.mp4'}
                     autoPlay
                     loop
                     muted
