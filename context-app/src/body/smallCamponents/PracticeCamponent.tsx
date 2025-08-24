@@ -6,11 +6,10 @@ import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import type {DataType, QuestionType} from "../../Data/Data";
 import {addQuestions, data, getQuestions, updateQuestion} from "../../Data/Data";
 import {Ruls} from "../../modal/Ruls";
-import zvuki from "../../../public/zvuki2.MP3";
-import Right from "../../../public/Right.mp4";
-import wrong from "../../../public/wrong.mp4";
 
-
+const zvuki = "../../../public/zvuki2.MP3";
+const Right = "../../../public/Right.mp4";
+const wrong = "../../../public/wrong.mp4";
 type TimeKey = "Present" | "Future" | "Past";
 export type changeType = "." | "?" | "!";
 
