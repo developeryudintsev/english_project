@@ -20,15 +20,18 @@ type HeaderType = {
 
 export const Header = (props: HeaderType) => {
     let [isMobile, setIsMobile] = useState(false);
+    let [isSuperSmall, setIsSuperSmall] = useState(false);
 
     useEffect(() => {
         const handleResize = () => {
             setIsMobile(window.innerWidth < 640);
+            setIsSuperSmall(window.innerWidth < 330);
         };
         handleResize();
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
     }, []);
+
 
     return (
         <AppBar position="static" sx={{ backgroundColor: '#444447' }}>
@@ -64,7 +67,7 @@ export const Header = (props: HeaderType) => {
                                             color: '#FFF44F',
                                             fontWeight: 700,
                                             fontFamily: '"South Park Ext", sans-serif',
-                                            fontSize: '1.7rem',
+                                            fontSize: isSuperSmall ? '0.8rem' : '1.7rem',
                                             textShadow: '2px 2px 0px #000, -1px -1px 0px #000',
                                             whiteSpace: 'nowrap',
                                         }}
@@ -98,8 +101,8 @@ export const Header = (props: HeaderType) => {
                                             src={cat}
                                             sx={{
                                                 border: '2px solid white',
-                                                width: 50,
-                                                height: 50,
+                                                width: isSuperSmall ? 40 : 50,
+                                                height: isSuperSmall ? 40 : 50,
                                             }}
                                         />
                                     </a>
@@ -130,7 +133,7 @@ export const Header = (props: HeaderType) => {
                                 <FormControl
                                     sx={{
                                         flexGrow: 1,
-                                        minWidth: 160,
+                                        minWidth: isSuperSmall ? 120 : 160,
                                         marginLeft: '20px',
                                     }}
                                     size="small"

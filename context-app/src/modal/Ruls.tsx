@@ -50,14 +50,18 @@ export const Ruls: React.FC<RulsProps> = ({ type, time, setAnswerStatus }) => {
                     position: "relative",
                 }}
             >
-                {/* Крестик всегда сверху слева */}
+                {/* Крестик справа сверху */}
                 <IconButton
                     onClick={() => setAnswerStatus("none")}
                     sx={{
                         position: "absolute",
-                        left: "8px",
+                        right: "10px",
                         top: "8px",
-                        color: "red",
+                        color: "#fff",
+                        backgroundColor: "red",
+                        "&:hover": {
+                            backgroundColor: "#cc0000",
+                        },
                     }}
                 >
                     <CloseIcon />
@@ -71,8 +75,7 @@ export const Ruls: React.FC<RulsProps> = ({ type, time, setAnswerStatus }) => {
                         textAlign: "center",
                         color: "#00ff88",
                         width: "100%",
-                        pl: 4, // чтобы текст не налезал на крестик
-                        pr: 4,
+                        px: 6, // чтобы текст не налезал на крестик
                     }}
                 >
                     {typeSentence} предложение в {time} Simple строиться так:
@@ -84,7 +87,7 @@ export const Ruls: React.FC<RulsProps> = ({ type, time, setAnswerStatus }) => {
                 {time === "Present" && (
                     <div>
                         <Typography sx={{ mt: 2, fontWeight: "bold" }}>
-                            утвердительное (любить):
+                            Утвердительное (любить):
                         </Typography>
                         <Typography>I / You / We / They → глагол без изменений.</Typography>
                         <Typography>I love.</Typography>

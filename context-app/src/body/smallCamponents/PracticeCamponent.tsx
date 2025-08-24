@@ -58,7 +58,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
     const [englishVoice, setEnglishVoice] = useState<SpeechSynthesisVoice | null>(null);
     const [congratulation, setCongratulation] = useState(false);
     const isFinished = congratulation;
-    // 🎵 создаём объект Audio один раз
     const successAudio = new Audio(zvuki);
 
     useEffect(() => {
