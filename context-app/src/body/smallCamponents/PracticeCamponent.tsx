@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {
     Box,
     Button,
@@ -7,19 +7,22 @@ import {
     MenuItem,
     Paper,
     Select,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
     Typography,
 } from "@mui/material";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
-import type { DataType, QuestionType } from "../../Data/Data";
-import {
-    addQuestions,
-    data,
-    getQuestions,
-    updateQuestion,
-} from "../../Data/Data";
-import { Ruls } from "../../modal/Ruls";
+import type {DataType, QuestionType} from "../../Data/Data";
+import {addQuestions, data, getQuestions, updateQuestion,} from "../../Data/Data";
+import {VideoCat} from "../../camponent/VideoCat";
+import {Modal} from "../../modal/Modal";
+import CloseIcon from "@mui/icons-material/Close";
 
 type TimeKey = "Present" | "Future" | "Past";
 export type changeType = "." | "?" | "!";
@@ -33,19 +36,6 @@ type PracticeComponentProps = {
     toggleTheory: (togglePractice: boolean) => void;
     setShowPractice: () => void;
     show: boolean;
-};
-
-const blinkAnimation = {
-    "@keyframes blinkGreen": {
-        "0%": { boxShadow: "0 0 10px 2px #00ff00" },
-        "50%": { boxShadow: "0 0 20px 5px #00ff00" },
-        "100%": { boxShadow: "0 0 10px 2px #00ff00" },
-    },
-    "@keyframes blinkRed": {
-        "0%": { boxShadow: "0 0 10px 2px red" },
-        "50%": { boxShadow: "0 0 20px 5px red" },
-        "100%": { boxShadow: "0 0 10px 2px red" },
-    },
 };
 
 export const PracticeComponent: React.FC<PracticeComponentProps> = ({
@@ -66,25 +56,25 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
     });
     const [fullData, setFullData] = useState<DataType | null>(null);
     const [questions, setQuestions] = useState<QuestionType[]>([]);
-    const [currentQuestion, setCurrentQuestion] =
-        useState<QuestionType | null>(null);
-    const [answerStatus, setAnswerStatus] = useState<
-        "none" | "correct" | "wrong"
-    >("none");
+    const [currentQuestion, setCurrentQuestion] = useState<QuestionType | null>(null);
+    const [answerStatus, setAnswerStatus] = useState<"none" | "correct" | "wrong">("none");
     const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
-    const [russianVoice, setRussianVoice] =
-        useState<SpeechSynthesisVoice | null>(null);
-    const [englishVoice, setEnglishVoice] =
-        useState<SpeechSynthesisVoice | null>(null);
+    const [russianVoice, setRussianVoice] = useState<SpeechSynthesisVoice | null>(null);
+    const [englishVoice, setEnglishVoice] = useState<SpeechSynthesisVoice | null>(null);
     const [congratulation, setCongratulation] = useState(false);
     const isFinished = congratulation;
-
+    let [toggelModal, setToggelModal] = useState<0 | 1 | 2>(0)
+    let typeSentence =
+        type === "."
+            ? "утвердительное"
+            : type === "?"
+                ? "вопросительное"
+                : "отрицательное";
     useEffect(() => {
         const init = async () => {
             const stored = await getQuestions();
-
             if (!stored || !stored.simple) {
-                await addQuestions(data);
+                await addQuestions(data, 'none');
                 const fresh = await getQuestions();
                 if (fresh) {
                     const loaded = fresh.simple[time][type];
@@ -94,33 +84,29 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                     const firstUnfinishedIndex = loaded.findIndex((q) => !q.isDone);
                     const idx = firstUnfinishedIndex === -1 ? 0 : firstUnfinishedIndex;
                     setCurrentQuestion(loaded[idx] ?? null);
-                    setCurrentIndex((prev) => ({ ...prev, [type]: idx }));
+                    setCurrentIndex((prev) => ({...prev, [type]: idx}));
                     setCongratulation(firstUnfinishedIndex === -1);
                 }
             } else {
                 const loaded = stored.simple[time][type];
                 setFullData(stored);
                 setQuestions(loaded);
-
                 const firstUnfinishedIndex = loaded.findIndex((q) => !q.isDone);
                 const idx = firstUnfinishedIndex === -1 ? 0 : firstUnfinishedIndex;
                 setCurrentQuestion(loaded[idx] ?? null);
-                setCurrentIndex((prev) => ({ ...prev, [type]: idx }));
+                setCurrentIndex((prev) => ({...prev, [type]: idx}));
                 setCongratulation(firstUnfinishedIndex === -1);
             }
-
             setAnswerStatus("none");
             setSelectedAnswer(null);
         };
 
         init();
     }, [time, type]);
-
     useEffect(() => {
         const allDone = questions.every((q) => q.isDone);
         setCongratulation(allDone);
     }, [questions, type]);
-
     useEffect(() => {
         const loadVoices = () => {
             const voices = window.speechSynthesis.getVoices();
@@ -160,7 +146,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
     const handleAnswer = async (answerText: string, id: string) => {
         if (answerStatus !== "none") return;
         setSelectedAnswer(answerText);
-
+        setToggelModal(1)
         if (currentQuestion && fullData) {
             const correctAnswer = currentQuestion.answers.find(
                 (ans) => ans.isCorrect
@@ -169,12 +155,11 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                 setAnswerStatus("correct");
                 const audio = new Audio("public/zvuki2.mp3");
                 audio.play();
-                const updatedQuestion = { ...currentQuestion, isDone: true };
+                const updatedQuestion = {...currentQuestion, isDone: true};
                 setQuestions((prev) =>
                     prev.map((q) => (q.id === id ? updatedQuestion : q))
                 );
                 setCurrentQuestion(updatedQuestion);
-
                 const updatedData: DataType = {
                     ...fullData,
                     simple: {
@@ -244,7 +229,27 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
         }
         setAnswerStatus("none");
     };
+    const videoRef = useRef<HTMLVideoElement | null>(null);
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (videoRef.current) {
+                videoRef.current.pause();
+            }
+        }, 5000);
 
+        return () => clearTimeout(timer);
+    }, []);
+    const newData = () => {
+        const init = async () => {
+            await addQuestions(data, 'reload');
+        }
+        init()
+        setToggelModal(0)
+    }
+    const CloseButton = () => {
+        setToggelModal(0)
+        setAnswerStatus("none")
+    }
     return (
         <Paper
             elevation={3}
@@ -268,56 +273,187 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                             animation: "blinkRed 1s infinite",
                             ...blinkAnimation,
                         }
-                        : { border: "2px solid transparent" }),
+                        : {border: "2px solid transparent"}),
             }}
         >
-            {answerStatus === "wrong" && (
-                <Ruls type={type} time={time} setAnswerStatus={setAnswerStatus} />
+            {toggelModal === 1 && answerStatus === 'wrong' &&
+                <Modal>
+                    <Box>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                backgroundColor: "#444447",
+                                color: "#fff",
+                                padding: "12px",
+                                position: "relative",
+                            }}
+                        >
+                            <IconButton
+                                onClick={() => CloseButton()}
+                                sx={{
+                                    position: "absolute",
+                                    right: "10px",
+                                    top: "6px",
+                                    color: "#fff",
+                                    backgroundColor: "red",
+                                    "&:hover": {
+                                        backgroundColor: "#cc0000",
+                                    },
+                                }}
+                            >
+                                <CloseIcon/>
+                            </IconButton>
+
+                            <Typography
+                                variant="h6"
+                                sx={{
+                                    fontWeight: "bold",
+                                    textAlign: "center",
+                                    color: '#FFF44F',
+                                    width: "100%",
+                                    px: 6,
+                                }}
+                            >
+                                {/*{typeSentence} предложение в {time} Simple строиться так:*/}
+                                {typeSentence} предложение в Simple строиться так:
+                            </Typography>
+                        </Box>
+
+                        <Box sx={{padding: 0, display: "flex", flexDirection: "column", alignItems: "center"}}>
+                            {time === "Present" && (
+                                <div style={{textAlign: "center", width: "100%"}}>
+                                    <Typography fontWeight="bold" sx={{color: "#FFF44F", mb: 1}}>
+                                        Формула:
+                                    </Typography>
+                                    <Box sx={{width: "100%", maxWidth: 800}}>
+                                        <TableContainer component={Paper} sx={{my: 1}}>
+                                            <Table size="small">
+                                                <TableHead>
+                                                    <TableRow>
+                                                        <TableCell align="center">Русский</TableCell>
+                                                        <TableCell align="center">Английский (утверждение)</TableCell>
+                                                        <TableCell align="center">Отрицание</TableCell>
+                                                        <TableCell align="center">Вопрос</TableCell>
+                                                    </TableRow>
+                                                </TableHead>
+                                                <TableBody>
+                                                    <TableRow>
+                                                        <TableCell align="center">Я люблю</TableCell>
+                                                        <TableCell align="center">I love</TableCell>
+                                                        <TableCell align="center">I don’t love</TableCell>
+                                                        <TableCell align="center">Do I love?</TableCell>
+                                                    </TableRow>
+                                                    <TableRow>
+                                                        <TableCell sx={{backgroundColor: "#FFF44F", color: "#000"}}>Он
+                                                            любит</TableCell>
+                                                        <TableCell
+                                                            sx={{backgroundColor: "#FFF44F", color: "#000", px: '10%'}}>He
+                                                            loves</TableCell>
+                                                        <TableCell
+                                                            sx={{backgroundColor: "#FFF44F", color: "#000", px: 1}}>
+                                                            He does not (doesn't) love
+                                                        </TableCell>
+                                                        <TableCell sx={{backgroundColor: "#FFF44F", color: "#000"}}>Does
+                                                            he love?</TableCell>
+                                                    </TableRow>
+                                                    <TableRow>
+                                                        <TableCell sx={{backgroundColor: "#FFF44F", color: "#000"}}>Она
+                                                            любит</TableCell>
+                                                        <TableCell
+                                                            sx={{backgroundColor: "#FFF44F", color: "#000", px: '10%'}}>She
+                                                            loves</TableCell>
+                                                        <TableCell
+                                                            sx={{backgroundColor: "#FFF44F", color: "#000", px: 1}}>She
+                                                            doesn't love</TableCell>
+                                                        <TableCell sx={{backgroundColor: "#FFF44F", color: "#000"}}>Does
+                                                            she love?</TableCell>
+                                                    </TableRow>
+                                                    <TableRow>
+                                                        <TableCell sx={{backgroundColor: "#FFF44F", color: "#000"}}>Оно
+                                                            любит</TableCell>
+                                                        <TableCell
+                                                            sx={{backgroundColor: "#FFF44F", color: "#000", px: '10%'}}>It
+                                                            loves</TableCell>
+                                                        <TableCell
+                                                            sx={{backgroundColor: "#FFF44F", color: "#000", px: 1}}>It
+                                                            doesn't love</TableCell>
+                                                        <TableCell sx={{backgroundColor: "#FFF44F", color: "#000"}}>Does
+                                                            it love?</TableCell>
+                                                    </TableRow>
+                                                    <TableRow>
+                                                        <TableCell>Мы любим</TableCell>
+                                                        <TableCell sx={{px: '10%'}}>We love</TableCell>
+                                                        <TableCell sx={{px: 1}}>We don't love</TableCell>
+                                                        <TableCell>Do we love?</TableCell>
+                                                    </TableRow>
+                                                    <TableRow>
+                                                        <TableCell>Ты любишь</TableCell>
+                                                        <TableCell sx={{px: '10%'}}>You love</TableCell>
+                                                        <TableCell sx={{px: 1}}>You don't love</TableCell>
+                                                        <TableCell>Do you love?</TableCell>
+                                                    </TableRow>
+                                                    <TableRow>
+                                                        <TableCell>Они любят</TableCell>
+                                                        <TableCell sx={{px: '10%'}}>They love</TableCell>
+                                                        <TableCell sx={{px: 1}}>They don't love</TableCell>
+                                                        <TableCell>Do they love?</TableCell>
+                                                    </TableRow>
+                                                </TableBody>
+                                            </Table>
+                                        </TableContainer>
+                                    </Box>
+                                </div>
+                            )}
+
+                            <VideoCat src={"/wrong.mp4"}/>
+                        </Box>
+                    </Box>
+                </Modal>
+            }
+            {toggelModal === 2 && (
+                <Modal>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            backgroundColor: "#444447",
+                            color: "#fff",
+                            padding: "12px",
+                            position: "relative",
+                        }}
+                    >
+                        <Typography
+                            variant="h6"
+                            sx={{
+                                fontWeight: "bold",
+                                textAlign: "center",
+                                color: '#FFF44F',
+                                width: "100%",
+                                px: 6,
+                            }}
+                        >
+                            Вы действительно хотите обнулить результат?
+                        </Typography>
+                    </Box>
+                    <Box sx={{
+                        padding: 2,
+                        display: "flex",
+                        flexDirection: "row",   // 👉 в строку
+                        justifyContent: "center", // 👉 по центру
+                        alignItems: "center",
+                        gap: 2, // 👉 отступ между кнопками
+                        width: "100%",
+                    }}>
+                        <Button sx={{backgroundColor: "#444447",}} onClick={() => setToggelModal(0)}>нет</Button>
+                        <Button sx={{backgroundColor: "#444447",}} onClick={() => newData()}>да</Button>
+                    </Box>
+                </Modal>
             )}
 
-            {/* Видео сверху */}
-            {answerStatus === "correct" && (
-                <video
-                    src={"/Right.mp4"}
-                    autoPlay
-                    loop
-                    muted
-                    style={{
-                        position: "fixed",
-                        top: "10px",
-                        left: "50%",
-                        transform: "translateX(-50%)",
-                        width: "100px",
-                        height: "100px",
-                        borderRadius: "50%",
-                        objectFit: "cover",
-                        objectPosition: "top center",
-                        zIndex: 2000,
-                    }}
-                />
-            )}
-            {answerStatus === "wrong" && (
-                <video
-                    src={"/wrong.mp4"}
-                    autoPlay
-                    loop
-                    muted
-                    style={{
-                        position: "fixed",
-                        top: "10px",
-                        left: "50%",
-                        transform: "translateX(-50%)",
-                        width: "100px",
-                        height: "100px",
-                        borderRadius: "50%",
-                        objectFit: "cover",
-                        objectPosition: "top center",
-                        zIndex: 2000,
-                    }}
-                />
-            )}
 
-            {/* Заголовок */}
             <Box
                 sx={{
                     display: "flex",
@@ -341,34 +477,54 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
             </span>
                     ) : !isFinished ? (
                         <div>
-                            <FormControl
-                                sx={{ minWidth: 160, marginTop: "-15px" }}
-                                size="small"
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    flexWrap: "wrap",
+                                    gap: 2,
+                                    marginTop: "-5px",
+                                }}
                             >
-                                <Select
-                                    value={type}
-                                    onChange={(e) => {
-                                        const newType = e.target.value as changeType;
-                                        setType(newType);
-                                        setCurrentQuestion(
-                                            data.simple[time][newType][currentIndex[newType]]
-                                        );
-                                    }}
-                                    displayEmpty
-                                    inputProps={{ "aria-label": "Select tense" }}
+                                <FormControl sx={{minWidth: 160}} size="small">
+                                    <Select
+                                        value={type}
+                                        onChange={(e) => {
+                                            const newType = e.target.value as changeType;
+                                            setType(newType);
+                                            setCurrentQuestion(
+                                                data.simple[time][newType][currentIndex[newType]]
+                                            );
+                                        }}
+                                        displayEmpty
+                                        inputProps={{"aria-label": "Select tense"}}
+                                        sx={{
+                                            backgroundColor: "white",
+                                            borderRadius: 1,
+                                            width: "100%",
+                                        }}
+                                    >
+                                        <MenuItem value=".">утвердительное</MenuItem>
+                                        <MenuItem value="?">вопросительное</MenuItem>
+                                        <MenuItem value="!">отрицательное</MenuItem>
+                                    </Select>
+                                </FormControl>
+
+                                <Button
+                                    onClick={() => setToggelModal(2)}
                                     sx={{
-                                        backgroundColor: "white",
-                                        borderRadius: 1,
-                                        width: "100%",
-                                        margin: 1,
+                                        backgroundColor: "#ff0202",
+                                        color: "black",
+                                        textTransform: "none",
+                                        height: "40px",
                                     }}
                                 >
-                                    <MenuItem value=".">утвердительное</MenuItem>
-                                    <MenuItem value="?">вопросительное</MenuItem>
-                                    <MenuItem value="!">отрицательное</MenuItem>
-                                </Select>
-                            </FormControl>
-                            <div style={{ margin: 3 }} onClick={() => ButtonFoo(toggle)}>
+                                    очистить результаты
+                                </Button>
+                            </Box>
+
+                            <div style={{margin: 3}} onClick={() => ButtonFoo(toggle)}>
                                 Выбери глагол или просто иди по порядку
                             </div>
                             <Box>
@@ -411,7 +567,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                     size="small"
                     aria-label="Toggle practice info"
                 >
-                    <InfoOutlinedIcon />
+                    <InfoOutlinedIcon/>
                 </IconButton>
             </Box>
 
@@ -432,13 +588,13 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
             </Typography>
             <IconButton
                 onClick={() => speakText(currentQuestion.question, "ru")}
-                sx={{ color: "#FFF44F" }}
+                sx={{color: "#FFF44F"}}
                 aria-label="Озвучить вопрос"
             >
-              <VolumeUpIcon />
+              <VolumeUpIcon/>
             </IconButton>
               {answerStatus === "correct" && (
-                  <CheckCircleIcon sx={{ color: "limegreen", fontSize: 28 }} />
+                  <CheckCircleIcon sx={{color: "limegreen", fontSize: 28}}/>
               )}
           </Box>
 
@@ -499,40 +655,122 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                         </Button>
                         <IconButton
                             onClick={() => speakText(ans.text, "en")}
-                            sx={{ ml: 1, color: "#FFF44F" }}
+                            sx={{ml: 1, color: "#FFF44F"}}
                             aria-label="Озвучить ответ"
                         >
-                            <VolumeUpIcon />
+                            <VolumeUpIcon/>
                         </IconButton>
                     </Box>
                 );
             })}
           </Box>
+  {/*                   <Box*/}
+  {/*                       sx={{*/}
+  {/*                           display: "flex",*/}
+  {/*                           alignItems: "center",*/}
+  {/*                           flexWrap: "wrap",*/}
+  {/*                           mt: 1.5,*/}
+  {/*                           position: "relative",*/}
+  {/*                       }}*/}
+  {/*                   >*/}
+  {/*  /!* Кнопка по центру *!/*/}
+  {/*                       <Box*/}
+  {/*                           sx={{*/}
+  {/*                               flex: "1 1 100%",*/}
+  {/*                               display: "flex",*/}
+  {/*                               justifyContent: "center", // центрируем кнопку*/}
+  {/*                           }}*/}
+  {/*                       >*/}
+  {/*    <Button*/}
+  {/*        variant="contained"*/}
+  {/*        sx={{*/}
+  {/*            backgroundColor: "#FFF44F",*/}
+  {/*            color: "black",*/}
+  {/*            textTransform: "none",*/}
+  {/*        }}*/}
+  {/*        onClick={handleNextQuestion}*/}
+  {/*    >*/}
+  {/*      Следующий вопрос*/}
+  {/*    </Button>*/}
+  {/*  </Box>*/}
 
+  {/*                       /!* Видео справа *!/*/}
+  {/*                       <Box*/}
+  {/*                           sx={{*/}
+  {/*                               flex: "1 1 100%",*/}
+  {/*                               display: "flex",*/}
+  {/*                               justifyContent: {xs: "center", sm: "flex-end"}, // центр снизу на мобилке, справа на больших*/}
+  {/*                               mt: {xs: 1, sm: 0},*/}
+  {/*                           }}*/}
+  {/*                       >*/}
+  {/*    <VideoCat src={"/Right.mp4"}/>*/}
+  {/*  </Box>*/}
+  {/*</Box>*/}
                     {answerStatus === "correct" && (
-                        <Button
-                            variant="contained"
-                            sx={{ mt: 1.5, backgroundColor: "#FFF44F", color: "black" }}
-                            onClick={handleNextQuestion}
+                        <Box
+                            sx={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                flexWrap: "wrap",
+                                mt: 1.5,
+                                gap: 1.5,
+                            }}
                         >
-                            Следующий вопрос
-                        </Button>
+                            <Button
+                                variant="contained"
+                                sx={{
+                                    backgroundColor: "#FFF44F",
+                                    color: "black",
+                                    textTransform: "none",
+                                    mb: {xs: 1, sm: 0},
+                                }}
+                                onClick={handleNextQuestion}
+                            >
+                                Следующий вопрос
+                            </Button>
+
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    justifyContent: {xs: "right", sm: "flex-end"},
+                                    alignItems: "right",
+                                    flex: {xs: "1 1 100%", sm: "0 0 auto"}, // на мобилке перенос вниз
+                                    mt: {xs: 1, sm: 0}, // сверху чуть меньше отступа
+                                    // marginRight:'-30%'
+                                }}
+                            >
+                                <VideoCat src={"/Right.mp4"}/>
+                            </Box>
+                            {/*<Box*/}
+                            {/*    sx={{*/}
+                            {/*        flex: "1 1 100%",*/}
+                            {/*        display: "flex",*/}
+                            {/*        justifyContent: {xs: "center", sm: "flex-end"}, // центр снизу на мобилке, справа на больших*/}
+                            {/*        mt: {xs: 1, sm: 0},*/}
+                            {/*    }}*/}
+                            {/*>*/}
+                            {/*    <VideoCat src={"/Right.mp4"}/>*/}
+                            {/*</Box>*/}
+                        </Box>
                     )}
                     {answerStatus === "wrong" && (
-                        <Button
-                            variant="contained"
-                            sx={{ mt: 1.5, backgroundColor: "#FFF44F", color: "black" }}
-                            onClick={tryAgain}
-                        >
-                            попробуй снова
-                        </Button>
+                        <Box>
+                            <Button
+                                variant="contained"
+                                sx={{mt: 1.5, backgroundColor: "#FFF44F", color: "black"}}
+                                onClick={tryAgain}
+                            >
+                                попробуй снова
+                            </Button>
+                        </Box>
                     )}
 
                     {show && (
                         <Box>
                             <Button
                                 variant="contained"
-                                sx={{ mt: 2, backgroundColor: "#FFF44F", color: "black" }}
+                                sx={{mt: 2, backgroundColor: "#FFF44F", color: "black"}}
                                 onClick={() => gobackFoo()}
                             >
                                 Вернуться к видео
@@ -543,4 +781,17 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
             )}
         </Paper>
     );
+};
+
+const blinkAnimation = {
+    "@keyframes blinkGreen": {
+        "0%": {boxShadow: "0 0 10px 2px #00ff00"},
+        "50%": {boxShadow: "0 0 20px 5px #00ff00"},
+        "100%": {boxShadow: "0 0 10px 2px #00ff00"},
+    },
+    "@keyframes blinkRed": {
+        "0%": {boxShadow: "0 0 10px 2px red"},
+        "50%": {boxShadow: "0 0 20px 5px red"},
+        "100%": {boxShadow: "0 0 10px 2px red"},
+    },
 };

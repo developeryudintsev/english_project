@@ -38,8 +38,7 @@ export const TheoryComponent = (props: PropsType) => {
                     sx={{
                         display: 'block',
                         width: '100%',
-                        px: { xs: 0, sm: 0 }, // боковые отступы на мобилке и ПК
-                        // boxSizing: 'border-box',
+                        px: { xs: 0, sm: 0 },
                     }}
                 >
                     {props.getTheoryComponent(props.toggleTheory)}

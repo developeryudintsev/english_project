@@ -238,7 +238,7 @@ export const ClipsSlider = ({ type, show, setShowPractice, toggle }: ClipsSlider
                                         width={ORIGINAL_W}
                                         height={ORIGINAL_H}
                                         frameBorder={0}
-                                        allow="autoplay=0; encrypted-media; fullscreen; picture-in-picture"
+                                        allow="autoplay=0;mute=1; encrypted-media; fullscreen; picture-in-picture"
                                         allowFullScreen
                                         title={`${clip}-${absIndex}`}
                                         onLoad={() => handleLoad(absIndex)}

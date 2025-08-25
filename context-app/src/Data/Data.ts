@@ -1009,7 +1009,8 @@ export const initDB = async () => {
 };
 
 // 1️⃣ Добавляем один раз (если нет)
-export const addQuestions = async (data: DataType) => {
+export const addQuestions = async (data: DataType,refresh:'reload'|'none') => {
+    if(refresh==='none'){
     const db = await initDB();
     const exists = await db.get(STORE_NAME, ROOT_ID);
     console.log(exists)
@@ -1017,9 +1018,14 @@ export const addQuestions = async (data: DataType) => {
         const rec: DBRecord = { id: ROOT_ID, payload: data };
         await db.add(STORE_NAME, rec);
     }
+    }else if(refresh==='reload'){
+        const db = await initDB();
+        await db.delete(STORE_NAME, ROOT_ID);
+        const rec: DBRecord = { id: ROOT_ID, payload: data };
+        await db.add(STORE_NAME, rec);
+    }
 };
 
-// 2️⃣ Получаем данные
 export const getQuestions = async (): Promise<DataType | null> => {
     const db = await initDB();
     const rec = (await db.get(STORE_NAME, ROOT_ID)) as DBRecord | undefined;
