@@ -152,9 +152,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                 (ans) => ans.isCorrect
             );
             if (correctAnswer && correctAnswer.text === answerText) {
-                setAnswerStatus("correct");
-                const audio = new Audio("public/zvuki2.mp3");
-                audio.play();
                 const updatedQuestion = {...currentQuestion, isDone: true};
                 setQuestions((prev) =>
                     prev.map((q) => (q.id === id ? updatedQuestion : q))
@@ -618,7 +615,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                         bgColor = "#ff4c4c";
                     }
                 }
-
                 return (
                     <Box
                         key={ans.text}
@@ -630,7 +626,11 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                     >
                         <Button
                             variant={isSelected ? "contained" : "outlined"}
-                            onClick={() => handleAnswer(ans.text, currentQuestion.id)}
+                            onClick={() =>{
+                                handleAnswer(ans.text, currentQuestion.id)
+                                    const audio = new Audio("public/zvuki2.mp3");
+                                    audio.play();
+                            }}
                             disabled={answerStatus !== "none"}
                             sx={{
                                 flexGrow: 1,
@@ -664,48 +664,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                 );
             })}
           </Box>
-  {/*                   <Box*/}
-  {/*                       sx={{*/}
-  {/*                           display: "flex",*/}
-  {/*                           alignItems: "center",*/}
-  {/*                           flexWrap: "wrap",*/}
-  {/*                           mt: 1.5,*/}
-  {/*                           position: "relative",*/}
-  {/*                       }}*/}
-  {/*                   >*/}
-  {/*  /!* Кнопка по центру *!/*/}
-  {/*                       <Box*/}
-  {/*                           sx={{*/}
-  {/*                               flex: "1 1 100%",*/}
-  {/*                               display: "flex",*/}
-  {/*                               justifyContent: "center", // центрируем кнопку*/}
-  {/*                           }}*/}
-  {/*                       >*/}
-  {/*    <Button*/}
-  {/*        variant="contained"*/}
-  {/*        sx={{*/}
-  {/*            backgroundColor: "#FFF44F",*/}
-  {/*            color: "black",*/}
-  {/*            textTransform: "none",*/}
-  {/*        }}*/}
-  {/*        onClick={handleNextQuestion}*/}
-  {/*    >*/}
-  {/*      Следующий вопрос*/}
-  {/*    </Button>*/}
-  {/*  </Box>*/}
-
-  {/*                       /!* Видео справа *!/*/}
-  {/*                       <Box*/}
-  {/*                           sx={{*/}
-  {/*                               flex: "1 1 100%",*/}
-  {/*                               display: "flex",*/}
-  {/*                               justifyContent: {xs: "center", sm: "flex-end"}, // центр снизу на мобилке, справа на больших*/}
-  {/*                               mt: {xs: 1, sm: 0},*/}
-  {/*                           }}*/}
-  {/*                       >*/}
-  {/*    <VideoCat src={"/Right.mp4"}/>*/}
-  {/*  </Box>*/}
-  {/*</Box>*/}
                     {answerStatus === "correct" && (
                         <Box
                             sx={{
