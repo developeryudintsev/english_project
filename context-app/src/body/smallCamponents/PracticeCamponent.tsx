@@ -153,6 +153,8 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                 (ans) => ans.isCorrect
             );
             if (correctAnswer && correctAnswer.text === answerText) {
+                const audio = new Audio("/zvuki2.mp3");
+                audio.play();
                 setAnswerStatus("correct");
                 if (audioRef.current) {
                     audioRef.current.currentTime = 0;
@@ -279,7 +281,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                         : {border: "2px solid transparent"}),
             }}
         >
-            <audio ref={audioRef} src="public/zvuki2.mp3" preload="auto" />
+            {/*<audio ref={audioRef} src="/public/zvuki2.mp3" preload="auto" />*/}
             {toggelModal === 1 && answerStatus === 'wrong' &&
                 <Modal>
                     <Box>
