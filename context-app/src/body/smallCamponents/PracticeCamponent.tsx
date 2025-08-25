@@ -153,7 +153,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                 (ans) => ans.isCorrect
             );
             if (correctAnswer && correctAnswer.text === answerText) {
-                const audio = new Audio("/zvuki2.mp3");
+                const audio = new Audio("./public/zvuki2.mp3");
                 audio.play();
                 setAnswerStatus("correct");
                 if (audioRef.current) {
