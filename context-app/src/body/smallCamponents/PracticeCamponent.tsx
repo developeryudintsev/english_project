@@ -64,6 +64,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
     const [congratulation, setCongratulation] = useState(false);
     const isFinished = congratulation;
     let [toggelModal, setToggelModal] = useState<0 | 1 | 2>(0)
+    const audioRef = useRef<HTMLAudioElement | null>(null);
     let typeSentence =
         type === "."
             ? "утвердительное"
@@ -152,6 +153,11 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                 (ans) => ans.isCorrect
             );
             if (correctAnswer && correctAnswer.text === answerText) {
+                setAnswerStatus("correct");
+                if (audioRef.current) {
+                    audioRef.current.currentTime = 0;
+                    audioRef.current.play();
+                }
                 const updatedQuestion = {...currentQuestion, isDone: true};
                 setQuestions((prev) =>
                     prev.map((q) => (q.id === id ? updatedQuestion : q))
@@ -273,6 +279,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                         : {border: "2px solid transparent"}),
             }}
         >
+            <audio ref={audioRef} src="public/zvuki2.mp3" preload="auto" />
             {toggelModal === 1 && answerStatus === 'wrong' &&
                 <Modal>
                     <Box>
@@ -626,11 +633,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                     >
                         <Button
                             variant={isSelected ? "contained" : "outlined"}
-                            onClick={() =>{
-                                handleAnswer(ans.text, currentQuestion.id)
-                                    const audio = new Audio("public/zvuki2.mp3");
-                                    audio.play();
-                            }}
+                            onClick={() => handleAnswer(ans.text, currentQuestion.id)}
                             disabled={answerStatus !== "none"}
                             sx={{
                                 flexGrow: 1,
