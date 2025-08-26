@@ -23,6 +23,7 @@ import {addQuestions, data, getQuestions, updateQuestion,} from "../../Data/Data
 import {VideoCat} from "../../camponent/VideoCat";
 import {Modal} from "../../modal/Modal";
 import CloseIcon from "@mui/icons-material/Close";
+import zvuki2 from '../../../assets/zvuki2.mp3';
 
 type TimeKey = "Present" | "Future" | "Past";
 export type changeType = "." | "?" | "!";
@@ -153,7 +154,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                 (ans) => ans.isCorrect
             );
             if (correctAnswer && correctAnswer.text === answerText) {
-                const audio = new Audio("./public/zvuki2.mp3");
+                const audio = new Audio(zvuki2);
                 audio.play();
                 setAnswerStatus("correct");
                 if (audioRef.current) {
