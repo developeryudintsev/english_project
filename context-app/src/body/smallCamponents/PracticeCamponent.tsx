@@ -23,26 +23,22 @@ import {addQuestions, data, getQuestions, updateQuestion,} from "../../Data/Data
 import {VideoCat} from "../../camponent/VideoCat";
 import {Modal} from "../../modal/Modal";
 import CloseIcon from "@mui/icons-material/Close";
-import zvuki2 from '../../../assets/zvuki2.mp3';
+import zvuki2 from '../../../assets/zvuki.mp3';
 
 type TimeKey = "Present" | "Future" | "Past";
 export type changeType = "." | "?" | "!";
 
 type PracticeComponentProps = {
-    firstClick: boolean;
-    setFirstClick: (firstClick: boolean) => void;
     time: TimeKey;
     toggle: boolean;
     open: boolean;
-    openTheory: (theory:boolean) => void;
+    openTheory: (theory: boolean) => void;
     toggleTheory: (togglePractice: boolean) => void;
-    setShowPractice: () => void;
+    setShowPractice: (showPractice:boolean) => void;
     show: boolean;
 };
 
 export const PracticeComponent: React.FC<PracticeComponentProps> = ({
-                                                                        firstClick,
-                                                                        setFirstClick,
                                                                         time,
                                                                         open,
                                                                         toggle = false,
@@ -68,24 +64,12 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
     const isFinished = congratulation;
     let [toggelModal, setToggelModal] = useState<0 | 1 | 2>(0)
     const audioRef = useRef<HTMLAudioElement | null>(null);
-    let [videoRight, setVideoRight] = useState(1)
     let typeSentence =
         type === "."
             ? "утвердительное"
             : type === "?"
                 ? "вопросительное"
                 : "отрицательное";
-    useEffect(() => {
-        const handleResize = () => {
-            const width = window.innerWidth;
-            if (width < 720) setVideoRight(3);
-            else if (width < 1060) setVideoRight(2);
-            else if (width < 1360) setVideoRight(1);
-        };
-        handleResize();
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
     useEffect(() => {
         const init = async () => {
             const stored = await getQuestions();
@@ -219,10 +203,10 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
         setSelectedAnswer(null);
     };
     useEffect(() => {
-        if (firstClick === true && open) {
+        if ( open) {
             toggleTheory(true);
         }
-    }, [open, firstClick]);
+    }, [open]);
     useEffect(() => {
         if (!show) {
             toggleTheory(false);
@@ -230,13 +214,14 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
     }, [show]);
     const gobackFoo = () => {
         if (show === true) {
-            setShowPractice();
+            setShowPractice(true);
         }
         toggleTheory(false);
     };
     const ButtonFoo = (toggle: boolean) => {
         toggleTheory(!toggle);
-        setFirstClick(false);
+        setShowPractice(!toggle)
+        setAnswerStatus('none')
     };
     const wordFoo = (id: string) => {
         const found = questions.find((f) => f.id === id);
@@ -277,7 +262,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
         setToggelModal(0)
         setAnswerStatus("none")
         toggleTheory(!toggle);
-        setFirstClick(false);
         openTheory(true)
     }
     return (
@@ -307,7 +291,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
             }}
         >
             {toggelModal === 1 && answerStatus === 'wrong' &&
-                <Modal>
+                <Modal open={toggelModal === 1?true:false} onClose={CloseButton}>
                     <Box>
                         <Box
                             sx={{
@@ -414,7 +398,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                 </Modal>
             }
             {toggelModal === 2 && (
-                <Modal>
+                <Modal open={toggelModal === 2?true:false} onClose={CloseButton}>
                     <Box
                         sx={{
                             display: "flex",
@@ -544,7 +528,9 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                                 borderColor: "#FFF44F",
                                                 color: "black",
                                                 textTransform: "none",
-                                                width: "10%",
+                                                width: "20%", // было 10%, теперь в 2 раза шире
+                                                paddingY: 2,  // увеличил высоту
+                                                fontSize: "1.2rem", // шрифт тоже крупнее
                                             }}
                                         >
                                             {m.word}
@@ -608,6 +594,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                   gap: 1,
                   maxWidth: 400,
                   margin: "0 auto",
+                  position: "relative",
               }}
           >
             {currentQuestion.answers.map((ans) => {
@@ -621,15 +608,31 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                         bgColor = "#ff4c4c";
                     }
                 }
+
                 return (
                     <Box
                         key={ans.text}
                         sx={{
+                            position: "relative", // чтобы слои позиционировались внутри
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "space-between",
                         }}
                     >
+                        {/* Видео сверху кнопки */}
+                        {answerStatus === "correct" && ans.isCorrect && (
+                            <Box
+                                sx={{
+                                    position: "absolute",
+                                    top: "180%",
+                                    left: "50%",
+                                    transform: "translate(-50%, -50%)",
+                                    zIndex: 2, // выше кнопки
+                                }}
+                            >
+                                <VideoCat src={"/Right.mp4"} />
+                            </Box>
+                        )}
                         <Button
                             variant={isSelected ? "contained" : "outlined"}
                             onClick={() => handleAnswer(ans.text, currentQuestion.id)}
@@ -640,9 +643,9 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                 border: "1px solid #FFF44F",
                                 backgroundColor: bgColor,
                                 textTransform: "none",
+                                zIndex: 1, // ниже видео
                                 "&:hover": {
-                                    backgroundColor:
-                                        bgColor === "transparent" ? "#555" : bgColor,
+                                    backgroundColor: bgColor === "transparent" ? "#555" : bgColor,
                                     color: "white !important",
                                 },
                                 "&.Mui-disabled": {
@@ -655,16 +658,18 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                         >
                             {ans.text}
                         </Button>
+
                         <IconButton
                             onClick={() => speakText(ans.text, "en")}
-                            sx={{ml: 1, color: "#FFF44F"}}
+                            sx={{ ml: 1, color: "#FFF44F", zIndex: 3 }} // иконка всегда выше
                             aria-label="Озвучить ответ"
                         >
-                            <VolumeUpIcon/>
+                            <VolumeUpIcon />
                         </IconButton>
                     </Box>
                 );
             })}
+
           </Box>
                     {answerStatus === "correct" && (
                         <Box
@@ -673,47 +678,61 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                 justifyContent: "center",
                                 alignItems: "center",
                                 flexWrap: "wrap",
-                                mt: 1.5,
-                                gap: 1.5,
+                                mt: 1,
+                                gap: 3.5,
+
                             }}
                         >
                             <Button
                                 variant="contained"
                                 sx={{
+                                    flexGrow: 1,
+                                    maxWidth: "300px",
+                                    width: "100%",
                                     backgroundColor: "#FFF44F",
                                     color: "black",
                                     textTransform: "none",
                                     mb: {xs: 1, sm: 0},
+                                    mt: 2,
                                 }}
                                 onClick={handleNextQuestion}
                             >
-                                Следующий вопрос
+                                СЛЕДУЮЩИЙ ВОПРОС
                             </Button>
 
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    justifyContent: {xs: "right", sm: "flex-end"},
-                                    alignItems: "right",
-                                    flex: {xs: "1 1 100%", sm: "0 0 auto"},
-                                    mt: {xs: 1, sm: 0},
-                                    position: 'fixed',
-                                    right: videoRight == 1 ? '20%' : videoRight == 2 ? '5%' : 'center',
-                                    top: videoRight == 3 ? '20%' : '70%'
-                                }}
-                            >
-                                <VideoCat src={"/Right.mp4"}/>
-                            </Box>
+                            {/*<Box*/}
+                            {/*    sx={{*/}
+                            {/*        position: "absolute",*/}
+                            {/*        transform: "translateY(-50%)",*/}
+                            {/*        display: "flex",*/}
+                            {/*        justifyContent: {xs: "right", sm: "flex-end"},*/}
+                            {/*        alignItems: "right",*/}
+                            {/*        flex: {xs: "1 1 100%", sm: "0 0 auto"},*/}
+                            {/*        mt: {xs: 1, sm: 0},*/}
+                            {/*        // position: 'fixed',*/}
+                            {/*        right: videoRight == 1 ? '50%' : videoRight == 2 ? '5%' : 'center',*/}
+                            {/*        top: videoRight == 3 ? '20%' : '70%'*/}
+                            {/*    }}*/}
+                            {/*>*/}
+                            {/*    <VideoCat src={"/Right.mp4"}/>*/}
+                            {/*</Box>*/}
                         </Box>
                     )}
                     {answerStatus === "wrong" && (
                         <Box>
                             <Button
                                 variant="contained"
-                                sx={{mt: 1.5, backgroundColor: "#FFF44F", color: "black"}}
+                                sx={{
+                                    flexGrow: 1,
+                                    maxWidth: "300px",
+                                    width: "100%",
+                                    mt: 1.5,
+                                    backgroundColor: "#FFF44F",
+                                    color: "black",
+                                }}
                                 onClick={tryAgain}
                             >
-                                попробуй снова
+                                ПОПРОБУЙ СНОВА
                             </Button>
                         </Box>
                     )}
@@ -722,10 +741,17 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                         <Box>
                             <Button
                                 variant="contained"
-                                sx={{mt: 2, backgroundColor: "#FFF44F", color: "black"}}
+                                sx={{
+                                    flexGrow: 1,
+                                    maxWidth: "300px",
+                                    width: "100%",
+                                    mt: 2,
+                                    backgroundColor: "#FFF44F",
+                                    color: "black",
+                                }}
                                 onClick={() => gobackFoo()}
                             >
-                                Вернуться к видео
+                                ВЕРНУТЬСЯ К ВИДЕО
                             </Button>
                         </Box>
                     )}

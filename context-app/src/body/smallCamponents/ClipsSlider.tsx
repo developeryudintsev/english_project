@@ -262,9 +262,10 @@ export const ClipsSlider = ({ type, show, setShowPractice, toggle }: ClipsSlider
                                         color: "black",
                                         textTransform: "none",
                                         width: "90%",
+                                        height:'45px'
                                     }}
                                 >
-                                    Практика
+                                    ПРАКТИКА
                                 </Button>
                             )}
                         </Box>

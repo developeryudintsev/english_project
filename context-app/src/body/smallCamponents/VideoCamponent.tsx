@@ -105,6 +105,7 @@ export const VideoComponent = ({firstClick,setFirstClick,open, show, setShowPrac
                         cursor: "pointer",
                         fontFamily: "Roboto, sans-serif",
                         color: '#FFF44F'
+
                     }}
                 >
           Видео для практики
