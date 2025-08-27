@@ -1,11 +1,12 @@
 import {ThoriumComponent} from "./ThoriumComponent";
 import {Box} from '@mui/material';
+import React from "react";
 
 type PropsType={
     time:"Present" | "Future"|"Past",
     thorium:boolean,
-    toggleTheory:()=>void,
-    getTheoryComponent:(toggleTheory: () => void)=>React.ReactNode
+    toggleTheory:(theory:boolean) => void;
+    getTheoryComponent: (toggleTheory:(theory:boolean) => void) => React.ReactNode;
 }
 
 export const Body = (props:PropsType) => {

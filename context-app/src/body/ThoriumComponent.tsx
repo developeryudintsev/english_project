@@ -2,13 +2,13 @@ import {VideoComponent} from "./smallCamponents/VideoCamponent";
 import {TheoryComponent} from "./smallCamponents/TheoryCamponent";
 import {Box} from "@mui/material";
 import {PracticeComponent} from "./smallCamponents/PracticeCamponent";
-import {useState} from "react";
+import React, {useState} from "react";
 
 type PropsType = {
     time: "Present" | "Future"|"Past",
     thorium: boolean,
-    toggleTheory: () => void,
-    getTheoryComponent: (toggleTheory: () => void) => React.ReactNode
+    toggleTheory: (theory:boolean) => void;
+    getTheoryComponent: (toggleTheory:(theory:boolean) => void) => React.ReactNode;
 }
 export const ThoriumComponent = (props: PropsType) => {
     const [toggleVideo, setToggleVideo] = useState(false);
@@ -41,12 +41,12 @@ export const ThoriumComponent = (props: PropsType) => {
             {showPractice ? (
                 <VideoComponent firstClick={firstClick} setFirstClick={setFirstClick} open={true} show={true} setShowPractice={setShowPracticeFoo} />
             ) : (
-                <PracticeComponent firstClick={firstClick} setFirstClick={setFirstClick} open={true}  show={true} time={props.time} toggle={toggleVideo} toggleTheory={toggleTheory} setShowPractice={setShowPracticeFoo}/>
+                <PracticeComponent firstClick={firstClick} setFirstClick={setFirstClick} open={true}  show={true} time={props.time} toggle={toggleVideo} openTheory={props.toggleTheory} toggleTheory={toggleTheory} setShowPractice={setShowPracticeFoo}/>
             )}
             {!showPractice ? (
                 <VideoComponent firstClick={firstClick} setFirstClick={setFirstClick} open={false}  show={false} setShowPractice={setShowPracticeFoo}/>
             ) : (
-                <PracticeComponent firstClick={firstClick} setFirstClick={setFirstClick} open={false} show={false} time={props.time} toggle={toggleVideo} toggleTheory={toggleTheory} setShowPractice={setShowPracticeFoo}/>
+                <PracticeComponent firstClick={firstClick} setFirstClick={setFirstClick} open={false} show={false} time={props.time} toggle={toggleVideo} openTheory={props.toggleTheory} toggleTheory={toggleTheory} setShowPractice={setShowPracticeFoo}/>
             )}
 
         </Box>

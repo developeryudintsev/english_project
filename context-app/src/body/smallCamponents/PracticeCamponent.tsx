@@ -34,6 +34,7 @@ type PracticeComponentProps = {
     time: TimeKey;
     toggle: boolean;
     open: boolean;
+    openTheory: (theory:boolean) => void;
     toggleTheory: (togglePractice: boolean) => void;
     setShowPractice: () => void;
     show: boolean;
@@ -45,6 +46,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                                                         time,
                                                                         open,
                                                                         toggle = false,
+                                                                        openTheory,
                                                                         toggleTheory,
                                                                         setShowPractice,
                                                                         show,
@@ -66,12 +68,24 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
     const isFinished = congratulation;
     let [toggelModal, setToggelModal] = useState<0 | 1 | 2>(0)
     const audioRef = useRef<HTMLAudioElement | null>(null);
+    let [videoRight, setVideoRight] = useState(1)
     let typeSentence =
         type === "."
             ? "утвердительное"
             : type === "?"
                 ? "вопросительное"
                 : "отрицательное";
+    useEffect(() => {
+        const handleResize = () => {
+            const width = window.innerWidth;
+            if (width < 720) setVideoRight(3);
+            else if (width < 1060) setVideoRight(2);
+            else if (width < 1360) setVideoRight(1);
+        };
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
     useEffect(() => {
         const init = async () => {
             const stored = await getQuestions();
@@ -251,10 +265,20 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
         }
         init()
         setToggelModal(0)
+        const newQuestion = data.simple[time][type];
+        setFullData(data);
+        setQuestions(newQuestion);
     }
     const CloseButton = () => {
         setToggelModal(0)
         setAnswerStatus("none")
+    }
+    const GoToTheorya = () => {
+        setToggelModal(0)
+        setAnswerStatus("none")
+        toggleTheory(!toggle);
+        setFirstClick(false);
+        openTheory(true)
     }
     return (
         <Paper
@@ -282,7 +306,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                         : {border: "2px solid transparent"}),
             }}
         >
-            {/*<audio ref={audioRef} src="/public/zvuki2.mp3" preload="auto" />*/}
             {toggelModal === 1 && answerStatus === 'wrong' &&
                 <Modal>
                     <Box>
@@ -293,7 +316,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                 justifyContent: "center",
                                 backgroundColor: "#444447",
                                 color: "#fff",
-                                padding: "12px",
+                                padding: "6px",
                                 position: "relative",
                             }}
                         >
@@ -312,7 +335,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                             >
                                 <CloseIcon/>
                             </IconButton>
-
                             <Typography
                                 variant="h6"
                                 sx={{
@@ -327,8 +349,16 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                 {typeSentence} предложение в Simple строиться так:
                             </Typography>
                         </Box>
-
-                        <Box sx={{padding: 0, display: "flex", flexDirection: "column", alignItems: "center"}}>
+                        <Box sx={{marginTop: "6px"}}>
+                            <Button onClick={() => GoToTheorya()}>Подробнее правила в теории</Button>
+                        </Box>
+                        <Box sx={{
+                            padding: 0,
+                            marginTop: "-18px",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center"
+                        }}>
                             {time === "Present" && (
                                 <div style={{textAlign: "center", width: "100%"}}>
                                     <Typography fontWeight="bold" sx={{color: "#FFF44F", mb: 1}}>
@@ -353,59 +383,23 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                                         <TableCell align="center">Do I love?</TableCell>
                                                     </TableRow>
                                                     <TableRow>
-                                                        <TableCell sx={{backgroundColor: "#FFF44F", color: "#000"}}>Он
+                                                        <TableCell sx={{backgroundColor: "#FFF44F", color: "#000"}}>Он/Она/Оно
                                                             любит</TableCell>
                                                         <TableCell
-                                                            sx={{backgroundColor: "#FFF44F", color: "#000", px: '10%'}}>He
+                                                            sx={{backgroundColor: "#FFF44F", color: "#000", px: '10%'}}>He/She/It
                                                             loves</TableCell>
                                                         <TableCell
                                                             sx={{backgroundColor: "#FFF44F", color: "#000", px: 1}}>
-                                                            He does not (doesn't) love
+                                                            He/She/It does not (doesn't) love
                                                         </TableCell>
                                                         <TableCell sx={{backgroundColor: "#FFF44F", color: "#000"}}>Does
-                                                            he love?</TableCell>
+                                                            he/she/it love?</TableCell>
                                                     </TableRow>
                                                     <TableRow>
-                                                        <TableCell sx={{backgroundColor: "#FFF44F", color: "#000"}}>Она
-                                                            любит</TableCell>
-                                                        <TableCell
-                                                            sx={{backgroundColor: "#FFF44F", color: "#000", px: '10%'}}>She
-                                                            loves</TableCell>
-                                                        <TableCell
-                                                            sx={{backgroundColor: "#FFF44F", color: "#000", px: 1}}>She
-                                                            doesn't love</TableCell>
-                                                        <TableCell sx={{backgroundColor: "#FFF44F", color: "#000"}}>Does
-                                                            she love?</TableCell>
-                                                    </TableRow>
-                                                    <TableRow>
-                                                        <TableCell sx={{backgroundColor: "#FFF44F", color: "#000"}}>Оно
-                                                            любит</TableCell>
-                                                        <TableCell
-                                                            sx={{backgroundColor: "#FFF44F", color: "#000", px: '10%'}}>It
-                                                            loves</TableCell>
-                                                        <TableCell
-                                                            sx={{backgroundColor: "#FFF44F", color: "#000", px: 1}}>It
-                                                            doesn't love</TableCell>
-                                                        <TableCell sx={{backgroundColor: "#FFF44F", color: "#000"}}>Does
-                                                            it love?</TableCell>
-                                                    </TableRow>
-                                                    <TableRow>
-                                                        <TableCell>Мы любим</TableCell>
-                                                        <TableCell sx={{px: '10%'}}>We love</TableCell>
-                                                        <TableCell sx={{px: 1}}>We don't love</TableCell>
-                                                        <TableCell>Do we love?</TableCell>
-                                                    </TableRow>
-                                                    <TableRow>
-                                                        <TableCell>Ты любишь</TableCell>
-                                                        <TableCell sx={{px: '10%'}}>You love</TableCell>
-                                                        <TableCell sx={{px: 1}}>You don't love</TableCell>
-                                                        <TableCell>Do you love?</TableCell>
-                                                    </TableRow>
-                                                    <TableRow>
-                                                        <TableCell>Они любят</TableCell>
-                                                        <TableCell sx={{px: '10%'}}>They love</TableCell>
-                                                        <TableCell sx={{px: 1}}>They don't love</TableCell>
-                                                        <TableCell>Do they love?</TableCell>
+                                                        <TableCell>Мы/Ты/Они любим</TableCell>
+                                                        <TableCell sx={{px: '10%'}}>We/You/They love</TableCell>
+                                                        <TableCell sx={{px: 1}}>We/You/They don't love</TableCell>
+                                                        <TableCell>Do we/you/they love?</TableCell>
                                                     </TableRow>
                                                 </TableBody>
                                             </Table>
@@ -448,14 +442,15 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                     <Box sx={{
                         padding: 2,
                         display: "flex",
-                        flexDirection: "row",   // 👉 в строку
-                        justifyContent: "center", // 👉 по центру
+                        flexDirection: "row",
+                        justifyContent: "center",
                         alignItems: "center",
-                        gap: 2, // 👉 отступ между кнопками
+                        gap: 2,
                         width: "100%",
                     }}>
-                        <Button sx={{backgroundColor: "#444447",}} onClick={() => setToggelModal(0)}>нет</Button>
-                        <Button sx={{backgroundColor: "#444447",}} onClick={() => newData()}>да</Button>
+                        <Button sx={{backgroundColor: "#d20000", color: 'black'}}
+                                onClick={() => setToggelModal(0)}>нет</Button>
+                        <Button sx={{backgroundColor: "#00d300", color: 'black'}} onClick={() => newData()}>да</Button>
                     </Box>
                 </Modal>
             )}
@@ -699,23 +694,15 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                     display: "flex",
                                     justifyContent: {xs: "right", sm: "flex-end"},
                                     alignItems: "right",
-                                    flex: {xs: "1 1 100%", sm: "0 0 auto"}, // на мобилке перенос вниз
-                                    mt: {xs: 1, sm: 0}, // сверху чуть меньше отступа
-                                    // marginRight:'-30%'
+                                    flex: {xs: "1 1 100%", sm: "0 0 auto"},
+                                    mt: {xs: 1, sm: 0},
+                                    position: 'fixed',
+                                    right: videoRight == 1 ? '20%' : videoRight == 2 ? '5%' : 'center',
+                                    top: videoRight == 3 ? '20%' : '70%'
                                 }}
                             >
                                 <VideoCat src={"/Right.mp4"}/>
                             </Box>
-                            {/*<Box*/}
-                            {/*    sx={{*/}
-                            {/*        flex: "1 1 100%",*/}
-                            {/*        display: "flex",*/}
-                            {/*        justifyContent: {xs: "center", sm: "flex-end"}, // центр снизу на мобилке, справа на больших*/}
-                            {/*        mt: {xs: 1, sm: 0},*/}
-                            {/*    }}*/}
-                            {/*>*/}
-                            {/*    <VideoCat src={"/Right.mp4"}/>*/}
-                            {/*</Box>*/}
                         </Box>
                     )}
                     {answerStatus === "wrong" && (

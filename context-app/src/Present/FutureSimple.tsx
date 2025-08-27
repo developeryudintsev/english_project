@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
 
 type PropsType = {
-    toggleTheory: () => void;
+    thorium:boolean;
+    toggleTheory:(theory:boolean) => void;
 };
 
-export const FutureSimple = ({ toggleTheory }: PropsType) => {
+export const FutureSimple = ({ toggleTheory,thorium }: PropsType) => {
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
@@ -33,7 +34,7 @@ export const FutureSimple = ({ toggleTheory }: PropsType) => {
                     pr: { xs: 4, sm: 2.2 },
                     boxSizing: "border-box",
                 }}
-                onClick={toggleTheory}
+                onClick={()=>toggleTheory(!thorium)}
             >
                 3. FUTURE SIMPLE - БУДУЩЕЕ ПРОСТОЕ ВРЕМЯ
             </Typography>

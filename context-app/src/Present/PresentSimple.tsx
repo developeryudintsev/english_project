@@ -12,10 +12,11 @@ import {
 } from "@mui/material";
 
 type PropsType = {
-    toggleTheory: () => void;
+    thorium:boolean;
+    toggleTheory:(theory:boolean) => void;
 };
 
-export const PresentSimple = ({ toggleTheory }: PropsType) => {
+export const PresentSimple = ({ toggleTheory,thorium }: PropsType) => {
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
@@ -43,7 +44,7 @@ export const PresentSimple = ({ toggleTheory }: PropsType) => {
                         pr: { xs: 4, sm: 2.2 },
                         boxSizing: "border-box",
                     }}
-                    onClick={toggleTheory}
+                    onClick={()=>toggleTheory(!thorium)}
                 >
                     1.PRESENT SIMPLE – НАСТОЯЩЕЕ ПРОСТОЕ ВРЕМЯ
                 </Typography>

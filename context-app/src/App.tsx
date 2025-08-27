@@ -13,17 +13,17 @@ export const App = () => {
         setTime(eValue);
         setThorium(false)
     };
-    const toggleTheory = () => {
-        setThorium(prev => !prev);
+    const toggleTheory = (theory:boolean) => {
+        setThorium(theory);
     };
-    const getTheoryComponent = (toggleTheory: () => void) => {
+    const getTheoryComponent = (toggleTheory: (theory:boolean) => void) => {
         switch (time) {
             case 'Present':
-                return <PresentSimple toggleTheory={toggleTheory} />;
+                return <PresentSimple thorium={thorium} toggleTheory={toggleTheory} />;
             case 'Past':
-                return <PastSimple toggleTheory={toggleTheory}/>;
+                return <PastSimple thorium={thorium} toggleTheory={toggleTheory}/>;
             case 'Future':
-                return <FutureSimple toggleTheory={toggleTheory}/>;
+                return <FutureSimple thorium={thorium} toggleTheory={toggleTheory}/>;
             default:
                 return null;
         }

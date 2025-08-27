@@ -5,8 +5,8 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 type PropsType = {
     time: 'Present' | 'Past' | 'Future';
     thorium: boolean;
-    toggleTheory: () => void;
-    getTheoryComponent: (toggleTheory: () => void) => React.ReactNode;
+    toggleTheory:(theory:boolean) => void;
+    getTheoryComponent: (toggleTheory:(theory:boolean) => void) => React.ReactNode;
 };
 
 export const TheoryComponent = (props: PropsType) => {
@@ -26,7 +26,7 @@ export const TheoryComponent = (props: PropsType) => {
             }}
         >
             <IconButton
-                onClick={props.toggleTheory}
+                onClick={()=>props.toggleTheory(!props.thorium)}
                 sx={{ color: '#FFF44F', position: 'absolute', top: 10, right: 8 }}
                 size="small"
             >
@@ -47,7 +47,7 @@ export const TheoryComponent = (props: PropsType) => {
 
             {!props.thorium && (
                 <span
-                    onClick={props.toggleTheory}
+                    onClick={()=>props.toggleTheory(!props.thorium)}
                     style={{
                         color: '#FFF44F',
                         cursor: 'pointer',

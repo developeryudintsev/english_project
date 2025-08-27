@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
 
 type PropsType = {
-    toggleTheory: () => void;
+    thorium:boolean;
+    toggleTheory:(theory:boolean) => void;
 };
 
-export const PastSimple = ({ toggleTheory }: PropsType) => {
+export const PastSimple = ({ toggleTheory,thorium }: PropsType) => {
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
@@ -33,7 +34,7 @@ export const PastSimple = ({ toggleTheory }: PropsType) => {
                     pr: { xs: 4, sm: 2.2 },
                     boxSizing: "border-box",
                 }}
-                onClick={toggleTheory}
+                onClick={()=>toggleTheory(!thorium)}
             >
                 2. PAST SIMPLE - ПРОШЕДШЕЕ ПРОСТОЕ ВРЕМЯ
             </Typography>
