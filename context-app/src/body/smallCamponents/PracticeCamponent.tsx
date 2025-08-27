@@ -31,21 +31,19 @@ export type changeType = "." | "?" | "!";
 type PracticeComponentProps = {
     time: TimeKey;
     toggle: boolean;
-    open: boolean;
     openTheory: (theory: boolean) => void;
     toggleTheory: (togglePractice: boolean) => void;
     setShowPractice: (showPractice:boolean) => void;
-    show: boolean;
+    showPractice:boolean
+    setToggleVC: (toggleVC: boolean) => void
 };
 
-export const PracticeComponent: React.FC<PracticeComponentProps> = ({
-                                                                        time,
-                                                                        open,
+export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                                                                         toggle = false,
                                                                         openTheory,
                                                                         toggleTheory,
                                                                         setShowPractice,
-                                                                        show,
+                                                                        setToggleVC
                                                                     }) => {
     const [type, setType] = useState<changeType>(".");
     const [currentIndex, setCurrentIndex] = useState<Record<changeType, number>>({
@@ -63,46 +61,18 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
     const [congratulation, setCongratulation] = useState(false);
     const isFinished = congratulation;
     let [toggelModal, setToggelModal] = useState<0 | 1 | 2>(0)
-    const audioRef = useRef<HTMLAudioElement | null>(null);
+    const videoCorrectRef = useRef<HTMLVideoElement | null>(null);
     let typeSentence =
         type === "."
             ? "утвердительное"
             : type === "?"
                 ? "вопросительное"
                 : "отрицательное";
-    useEffect(() => {
-        const init = async () => {
-            const stored = await getQuestions();
-            if (!stored || !stored.simple) {
-                await addQuestions(data, 'none');
-                const fresh = await getQuestions();
-                if (fresh) {
-                    const loaded = fresh.simple[time][type];
-                    setFullData(fresh);
-                    setQuestions(loaded);
+    const [page, setPage] = useState(0);
 
-                    const firstUnfinishedIndex = loaded.findIndex((q) => !q.isDone);
-                    const idx = firstUnfinishedIndex === -1 ? 0 : firstUnfinishedIndex;
-                    setCurrentQuestion(loaded[idx] ?? null);
-                    setCurrentIndex((prev) => ({...prev, [type]: idx}));
-                    setCongratulation(firstUnfinishedIndex === -1);
-                }
-            } else {
-                const loaded = stored.simple[time][type];
-                setFullData(stored);
-                setQuestions(loaded);
-                const firstUnfinishedIndex = loaded.findIndex((q) => !q.isDone);
-                const idx = firstUnfinishedIndex === -1 ? 0 : firstUnfinishedIndex;
-                setCurrentQuestion(loaded[idx] ?? null);
-                setCurrentIndex((prev) => ({...prev, [type]: idx}));
-                setCongratulation(firstUnfinishedIndex === -1);
-            }
-            setAnswerStatus("none");
-            setSelectedAnswer(null);
-        };
-
-        init();
-    }, [time, type]);
+    const itemsPerPage = 9;
+    const startIndex = page * itemsPerPage;
+    const visibleQuestions = questions.slice(startIndex, startIndex + itemsPerPage);
     useEffect(() => {
         const allDone = questions.every((q) => q.isDone);
         setCongratulation(allDone);
@@ -124,6 +94,78 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
         window.speechSynthesis.onvoiceschanged = loadVoices;
         loadVoices();
     }, []);
+    useEffect(() => {
+        const init = async () => {
+            const stored = await getQuestions();
+            if (!stored || !stored.simple) {
+                await addQuestions(data, "none");
+                const fresh = await getQuestions();
+                if (fresh) {
+                    const loaded = fresh.simple[time][type];
+                    setFullData(fresh);
+                    setQuestions(loaded);
+                    const firstUnfinishedIndex = loaded.findIndex((q) => !q.isDone);
+                    const idx = firstUnfinishedIndex === -1 ? 0 : firstUnfinishedIndex;
+                    setCurrentQuestion(loaded[idx] ?? null);
+                    setCurrentIndex((prev) => ({...prev, [type]: idx}));
+                    setCongratulation(firstUnfinishedIndex === -1);
+                }
+            } else {
+                const loaded = stored.simple[time][type];
+                setFullData(stored);
+                setQuestions(loaded);
+                const firstUnfinishedIndex = loaded.findIndex((q) => !q.isDone);
+                const idx = firstUnfinishedIndex === -1 ? 0 : firstUnfinishedIndex;
+                setCurrentQuestion(loaded[idx] ?? null);
+                setCurrentIndex((prev) => ({...prev, [type]: idx}));
+                setCongratulation(firstUnfinishedIndex === -1);
+            }
+            setAnswerStatus("none");
+            setSelectedAnswer(null);
+        };
+        init();
+    }, [time, type]);
+
+    const handleAnswer = async (answerText: string, id: string) => {
+        if (answerStatus !== "none") return;
+        setSelectedAnswer(answerText);
+        setToggelModal(1);
+
+        if (currentQuestion && fullData) {
+            const correctAnswer = currentQuestion.answers.find((ans) => ans.isCorrect);
+            if (correctAnswer && correctAnswer.text === answerText) {
+                // синхронный запуск видео и звука
+                const audio = new Audio(zvuki2);
+                audio.currentTime = 0;
+                if (videoCorrectRef.current) {
+                    videoCorrectRef.current.currentTime = 0;
+                    videoCorrectRef.current.play();
+                }
+                audio.play();
+
+                setAnswerStatus("correct");
+
+                // апдейт данных
+                const updatedQuestion = {...currentQuestion, isDone: true};
+                setQuestions((prev) => prev.map((q) => (q.id === id ? updatedQuestion : q)));
+                setCurrentQuestion(updatedQuestion);
+                const updatedData: DataType = {
+                    ...fullData,
+                    simple: {
+                        ...fullData.simple,
+                        [time]: {
+                            ...fullData.simple[time],
+                            [type]: questions.map((q) => (q.id === id ? updatedQuestion : q)),
+                        },
+                    },
+                };
+                setFullData(updatedData);
+                await updateQuestion(updatedData);
+            } else {
+                setAnswerStatus("wrong");
+            }
+        }
+    };
     const speakText = (text: string, lang: "ru" | "en") => {
         if (!text) return;
         if (window.speechSynthesis.speaking) {
@@ -143,47 +185,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
         utterance.pitch = 1;
         window.speechSynthesis.speak(utterance);
     };
-    const handleAnswer = async (answerText: string, id: string) => {
-        if (answerStatus !== "none") return;
-        setSelectedAnswer(answerText);
-        setToggelModal(1)
-        if (currentQuestion && fullData) {
-            const correctAnswer = currentQuestion.answers.find(
-                (ans) => ans.isCorrect
-            );
-            if (correctAnswer && correctAnswer.text === answerText) {
-                const audio = new Audio(zvuki2);
-                audio.play();
-                setAnswerStatus("correct");
-                if (audioRef.current) {
-                    audioRef.current.currentTime = 0;
-                    audioRef.current.play();
-                }
-                const updatedQuestion = {...currentQuestion, isDone: true};
-                setQuestions((prev) =>
-                    prev.map((q) => (q.id === id ? updatedQuestion : q))
-                );
-                setCurrentQuestion(updatedQuestion);
-                const updatedData: DataType = {
-                    ...fullData,
-                    simple: {
-                        ...fullData.simple,
-                        [time]: {
-                            ...fullData.simple[time],
-                            [type]: questions.map((q) =>
-                                q.id === id ? updatedQuestion : q
-                            ),
-                        },
-                    },
-                };
-
-                setFullData(updatedData);
-                await updateQuestion(updatedData);
-            } else {
-                setAnswerStatus("wrong");
-            }
-        }
-    };
     const handleNextQuestion = () => {
         const next = questions.find((q) => !q.isDone);
         if (next) {
@@ -202,20 +203,10 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
         setAnswerStatus("none");
         setSelectedAnswer(null);
     };
-    useEffect(() => {
-        if ( open) {
-            toggleTheory(true);
-        }
-    }, [open]);
-    useEffect(() => {
-        if (!show) {
-            toggleTheory(false);
-        }
-    }, [show]);
     const gobackFoo = () => {
-        if (show === true) {
-            setShowPractice(true);
-        }
+        console.log(toggle)
+            setShowPractice(false);
+        setToggleVC(true)
         toggleTheory(false);
     };
     const ButtonFoo = (toggle: boolean) => {
@@ -334,7 +325,11 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                             </Typography>
                         </Box>
                         <Box sx={{marginTop: "6px"}}>
-                            <Button onClick={() => GoToTheorya()}>Подробнее правила в теории</Button>
+                            <Button
+                                onClick={() => GoToTheorya()}
+                                variant={"contained"}
+                                sx={{color:'black'}}
+                            >Подробнее правила в теории</Button>
                         </Box>
                         <Box sx={{
                             padding: 0,
@@ -391,8 +386,18 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                     </Box>
                                 </div>
                             )}
-
-                            <VideoCat src={"/wrong.mp4"}/>
+                            <Box
+                                sx={{
+                                    position: "absolute",
+                                    top: "70%", // центр кнопки
+                                    left: "50%",
+                                    transform: "translate(-50%, -50%)", // идеально по центру
+                                    zIndex: 2,
+                                    pointerEvents: "none", // чтобы видео не мешало кликам
+                                }}
+                            >
+                                <VideoCat src={"/wrong.mp4"}  />
+                            </Box>
                         </Box>
                     </Box>
                 </Modal>
@@ -514,29 +519,77 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                             <div style={{margin: 3}} onClick={() => ButtonFoo(toggle)}>
                                 Выбери глагол или просто иди по порядку
                             </div>
-                            <Box>
-                                {questions.map((m) => {
-                                    return (
+                            <Box sx={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        gap: 2,
+                                        width: "100%",
+                                    }}
+                                >
+                                    {/* Левая стрелка */}
+                                    {questions.length > itemsPerPage && (
                                         <Button
-                                            key={m.id}
-                                            variant={m.isDone ? "contained" : "outlined"}
-                                            onClick={() => wordFoo(m.id)}
-                                            size="small"
+                                            variant="outlined"
+                                            disabled={page === 0}
+                                            onClick={() => setPage((p) => Math.max(p - 1, 0))}
                                             sx={{
-                                                margin: 0.5,
-                                                backgroundColor: m.isDone ? "#FFF44F" : "none",
-                                                borderColor: "#FFF44F",
-                                                color: "black",
-                                                textTransform: "none",
-                                                width: "20%", // было 10%, теперь в 2 раза шире
-                                                paddingY: 2,  // увеличил высоту
-                                                fontSize: "1.2rem", // шрифт тоже крупнее
+                                                fontSize: 40,
+                                                border:"#FFF44F",
+                                                color: "#FFF44F",
+                                                minWidth: "40px",
                                             }}
                                         >
-                                            {m.word}
+                                            {`<`}
                                         </Button>
-                                    );
-                                })}
+                                    )}
+
+                                    <Box
+                                        sx={{
+                                            display: "grid",
+                                            gridTemplateColumns: "repeat(3, 1fr)", // 3 кнопки в ряд
+                                            gap: 1,
+                                            width: "70%",
+                                        }}
+                                    >
+                                        {visibleQuestions.map((m) => (
+                                            <Button
+                                                key={m.id}
+                                                variant={m.isDone ? "contained" : "outlined"}
+                                                onClick={() => wordFoo(m.id)}
+                                                size="medium"
+                                                sx={{
+                                                    backgroundColor: m.isDone ? "#FFF44F" : "none",
+                                                    borderColor: "#FFF44F",
+                                                    color: "black",
+                                                    textTransform: "none",
+                                                    paddingY: 2,
+                                                    fontSize: "1.1rem",
+                                                }}
+                                            >
+                                                {m.word}
+                                            </Button>
+                                        ))}
+                                    </Box>
+
+                                    {questions.length > itemsPerPage && (
+                                        <Button
+                                            variant="outlined"
+                                            disabled={startIndex + itemsPerPage >= questions.length}
+                                            onClick={() => setPage((p) => p + 1)}
+                                            sx={{
+                                                fontSize: 40,
+                                                border:"#FFF44F",
+                                                color: "#FFF44F",
+                                                minWidth: "40px",
+                                            }}
+                                        >
+                                            {'>'}
+                                        </Button>
+                                    )}
+                                </Box>
                             </Box>
                         </div>
                     ) : (
@@ -560,7 +613,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                 </IconButton>
             </Box>
 
-            {/* Вопросы */}
             {toggle && !isFinished && currentQuestion && (
                 <span>
           <Box
@@ -624,13 +676,13 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                             <Box
                                 sx={{
                                     position: "absolute",
-                                    top: "180%",
+                                    top: "50%",
                                     left: "50%",
                                     transform: "translate(-50%, -50%)",
                                     zIndex: 2, // выше кнопки
                                 }}
                             >
-                                <VideoCat src={"/Right.mp4"} />
+                                <VideoCat src={"/Right.mp4"}  />
                             </Box>
                         )}
                         <Button
@@ -699,23 +751,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                             >
                                 СЛЕДУЮЩИЙ ВОПРОС
                             </Button>
-
-                            {/*<Box*/}
-                            {/*    sx={{*/}
-                            {/*        position: "absolute",*/}
-                            {/*        transform: "translateY(-50%)",*/}
-                            {/*        display: "flex",*/}
-                            {/*        justifyContent: {xs: "right", sm: "flex-end"},*/}
-                            {/*        alignItems: "right",*/}
-                            {/*        flex: {xs: "1 1 100%", sm: "0 0 auto"},*/}
-                            {/*        mt: {xs: 1, sm: 0},*/}
-                            {/*        // position: 'fixed',*/}
-                            {/*        right: videoRight == 1 ? '50%' : videoRight == 2 ? '5%' : 'center',*/}
-                            {/*        top: videoRight == 3 ? '20%' : '70%'*/}
-                            {/*    }}*/}
-                            {/*>*/}
-                            {/*    <VideoCat src={"/Right.mp4"}/>*/}
-                            {/*</Box>*/}
                         </Box>
                     )}
                     {answerStatus === "wrong" && (
@@ -737,7 +772,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                         </Box>
                     )}
 
-                    {show && (
+                    {/*{show && (*/}
                         <Box>
                             <Button
                                 variant="contained"
@@ -754,7 +789,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                 ВЕРНУТЬСЯ К ВИДЕО
                             </Button>
                         </Box>
-                    )}
+                    {/*)}*/}
         </span>
             )}
         </Paper>

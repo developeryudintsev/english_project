@@ -1,5 +1,5 @@
-import { ThoriumComponent } from "./ThoriumComponent";
-import { Box } from '@mui/material';
+import {ThoriumComponent} from "./ThoriumComponent";
+import {Box} from '@mui/material';
 import React from "react";
 
 type PropsType = {
@@ -13,6 +13,9 @@ type PropsType = {
     setFirstClick: (firstClick: boolean) => void;
     setShowPracticeFoo: () => void;
     showPractice: boolean;
+    toggleVC: boolean,
+    setToggleVC: (toggleVC: boolean) => void
+    setShowPractice: (showPractice: boolean) => void
 };
 
 export const Body = (props: PropsType) => {
@@ -20,9 +23,13 @@ export const Body = (props: PropsType) => {
         <Box
             sx={{
                 display: 'flex',
-                flexDirection: { xs: 'column', md: 'row' },
-                justifyContent: 'flex-start',
-                alignItems: 'flex-start',
+                flexDirection: {xs: 'column', md: 'row'},
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '100%',
+                marginTop: 2,
+                padding: 0,
+                boxSizing: 'border-box',
             }}
         >
             <ThoriumComponent {...props} />

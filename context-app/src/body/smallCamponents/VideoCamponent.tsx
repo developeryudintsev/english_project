@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {Box, Collapse, IconButton, Paper, Typography} from "@mui/material";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import {ClipsSlider} from "./ClipsSlider";
@@ -7,32 +7,18 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 
 type VideoComponentType = {
-    firstClick: boolean,
-    setFirstClick: (firstClick:boolean) => void,
-    open: boolean,
-    show: boolean,
-    setShowPractice: () => void,
+    toggle: boolean,
+    setToggle: (toggleVC: boolean) => void
+    setShowPractice: (showPractice: boolean) => void
+    setToggleVideo: (theory: boolean) => void;
 }
 export type changeType='утвердительное'|'вопросительное'|'отрицательное'
-export const VideoComponent = ({firstClick,setFirstClick,open, show, setShowPractice}: VideoComponentType) => {
+export const VideoComponent = ({toggle,setToggle, setShowPractice,setToggleVideo}: VideoComponentType) => {
     const [type, setType] = useState<changeType>('утвердительное');
-    const [toggle, setToggle] = useState(false);
     const toggleVideo = (toggle: boolean) => {
         setToggle(toggle)
-        setFirstClick(true)
     }
-    useEffect(() => {
-        if(firstClick===true){
-        if (open) {
-            toggleVideo(true)
-        }
-        }
-    }, [open,firstClick])
-    useEffect(() => {
-        if (!show) {
-            toggleVideo(false)
-        }
-    }, [show])
+
     return (
         <Paper
             elevation={3}
@@ -93,7 +79,10 @@ export const VideoComponent = ({firstClick,setFirstClick,open, show, setShowPrac
                     }}
                 >
                     <ClipsSlider
-                        type={type} show={show} setShowPractice={setShowPractice} toggle={toggle}
+                        type={type} setToggle={setToggle}
+                        setShowPractice={setShowPractice}
+                        toggle={toggle}
+                        setToggleVideo={setToggleVideo}
                     />
                 </Box>
             </Collapse>

@@ -15,12 +15,11 @@ export const App = () => {
     const [toggleVideo, setToggleVideo] = useState(false);
     const [firstClick, setFirstClick] = useState(false);
     const [showPractice, setShowPractice] = useState(false);
-
+    const [toggleVC, setToggleVC] = useState(false);
     const handleChange = (eValue: timeType) => {
         setTime(eValue);
         setThorium(false);
     };
-
     const toggleTheory = (theory: boolean) => setThorium(theory);
     const toggleTheoryPV = (toggle: boolean) => setToggleVideo(toggle);
 
@@ -39,9 +38,10 @@ export const App = () => {
     console.log(showPractice)
     return (
         <>
-            {showPractice==false ? (
+            {showPractice==false && (
                 <Header time={time} setTime={setTime} handleChange={handleChange} />
-            ) : (
+            )}
+            {showPractice==true && (
                 <Box
                     sx={{
                         display: 'flex',
@@ -58,13 +58,13 @@ export const App = () => {
                     }}
                 >
                 <PracticeComponent
-                    open={true}
-                    show={true}
                     time={time}
                     toggle={toggleVideo}
                     openTheory={toggleTheory}
                     toggleTheory={toggleTheoryPV}
+                    setToggleVC={setToggleVC}
                     setShowPractice={setShowPractice}
+                    showPractice={showPractice}
                 />
                 </Box>
             )}
@@ -80,6 +80,9 @@ export const App = () => {
                 setFirstClick={setFirstClick}
                 setShowPracticeFoo={() => setShowPractice(!showPractice)}
                 showPractice={showPractice}
+                setShowPractice={setShowPractice}
+                toggleVC={toggleVC}
+                setToggleVC={setToggleVC}
             />
         </>
     );

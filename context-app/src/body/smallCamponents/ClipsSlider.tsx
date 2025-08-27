@@ -29,17 +29,15 @@ export const clipsReverse: Record<changeType, string[]> = {
 
 type ClipsSliderType = {
     type: changeType;
-    show: boolean;
-    setShowPractice: (toggle: boolean) => void;
+    setToggle:(toggle: boolean)=>void,
+    setShowPractice:(showPractice: boolean)=>void,
     toggle: boolean;
+    setToggleVideo: (theory: boolean) => void;
 };
 
-export const ClipsSlider = ({ type, show, setShowPractice, toggle }: ClipsSliderType) => {
-    // 1) Источник — НЕ мутируем
+export const ClipsSlider = ({ type,setToggle, setShowPractice, toggle,setToggleVideo }: ClipsSliderType) => {
     const sourceList = useMemo(() => clipsReverse[type].slice().reverse(), [type]);
-
     const containerRef = useRef<HTMLDivElement | null>(null);
-
     const ORIGINAL_W = 240;
     const ORIGINAL_H = 480;
     const GAP = 12;
@@ -47,19 +45,15 @@ export const ClipsSlider = ({ type, show, setShowPractice, toggle }: ClipsSlider
     const SCALE = 0.8;
     const MAX_VISIBLE = 4;
     const MIN_VISIBLE = 1;
-
     const [visibleCount, setVisibleCount] = useState<number>(4);
     const [page, setPage] = useState<number>(0);
-
     const [clipSources, setClipSources] = useState<string[]>(sourceList);
     const [loaded, setLoaded] = useState<boolean[]>(Array(sourceList.length).fill(false));
-
     useEffect(() => {
         setClipSources(sourceList);
         setLoaded(Array(sourceList.length).fill(false));
         setPage(0);
     }, [sourceList]);
-
     useEffect(() => {
         const handleResize = () => {
             const width = window.innerWidth;
@@ -72,7 +66,6 @@ export const ClipsSlider = ({ type, show, setShowPractice, toggle }: ClipsSlider
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
     }, []);
-
     useEffect(() => {
         const handleVisibility = () => {
             setClipSources(prev =>
@@ -86,13 +79,10 @@ export const ClipsSlider = ({ type, show, setShowPractice, toggle }: ClipsSlider
         document.addEventListener("visibilitychange", handleVisibility);
         return () => document.removeEventListener("visibilitychange", handleVisibility);
     }, []);
-
     const maxPage = Math.max(0, clipSources.length - visibleCount);
-
     useEffect(() => {
         if (page > maxPage) setPage(maxPage);
     }, [visibleCount, maxPage, page]);
-
     const handleLoad = (absIndex: number) => {
         setLoaded(prev => {
             if (prev[absIndex]) return prev;
@@ -101,11 +91,12 @@ export const ClipsSlider = ({ type, show, setShowPractice, toggle }: ClipsSlider
             return copy;
         });
     };
-
     const visibleClips = clipSources.slice(page, page + visibleCount);
-
     const gobackFoo = () => {
-        if (show) setShowPractice(false);
+        console.log('sdsdasd')
+         setShowPractice(true);
+        setToggle(false)
+        setToggleVideo(true);
     };
 
     return (
@@ -251,7 +242,7 @@ export const ClipsSlider = ({ type, show, setShowPractice, toggle }: ClipsSlider
                                 </div>
                             </Box>
 
-                            {show && (
+                            {/*{show && (*/}
                                 <Button
                                     variant="contained"
                                     size="small"
@@ -267,7 +258,7 @@ export const ClipsSlider = ({ type, show, setShowPractice, toggle }: ClipsSlider
                                 >
                                     ПРАКТИКА
                                 </Button>
-                            )}
+                            {/*)}*/}
                         </Box>
                     );
                 })}
