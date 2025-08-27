@@ -487,6 +487,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                     flexWrap: "wrap",
                                     gap: 2,
                                     marginTop: "-5px",
+                                    pr: 3,
                                 }}
                             >
                                 <FormControl sx={{minWidth: 160}} size="small">
