@@ -48,8 +48,6 @@ export const ThoriumComponent = (props: PropsType) => {
 
             {!props.showPractice && (
                 <PracticeComponent
-                    firstClick={props.firstClick}
-                    setFirstClick={props.setFirstClick}
                     open={false}
                     show={false}
                     time={props.time}
