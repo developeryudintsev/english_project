@@ -23,7 +23,6 @@ import {addQuestions, data, getQuestions, updateQuestion,} from "../../Data/Data
 import {VideoCat} from "../../camponent/VideoCat";
 import {Modal} from "../../modal/Modal";
 import CloseIcon from "@mui/icons-material/Close";
-import zvuki2 from '../../../assets/zvuki.mp3';
 
 type TimeKey = "Present" | "Future" | "Past";
 export type changeType = "." | "?" | "!";
@@ -61,7 +60,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
     const [congratulation, setCongratulation] = useState(false);
     const isFinished = congratulation;
     let [toggelModal, setToggelModal] = useState<0 | 1 | 2>(0)
-    const videoCorrectRef = useRef<HTMLVideoElement | null>(null);
+    // const videoCorrectRef = useRef<HTMLVideoElement | null>(null);
     let typeSentence =
         type === "."
             ? "утвердительное"
@@ -134,14 +133,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
         if (currentQuestion && fullData) {
             const correctAnswer = currentQuestion.answers.find((ans) => ans.isCorrect);
             if (correctAnswer && correctAnswer.text === answerText) {
-                // синхронный запуск видео и звука
-                const audio = new Audio(zvuki2);
-                audio.currentTime = 0;
-                if (videoCorrectRef.current) {
-                    videoCorrectRef.current.currentTime = 0;
-                    videoCorrectRef.current.play();
-                }
-                audio.play();
 
                 setAnswerStatus("correct");
 
@@ -210,6 +201,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
         toggleTheory(false);
     };
     const ButtonFoo = (toggle: boolean) => {
+        openTheory(false)
         toggleTheory(!toggle);
         setShowPractice(!toggle)
         setAnswerStatus('none')
@@ -246,6 +238,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
         setQuestions(newQuestion);
     }
     const CloseButton = () => {
+
         setToggelModal(0)
         setAnswerStatus("none")
     }
@@ -328,7 +321,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                             <Button
                                 onClick={() => GoToTheorya()}
                                 variant={"contained"}
-                                sx={{color:'black'}}
+                                sx={{color:'white'}}
                             >Подробнее правила в теории</Button>
                         </Box>
                         <Box sx={{
@@ -396,7 +389,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                                     pointerEvents: "none", // чтобы видео не мешало кликам
                                 }}
                             >
-                                <VideoCat src={"/wrong.mp4"}  />
+                                <VideoCat src={"/wrong2.mp4"} answerStatus={answerStatus}  />
                             </Box>
                         </Box>
                     </Box>
@@ -554,24 +547,39 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                                             width: "70%",
                                         }}
                                     >
-                                        {visibleQuestions.map((m) => (
-                                            <Button
-                                                key={m.id}
-                                                variant={m.isDone ? "contained" : "outlined"}
-                                                onClick={() => wordFoo(m.id)}
-                                                size="medium"
-                                                sx={{
-                                                    backgroundColor: m.isDone ? "#FFF44F" : "none",
-                                                    borderColor: "#FFF44F",
-                                                    color: "black",
-                                                    textTransform: "none",
-                                                    paddingY: 2,
-                                                    fontSize: "1.1rem",
-                                                }}
-                                            >
-                                                {m.word}
-                                            </Button>
-                                        ))}
+                                        {visibleQuestions.map((m) => {
+                                            const isCurrent = currentQuestion?.id === m.id; // выбранное слово
+                                            return (
+                                                <Button
+                                                    key={m.id}
+                                                    variant={m.isDone ? "contained" : "outlined"}
+                                                    onClick={() => wordFoo(m.id)}
+                                                    size="medium"
+                                                    sx={{
+                                                        backgroundColor: isCurrent
+                                                            ? "#1976d2" // синяя кнопка если выбрана
+                                                            : m.isDone
+                                                                ? "#FFF44F" // жёлтая если пройдена
+                                                                : "transparent",
+                                                        borderColor: "#FFF44F",
+                                                        color: isCurrent ? "white" : "black",
+                                                        textTransform: "none",
+                                                        paddingY: 2,
+                                                        fontSize: "1.1rem",
+                                                        "&:hover": {
+                                                            backgroundColor: isCurrent
+                                                                ? "#1565c0" // темнее при наведении
+                                                                : m.isDone
+                                                                    ? "#ffea00"
+                                                                    : "#555",
+                                                            color: "white",
+                                                        },
+                                                    }}
+                                                >
+                                                    {m.word}
+                                                </Button>
+                                            );
+                                        })}
                                     </Box>
 
                                     {questions.length > itemsPerPage && (
@@ -682,7 +690,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                                     zIndex: 2, // выше кнопки
                                 }}
                             >
-                                <VideoCat src={"/Right.mp4"}  />
+                                <VideoCat src={"/Right2.mp4"} answerStatus={answerStatus} />
                             </Box>
                         )}
                         <Button
@@ -749,7 +757,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                                 }}
                                 onClick={handleNextQuestion}
                             >
-                                СЛЕДУЮЩИЙ ВОПРОС
+                                СЛЕДУЮЩИЙ ВОПРОС(ПО ПОРЯДКУ)
                             </Button>
                         </Box>
                     )}

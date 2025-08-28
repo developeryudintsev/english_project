@@ -1,25 +1,40 @@
 import React, { useEffect, useRef, useState } from "react";
+import zvuki2 from "../../assets/zvuki.mp3";
 
 type VideoCatProps = {
     src: string;
+    answerStatus: "none" | "correct" | "wrong";
 };
 
-export const VideoCat: React.FC<VideoCatProps> = ({ src }) => {
+export const VideoCat: React.FC<VideoCatProps> = ({ src, answerStatus }) => {
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const [visible, setVisible] = useState(true);
+    const videoCorrectRef = useRef<HTMLVideoElement | null>(null);
 
     useEffect(() => {
         const timer = setTimeout(() => {
             if (videoRef.current) {
                 videoRef.current.pause();
             }
-            setVisible(false); // спрячем видео
+            setVisible(false); // спрячем видео через 5 сек
         }, 5000);
 
         return () => clearTimeout(timer);
     }, []);
 
-    if (!visible) return null; // вообще не рендерим
+    useEffect(() => {
+        if (answerStatus === "correct") {
+            const audio = new Audio(zvuki2);
+            audio.currentTime = 0;
+            if (videoCorrectRef.current) {
+                videoCorrectRef.current.currentTime = 0;
+                videoCorrectRef.current.play();
+            }
+            audio.play();
+        }
+    }, [answerStatus]);
+
+    if (!visible) return null;
 
     return (
         <video
@@ -28,6 +43,7 @@ export const VideoCat: React.FC<VideoCatProps> = ({ src }) => {
             autoPlay
             loop
             muted
+            onClick={() => setVisible(false)}
             style={{
                 marginTop: "0px",
                 marginBottom: "10px",
@@ -36,6 +52,7 @@ export const VideoCat: React.FC<VideoCatProps> = ({ src }) => {
                 borderRadius: "50%",
                 objectFit: "cover",
                 objectPosition: "top center",
+                cursor: "pointer", // чтобы понятно было, что можно нажать
             }}
         />
     );
