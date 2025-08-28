@@ -17,7 +17,7 @@ export const VideoCat: React.FC<VideoCatProps> = ({ src, answerStatus }) => {
                 videoRef.current.pause();
             }
             setVisible(false); // спрячем видео через 5 сек
-        }, 5000);
+        }, 3650);
 
         return () => clearTimeout(timer);
     }, []);
@@ -30,7 +30,7 @@ export const VideoCat: React.FC<VideoCatProps> = ({ src, answerStatus }) => {
                 videoCorrectRef.current.currentTime = 0;
                 videoCorrectRef.current.play();
             }
-            audio.play();
+            // audio.play();
         }
     }, [answerStatus]);
 
@@ -42,7 +42,6 @@ export const VideoCat: React.FC<VideoCatProps> = ({ src, answerStatus }) => {
             src={src}
             autoPlay
             loop
-            muted
             onClick={() => setVisible(false)}
             style={{
                 marginTop: "0px",

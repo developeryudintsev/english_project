@@ -690,7 +690,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                                     zIndex: 2, // выше кнопки
                                 }}
                             >
-                                <VideoCat src={"/Right2.mp4"} answerStatus={answerStatus} />
+                                <VideoCat src={"/RightS3.mp4"} answerStatus={answerStatus} />
                             </Box>
                         )}
                         <Button

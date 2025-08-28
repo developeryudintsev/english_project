@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import {Header} from './Header/Header';
 import {PresentSimple} from './Present/PresentSimple';
 import {PastSimple} from './Present/PasteSimple';
@@ -16,10 +16,12 @@ export const App = () => {
     const [firstClick, setFirstClick] = useState(false);
     const [showPractice, setShowPractice] = useState(false);
     const [toggleVC, setToggleVC] = useState(false);
+
     const handleChange = (eValue: timeType) => {
         setTime(eValue);
         setThorium(false);
     };
+
     const toggleTheory = (theory: boolean) => setThorium(theory);
     const toggleTheoryPV = (toggle: boolean) => setToggleVideo(toggle);
 
@@ -35,13 +37,19 @@ export const App = () => {
                 return null;
         }
     };
-    console.log(showPractice)
+
+    useEffect(() => {
+        if (showPractice) {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+    }, [showPractice]);
+
     return (
         <>
-            {showPractice==false && (
+            {!showPractice && (
                 <Header time={time} setTime={setTime} handleChange={handleChange} />
             )}
-            {showPractice==true && (
+            {showPractice && (
                 <Box
                     sx={{
                         display: 'flex',
@@ -57,15 +65,15 @@ export const App = () => {
                         maxWidth: '100vw',
                     }}
                 >
-                <PracticeComponent
-                    time={time}
-                    toggle={toggleVideo}
-                    openTheory={toggleTheory}
-                    toggleTheory={toggleTheoryPV}
-                    setToggleVC={setToggleVC}
-                    setShowPractice={setShowPractice}
-                    showPractice={showPractice}
-                />
+                    <PracticeComponent
+                        time={time}
+                        toggle={toggleVideo}
+                        openTheory={toggleTheory}
+                        toggleTheory={toggleTheoryPV}
+                        setToggleVC={setToggleVC}
+                        setShowPractice={setShowPractice}
+                        showPractice={showPractice}
+                    />
                 </Box>
             )}
 
