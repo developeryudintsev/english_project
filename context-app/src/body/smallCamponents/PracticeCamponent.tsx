@@ -191,10 +191,8 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                 [type]: questions.indexOf(next),
             }));
             const qestionIsTrue=visibleQuestions.find((q) => !q.isDone);
-            console.log(qestionIsTrue)
             if(qestionIsTrue===undefined){
                 setPage((p) => Math.max(p+1))
-                console.log(page)
             }
         } else {
             setCongratulation(true);
@@ -207,7 +205,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
         setSelectedAnswer(null);
     };
     const gobackFoo = () => {
-        console.log(toggle)
             setShowPractice(false);
         setToggleVC(true)
         toggleTheory(false);
