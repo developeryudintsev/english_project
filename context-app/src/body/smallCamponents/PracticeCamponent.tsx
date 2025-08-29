@@ -190,6 +190,12 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                 ...prev,
                 [type]: questions.indexOf(next),
             }));
+            const qestionIsTrue=visibleQuestions.find((q) => !q.isDone);
+            console.log(qestionIsTrue)
+            if(qestionIsTrue===undefined){
+                setPage((p) => Math.max(p+1))
+                console.log(page)
+            }
         } else {
             setCongratulation(true);
         }
@@ -221,6 +227,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                 [type]: questions.indexOf(found),
             }));
         }
+
         setAnswerStatus("none");
     };
     const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -242,7 +249,10 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
         const newQuestion = data.simple[time][type];
         setFullData(data);
         setQuestions(newQuestion);
+        setCurrentQuestion(newQuestion[0])
         setPage(0);
+        wordFoo(newQuestion[0].id)
+        console.log(newQuestion[0])
     }
     const CloseButton = () => {
         setToggelModal(0)
@@ -254,6 +264,25 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
         toggleTheory(!toggle);
         openTheory(true)
     }
+    const LeftSlider=()=>{
+        setPage((p) => Math.max(p - 1, 0))
+        const index = (page-1) * itemsPerPage;
+        const questionsWithOutDelay = questions.slice(index, index + itemsPerPage);
+        const findQestion=questionsWithOutDelay.find((f)=>f.isDone==false)
+        const result=findQestion==undefined?questionsWithOutDelay[0]:findQestion
+        setCurrentQuestion(result)
+        wordFoo(result.id)
+    }
+    const RightSlider=()=>{
+        setPage((p) => Math.max(p + 1))
+        const index = (page+1) * itemsPerPage;
+        const questionsWithOutDelay = questions.slice(index, index + itemsPerPage);
+        const findQestion=questionsWithOutDelay.find((f)=>f.isDone==false)
+        const result=findQestion==undefined?questionsWithOutDelay[0]:findQestion
+        setCurrentQuestion(result)
+        wordFoo(result.id)
+    }
+
     return (
         <Paper
             elevation={3}
@@ -395,7 +424,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                                     pointerEvents: "none", // чтобы видео не мешало кликам
                                 }}
                             >
-                                <VideoCat src={"/wrong3.mp4"} answerStatus={answerStatus}  />
+                                <VideoCat src={"/wrong4.mp4"} answerStatus={answerStatus}  />
                             </Box>
                         </Box>
                     </Box>
@@ -442,7 +471,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                     </Box>
                 </Modal>
             )}
-
 
             <Box
                 sx={{
@@ -514,7 +542,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                                     очистить результаты
                                 </Button>
                             </Box>
-
                             <div style={{margin: 3}} onClick={() => ButtonFoo(toggle)}>
                                 Выбери глагол или просто иди по порядку
                             </div>
@@ -528,12 +555,11 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                                         width: "100%",
                                     }}
                                 >
-                                    {/* Левая стрелка */}
                                     {questions.length > itemsPerPage && (
                                         <Button
                                             variant="outlined"
                                             disabled={page === 0}
-                                            onClick={() => setPage((p) => Math.max(p - 1, 0))}
+                                            onClick={() => LeftSlider()}
                                             sx={{
                                                 fontSize: 40,
                                                 border:"#FFF44F",
@@ -544,7 +570,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                                             {`<`}
                                         </Button>
                                     )}
-
                                     <Box
                                         sx={{
                                             display: "grid",
@@ -554,7 +579,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                                         }}
                                     >
                                         {visibleQuestions.map((m) => {
-                                            const isCurrent = currentQuestion?.id === m.id; // выбранное слово
+                                            const isCurrent = currentQuestion?.id === m.id;
                                             return (
                                                 <Button
                                                     key={m.id}
@@ -563,9 +588,9 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                                                     size="medium"
                                                     sx={{
                                                         backgroundColor: isCurrent
-                                                            ? "#1976d2" // синяя кнопка если выбрана
+                                                            ? "#1976d2"
                                                             : m.isDone
-                                                                ? "#FFF44F" // жёлтая если пройдена
+                                                                ? "#FFF44F"
                                                                 : "transparent",
                                                         borderColor: "#FFF44F",
                                                         color: isCurrent ? "white" : "black",
@@ -574,7 +599,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                                                         fontSize: "1.1rem",
                                                         "&:hover": {
                                                             backgroundColor: isCurrent
-                                                                ? "#1565c0" // темнее при наведении
+                                                                ? "#1565c0"
                                                                 : m.isDone
                                                                     ? "#ffea00"
                                                                     : "#555",
@@ -587,12 +612,11 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                                             );
                                         })}
                                     </Box>
-
                                     {questions.length > itemsPerPage && (
                                         <Button
                                             variant="outlined"
                                             disabled={startIndex + itemsPerPage >= questions.length}
-                                            onClick={() => setPage((p) => p + 1)}
+                                            onClick={() =>RightSlider()}
                                             sx={{
                                                 fontSize: 40,
                                                 border:"#FFF44F",
@@ -679,13 +703,12 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                     <Box
                         key={ans.text}
                         sx={{
-                            position: "relative", // чтобы слои позиционировались внутри
+                            position: "relative",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "space-between",
                         }}
                     >
-                        {/* Видео сверху кнопки */}
                         {answerStatus === "correct" && ans.isCorrect && (
                             <Box
                                 sx={{
@@ -693,10 +716,10 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                                     top: "50%",
                                     left: "50%",
                                     transform: "translate(-50%, -50%)",
-                                    zIndex: 2, // выше кнопки
+                                    zIndex: 2,
                                 }}
                             >
-                                <VideoCat src={"/RightS5.mp4"} answerStatus={answerStatus} />
+                                <VideoCat src={"/RightS6.mp4"} answerStatus={answerStatus} />
                             </Box>
                         )}
                         <Button

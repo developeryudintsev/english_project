@@ -16,8 +16,8 @@ export const VideoCat: React.FC<VideoCatProps> = ({ src, answerStatus }) => {
             if (videoRef.current) {
                 videoRef.current.pause();
             }
-            setVisible(false); // спрячем видео через 5 сек
-        }, 3650);
+            setVisible(false);
+        }, 2000);
 
         return () => clearTimeout(timer);
     }, []);
