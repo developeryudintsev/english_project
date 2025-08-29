@@ -60,7 +60,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
     const [congratulation, setCongratulation] = useState(false);
     const isFinished = congratulation;
     let [toggelModal, setToggelModal] = useState<0 | 1 | 2>(0)
-    // const videoCorrectRef = useRef<HTMLVideoElement | null>(null);
     let typeSentence =
         type === "."
             ? "утвердительное"
@@ -68,7 +67,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                 ? "вопросительное"
                 : "отрицательное";
     const [page, setPage] = useState(0);
-
     const itemsPerPage = 9;
     const startIndex = page * itemsPerPage;
     const visibleQuestions = questions.slice(startIndex, startIndex + itemsPerPage);
@@ -103,28 +101,37 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                     const loaded = fresh.simple[time][type];
                     setFullData(fresh);
                     setQuestions(loaded);
+
                     const firstUnfinishedIndex = loaded.findIndex((q) => !q.isDone);
                     const idx = firstUnfinishedIndex === -1 ? 0 : firstUnfinishedIndex;
+
                     setCurrentQuestion(loaded[idx] ?? null);
-                    setCurrentIndex((prev) => ({...prev, [type]: idx}));
+                    setCurrentIndex((prev) => ({ ...prev, [type]: idx }));
                     setCongratulation(firstUnfinishedIndex === -1);
+
+                    // 👇 авто-выбор страницы с первой незакрытой задачей
+                    setPage(Math.floor(idx / itemsPerPage));
                 }
             } else {
                 const loaded = stored.simple[time][type];
                 setFullData(stored);
                 setQuestions(loaded);
+
                 const firstUnfinishedIndex = loaded.findIndex((q) => !q.isDone);
                 const idx = firstUnfinishedIndex === -1 ? 0 : firstUnfinishedIndex;
+
                 setCurrentQuestion(loaded[idx] ?? null);
-                setCurrentIndex((prev) => ({...prev, [type]: idx}));
+                setCurrentIndex((prev) => ({ ...prev, [type]: idx }));
                 setCongratulation(firstUnfinishedIndex === -1);
+
+                // 👇 авто-выбор страницы
+                setPage(Math.floor(idx / itemsPerPage));
             }
             setAnswerStatus("none");
             setSelectedAnswer(null);
         };
         init();
     }, [time, type]);
-
     const handleAnswer = async (answerText: string, id: string) => {
         if (answerStatus !== "none") return;
         setSelectedAnswer(answerText);
@@ -136,7 +143,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
 
                 setAnswerStatus("correct");
 
-                // апдейт данных
                 const updatedQuestion = {...currentQuestion, isDone: true};
                 setQuestions((prev) => prev.map((q) => (q.id === id ? updatedQuestion : q)));
                 setCurrentQuestion(updatedQuestion);
@@ -236,9 +242,9 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
         const newQuestion = data.simple[time][type];
         setFullData(data);
         setQuestions(newQuestion);
+        setPage(0);
     }
     const CloseButton = () => {
-
         setToggelModal(0)
         setAnswerStatus("none")
     }
@@ -389,7 +395,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                                     pointerEvents: "none", // чтобы видео не мешало кликам
                                 }}
                             >
-                                <VideoCat src={"/wrong2.mp4"} answerStatus={answerStatus}  />
+                                <VideoCat src={"/wrong3.mp4"} answerStatus={answerStatus}  />
                             </Box>
                         </Box>
                     </Box>
@@ -632,7 +638,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                   mb: 1,
               }}
           >
-            <Typography variant="h6">
+            <Typography variant="h6" sx={{color:'white'}}>
               {currentIndex[type] + 1}. {currentQuestion.question}
             </Typography>
             <IconButton
@@ -690,7 +696,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                                     zIndex: 2, // выше кнопки
                                 }}
                             >
-                                <VideoCat src={"/RightS3.mp4"} answerStatus={answerStatus} />
+                                <VideoCat src={"/RightS5.mp4"} answerStatus={answerStatus} />
                             </Box>
                         )}
                         <Button
@@ -769,7 +775,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                                     flexGrow: 1,
                                     maxWidth: "300px",
                                     width: "100%",
-                                    mt: 1.5,
+                                    mt: 2,
                                     backgroundColor: "#FFF44F",
                                     color: "black",
                                 }}
