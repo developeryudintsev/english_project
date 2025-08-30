@@ -47,6 +47,7 @@ export const ThoriumComponent = (props: PropsType) => {
                 toggle={props.toggleVC}
                 setToggle={props.setToggleVC}
                 setShowPractice={props.setShowPractice}
+                openTheory={props.toggleTheory}
                 setToggleVideo={props.setToggleVideo}
             />
 

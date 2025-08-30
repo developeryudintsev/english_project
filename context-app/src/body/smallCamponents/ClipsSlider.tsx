@@ -33,9 +33,10 @@ type ClipsSliderType = {
     setShowPractice:(showPractice: boolean)=>void,
     toggle: boolean;
     setToggleVideo: (theory: boolean) => void;
+    openTheory: (theory: boolean) => void;
 };
 
-export const ClipsSlider = ({ type,setToggle, setShowPractice, toggle,setToggleVideo }: ClipsSliderType) => {
+export const ClipsSlider = ({ type,setToggle, setShowPractice, toggle,setToggleVideo,openTheory }: ClipsSliderType) => {
     const sourceList = useMemo(() => clipsReverse[type].slice().reverse(), [type]);
     const containerRef = useRef<HTMLDivElement | null>(null);
     const ORIGINAL_W = 240;
@@ -93,7 +94,7 @@ export const ClipsSlider = ({ type,setToggle, setShowPractice, toggle,setToggleV
     };
     const visibleClips = clipSources.slice(page, page + visibleCount);
     const gobackFoo = () => {
-        console.log('sdsdasd')
+        openTheory(false)
          setShowPractice(true);
         setToggle(false)
         setToggleVideo(true);

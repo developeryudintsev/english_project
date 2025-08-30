@@ -1,38 +1,32 @@
-import React, { useEffect, useRef, useState } from "react";
-import zvuki2 from "../../assets/zvuki.mp3";
+import React, {useEffect, useRef, useState} from "react";
 
 type VideoCatProps = {
     src: string;
-    answerStatus: "none" | "correct" | "wrong";
 };
 
-export const VideoCat: React.FC<VideoCatProps> = ({ src, answerStatus }) => {
+export const VideoCat: React.FC<VideoCatProps> = ({ src }) => {
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const [visible, setVisible] = useState(true);
-    const videoCorrectRef = useRef<HTMLVideoElement | null>(null);
+    const [isFadingOut, setIsFadingOut] = useState(false);
 
     useEffect(() => {
         const timer = setTimeout(() => {
             if (videoRef.current) {
                 videoRef.current.pause();
             }
-            setVisible(false);
+            setIsFadingOut(true); // запускаем плавное исчезновение
         }, 2000);
 
         return () => clearTimeout(timer);
     }, []);
 
     useEffect(() => {
-        if (answerStatus === "correct") {
-            const audio = new Audio(zvuki2);
-            audio.currentTime = 0;
-            if (videoCorrectRef.current) {
-                videoCorrectRef.current.currentTime = 0;
-                videoCorrectRef.current.play();
-            }
-            // audio.play();
+        if (isFadingOut) {
+            // через 500ms (время transition) окончательно убираем
+            const hideTimer = setTimeout(() => setVisible(false), 500);
+            return () => clearTimeout(hideTimer);
         }
-    }, [answerStatus]);
+    }, [isFadingOut]);
 
     if (!visible) return null;
 
@@ -42,7 +36,7 @@ export const VideoCat: React.FC<VideoCatProps> = ({ src, answerStatus }) => {
             src={src}
             autoPlay
             loop
-            onClick={() => setVisible(false)}
+            onClick={() => setIsFadingOut(true)}
             style={{
                 marginTop: "0px",
                 marginBottom: "10px",
@@ -51,7 +45,9 @@ export const VideoCat: React.FC<VideoCatProps> = ({ src, answerStatus }) => {
                 borderRadius: "50%",
                 objectFit: "cover",
                 objectPosition: "top center",
-                cursor: "pointer", // чтобы понятно было, что можно нажать
+                cursor: "pointer",
+                opacity: isFadingOut ? 0 : 1,
+                transition: "opacity 0.5s ease",
             }}
         />
     );

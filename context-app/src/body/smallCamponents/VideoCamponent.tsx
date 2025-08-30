@@ -9,11 +9,12 @@ import MenuItem from "@mui/material/MenuItem";
 type VideoComponentType = {
     toggle: boolean,
     setToggle: (toggleVC: boolean) => void
+    openTheory: (theory: boolean) => void;
     setShowPractice: (showPractice: boolean) => void
     setToggleVideo: (theory: boolean) => void;
 }
 export type changeType='утвердительное'|'вопросительное'|'отрицательное'
-export const VideoComponent = ({toggle,setToggle, setShowPractice,setToggleVideo}: VideoComponentType) => {
+export const VideoComponent = ({toggle,setToggle,openTheory, setShowPractice,setToggleVideo}: VideoComponentType) => {
     const [type, setType] = useState<changeType>('утвердительное');
     const toggleVideo = (toggle: boolean) => {
         setToggle(toggle)
@@ -83,6 +84,7 @@ export const VideoComponent = ({toggle,setToggle, setShowPractice,setToggleVideo
                         setShowPractice={setShowPractice}
                         toggle={toggle}
                         setToggleVideo={setToggleVideo}
+                        openTheory={openTheory}
                     />
                 </Box>
             </Collapse>

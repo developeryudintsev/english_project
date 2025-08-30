@@ -207,7 +207,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
     const gobackFoo = () => {
             setShowPractice(false);
         setToggleVC(true)
-        toggleTheory(false);
+        openTheory(false);
     };
     const ButtonFoo = (toggle: boolean) => {
         openTheory(false)
@@ -374,7 +374,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                                                 <TableHead>
                                                     <TableRow>
                                                         <TableCell align="center">Русский</TableCell>
-                                                        <TableCell align="center">Английский (утверждение)</TableCell>
+                                                        <TableCell align="center">Английский (Утверждение)</TableCell>
                                                         <TableCell align="center">Отрицание</TableCell>
                                                         <TableCell align="center">Вопрос</TableCell>
                                                     </TableRow>
@@ -421,7 +421,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                                     pointerEvents: "none", // чтобы видео не мешало кликам
                                 }}
                             >
-                                <VideoCat src={"/wrong4.mp4"} answerStatus={answerStatus}  />
+                                <VideoCat src={"/wrong4.mp4"} />
                             </Box>
                         </Box>
                     </Box>
@@ -450,7 +450,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                                 px: 6,
                             }}
                         >
-                            Вы действительно хотите обнулить результат?
+                            Вы действительно хотите обнулить результаты?
                         </Typography>
                     </Box>
                     <Box sx={{
@@ -716,7 +716,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                                     zIndex: 2,
                                 }}
                             >
-                                <VideoCat src={"/RightS6.mp4"} answerStatus={answerStatus} />
+                                <VideoCat src={"/RightS6.mp4"}/>
                             </Box>
                         )}
                         <Button
@@ -729,7 +729,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                                 border: "1px solid #FFF44F",
                                 backgroundColor: bgColor,
                                 textTransform: "none",
-                                zIndex: 1, // ниже видео
+                                zIndex: 1,
                                 "&:hover": {
                                     backgroundColor: bgColor === "transparent" ? "#555" : bgColor,
                                     color: "white !important",
@@ -775,11 +775,9 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                                     flexGrow: 1,
                                     maxWidth: "300px",
                                     width: "100%",
+                                    mt: 2,
                                     backgroundColor: "#FFF44F",
                                     color: "black",
-                                    textTransform: "none",
-                                    mb: {xs: 1, sm: 0},
-                                    mt: 2,
                                 }}
                                 onClick={handleNextQuestion}
                             >
