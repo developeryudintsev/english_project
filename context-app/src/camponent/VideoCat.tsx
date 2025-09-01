@@ -14,7 +14,7 @@ export const VideoCat: React.FC<VideoCatProps> = ({ src }) => {
             if (videoRef.current) {
                 videoRef.current.pause();
             }
-            setIsFadingOut(true); // запускаем плавное исчезновение
+            setIsFadingOut(false); // запускаем плавное исчезновение
         }, 2000);
 
         return () => clearTimeout(timer);

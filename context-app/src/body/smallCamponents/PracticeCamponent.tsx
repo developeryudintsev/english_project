@@ -628,7 +628,20 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                             </Box>
                         </div>
                     ) : (
-                        "Поздравляем! Вы ответили на все вопросы."
+                        <Box sx={{height:'150px'}}>
+                            Поздравляем! Вы ответили на все вопросы.
+                            <Box
+                                sx={{
+                                    position: "absolute",
+                                    top: "65%",
+                                    left: "50%",
+                                    transform: "translate(-50%, -50%)",
+                                    zIndex: 2,
+                                }}
+                            >
+                                <VideoCat src={"/win.mp4"}/>
+                            </Box>
+                        </Box>
                     )}
                 </Typography>
 
