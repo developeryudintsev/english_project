@@ -26,14 +26,13 @@ export const Header = (props: HeaderType) => {
 
     useEffect(() => {
         const handleResize = () => {
-            setIsMobile(window.innerWidth < 675);
+            setIsMobile(window.innerWidth < 684);
             setIsSuperSmall(window.innerWidth < 330);
         };
         handleResize();
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
     }, []);
-
 
     return (
         <AppBar position="static" sx={{ backgroundColor: '#444447' }}>
@@ -95,7 +94,33 @@ export const Header = (props: HeaderType) => {
                                             left:'2px'
                                         }}
                                     >
-                                        {props.star}<Rating name="customized-10" defaultValue={props.star!==0?1:0} max={1} />
+                                        <Box sx={{ position: "relative", display: "inline-flex", alignItems: "center" }}>
+                                            {/* ⭐ звезда */}
+                                            <Rating
+                                                name="progress-star"
+                                                value={props.star > 0 ? 1 : 0}
+                                                max={1}
+                                                readOnly
+                                                sx={{ fontSize: "60px", color: "#FFF44F",top:'10px' }}
+                                            />
+                                            {props.star > 0 && (
+                                                <Typography
+                                                    sx={{
+                                                        position: "absolute",
+                                                        left: "50%",
+                                                        top: "50%",
+                                                        transform: "translate(-50%, calc(-50% + 5px))",
+                                                        color: "black",
+                                                        fontWeight: "bold",
+                                                        fontSize: "1.2rem",
+                                                        pointerEvents: "none",
+                                                        top:'60%'
+                                                    }}
+                                                >
+                                                    {props.star}
+                                                </Typography>
+                                            )}
+                                        </Box>
                                     </Typography>
                                 </Box>
 
@@ -257,7 +282,34 @@ export const Header = (props: HeaderType) => {
                                             whiteSpace: 'nowrap',
                                         }}
                                     >
-                                        {props.star}<Rating name="customized-10" defaultValue={props.star>0?1:0} max={1} />
+                                        <Box sx={{ position: "relative", display: "inline-flex", alignItems: "center" }}>
+                                            {/* ⭐ звезда */}
+                                            <Rating
+                                                name="progress-star"
+                                                value={props.star > 0 ? 1 : 0}
+                                                max={1}
+                                                readOnly
+                                                sx={{ fontSize: "60px", color: "#FFF44F",top:'10px' }}
+                                            />
+                                            {props.star > 0 && (
+                                                <Typography
+                                                    sx={{
+                                                        position: "absolute",
+                                                        left: "50%",
+                                                        top: "50%",
+                                                        transform: "translate(-50%, calc(-50% + 5px))",
+                                                        color: "black",
+                                                        fontWeight: "bold",
+                                                        fontSize: "1.2rem",
+                                                        pointerEvents: "none",
+                                                        top:'60%'
+                                                    }}
+                                                >
+                                                    {props.star}
+                                                </Typography>
+                                            )}
+                                        </Box>
+
                                     </Typography>
                                 </Box>
 

@@ -38,8 +38,8 @@ type PracticeComponentProps = {
     setShowPractice: (showPractice: boolean) => void;
     showPractice: boolean
     setToggleVC: (toggleVC: boolean) => void
-    setStar:(star:number)=>void
-    star:number
+    setStar: (star: number) => void
+    star: number
 };
 
 export const PracticeComponent: React.FC<PracticeComponentProps> = ({
@@ -75,6 +75,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
             : type === "?"
                 ? "вопросительное"
                 : "отрицательное";
+    const [wasFinished, setWasFinished] = useState(false);
     const [page, setPage] = useState(0);
     const itemsPerPage = 9;
     const startIndex = page * itemsPerPage;
@@ -178,11 +179,24 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
         }
     };
     useEffect(() => {
-        if (isFinished == true ) {
-            setToggelVideoCat(3)
-            setStar(star+1)
-        }
-    }, [isFinished])
+        const loadStars = async () => {
+            const data = await getQuestions();
+            if (!data) return;
+
+            // считаем количество "страниц", где все вопросы isDone=true
+            let completed = 0;
+            Object.values(data.simple).forEach(timeData => {
+                Object.values(timeData).forEach(questions => {
+                    const allDone = questions.every(q => q.isDone);
+                    if (allDone) completed++;
+                });
+            });
+
+            setStar(completed);
+        };
+
+        loadStars();
+    }, []);
     const speakText = (text: string, lang: "ru" | "en") => {
         if (!text) return;
         if (window.speechSynthesis.speaking) {
@@ -688,14 +702,16 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                             }}
                                         >
 
-                                        <VideoCat src={"/win.mp4"} setToggelVideoCat={setToggelVideoCat}/>
-                                            <Box sx={{ position: "absolute",
+                                            <VideoCat src={"/win.mp4"} setToggelVideoCat={setToggelVideoCat}/>
+                                            <Box sx={{
+                                                position: "absolute",
                                                 top: "110%",
                                                 left: "50%",
                                                 transform: "translate(-50%, -50%)",
                                                 zIndex: 2,
-                                                pointerEvents: "none",}}>
-                                                <Rating name="customized-10" defaultValue={1} max={1} />
+                                                pointerEvents: "none",
+                                            }}>
+                                                <Rating name="customized-10" defaultValue={1} max={1}/>
                                             </Box>
                                         </Box>
                                     </Modal>
