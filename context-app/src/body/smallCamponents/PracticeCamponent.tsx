@@ -50,7 +50,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                                                         setShowPractice,
                                                                         setToggleVC,
                                                                         setStar,
-                                                                        star
                                                                     }) => {
     const [type, setType] = useState<changeType>(".");
     const [currentIndex, setCurrentIndex] = useState<Record<changeType, number>>({
@@ -75,7 +74,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
             : type === "?"
                 ? "вопросительное"
                 : "отрицательное";
-    const [wasFinished, setWasFinished] = useState(false);
     const [page, setPage] = useState(0);
     const itemsPerPage = 9;
     const startIndex = page * itemsPerPage;

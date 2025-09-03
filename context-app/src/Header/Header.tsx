@@ -12,17 +12,24 @@ import type {timeType} from '../App';
 import cat from '../picture/cat.JPG';
 import {useEffect, useState} from "react";
 import Rating from "@mui/material/Rating";
+import Modal from "@mui/material/Modal";
+import {IconButton} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import type {DataType, QuestionType} from "../Data/Data";
+import {getQuestions} from "../Data/Data";
 
 type HeaderType = {
     time: timeType;
     setTime: (time: timeType) => void;
     handleChange: (event: timeType) => void;
-    star:number
+    star: number
 };
 
 export const Header = (props: HeaderType) => {
-    let [isMobile, setIsMobile] = useState(false);
-    let [isSuperSmall, setIsSuperSmall] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+    const [isSuperSmall, setIsSuperSmall] = useState(false);
+    const [modalToggle, setModalToggle] = useState(false);
+    const [questions, setQuestions] = useState<DataType | null>(null);
 
     useEffect(() => {
         const handleResize = () => {
@@ -34,8 +41,21 @@ export const Header = (props: HeaderType) => {
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
+    useEffect(() => {
+        if (modalToggle) {
+            getQuestions().then((data) => {
+                setQuestions(data);
+            });
+        }
+    }, [modalToggle]);
+
+    const checkDone = (tense: keyof DataType["simple"], lessonKey: string) => {
+        const lesson = questions?.simple[tense]?.[lessonKey];
+        if (!lesson) return false;
+        return lesson.every((q: QuestionType) => q.isDone);
+    };
     return (
-        <AppBar position="static" sx={{ backgroundColor: '#444447' }}>
+        <AppBar position="static" sx={{backgroundColor: '#444447'}}>
             <Container maxWidth="xl">
                 <Toolbar
                     disableGutters
@@ -51,7 +71,6 @@ export const Header = (props: HeaderType) => {
                 >
                     {isMobile ? (
                         <>
-                            {/* Верхняя строка: English cat (v0.7) + ава */}
                             <Box
                                 sx={{
                                     display: 'flex',
@@ -62,7 +81,7 @@ export const Header = (props: HeaderType) => {
                                     gap: 20,
                                 }}
                             >
-                                <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
+                                <Box sx={{display: 'flex', alignItems: 'baseline', gap: 0.5}}>
                                     <Typography
                                         sx={{
                                             color: '#FFF44F',
@@ -91,36 +110,148 @@ export const Header = (props: HeaderType) => {
                                             fontWeight: 400,
                                             fontSize: '1rem',
                                             whiteSpace: 'nowrap',
-                                            left:'2px'
+                                            left: '2px'
                                         }}
                                     >
-                                        <Box sx={{ position: "relative", display: "inline-flex", alignItems: "center" }}>
+                                        <Box sx={{position: "relative", display: "inline-flex", alignItems: "center"}}
+                                             onClick={() => setModalToggle(true)}
+                                        >
                                             {/* ⭐ звезда */}
                                             <Rating
                                                 name="progress-star"
                                                 value={props.star > 0 ? 1 : 0}
                                                 max={1}
                                                 readOnly
-                                                sx={{ fontSize: "60px", color: "#FFF44F",top:'10px' }}
+                                                sx={{fontSize: "60px", color: "#FFF44F", top: '10px'}}
                                             />
                                             {props.star > 0 && (
                                                 <Typography
                                                     sx={{
                                                         position: "absolute",
                                                         left: "50%",
-                                                        top: "50%",
+                                                        top: "60%",
                                                         transform: "translate(-50%, calc(-50% + 5px))",
                                                         color: "black",
                                                         fontWeight: "bold",
                                                         fontSize: "1.2rem",
                                                         pointerEvents: "none",
-                                                        top:'60%'
                                                     }}
                                                 >
                                                     {props.star}
                                                 </Typography>
                                             )}
                                         </Box>
+
+                                        <Modal
+                                            open={modalToggle}
+                                            onClose={() => setModalToggle(false)}
+                                        >
+                                            <Box
+                                                sx={{
+                                                    width: 400,
+                                                    bgcolor: "#2c2c2c",
+                                                    borderRadius: 2,
+                                                    boxShadow: 24,
+                                                    mx: "auto",
+                                                    mt: "10%",
+                                                    overflow: "hidden",
+                                                }}
+                                            >
+                                                <Box
+                                                    sx={{
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        justifyContent: "center",
+                                                        backgroundColor: "#444447",
+                                                        color: "#fff",
+                                                        py: 1,
+                                                        position: "relative",
+                                                    }}
+                                                >
+                                                    <IconButton
+                                                        onClick={() => setModalToggle(false)}
+                                                        sx={{
+                                                            position: "absolute",
+                                                            right: "10px",
+                                                            top: "6px",
+                                                            color: "#fff",
+                                                            backgroundColor: "red",
+                                                            "&:hover": {
+                                                                backgroundColor: "#cc0000",
+                                                            },
+                                                        }}
+                                                    >
+                                                        <CloseIcon />
+                                                    </IconButton>
+                                                    <Typography
+                                                        variant="h6"
+                                                        sx={{
+                                                            fontWeight: "bold",
+                                                            textAlign: "center",
+                                                            color: "#FFF44F",
+                                                            width: "100%",
+                                                            px: 6,
+                                                        }}
+                                                    >
+                                                        Выполненные времена:
+                                                    </Typography>
+                                                </Box>
+
+                                                {/* список времен */}
+                                                <Box sx={{ p: 2 }}>
+                                                    {["Present", "Past", "Future"].map((tense) => (
+                                                        <Box key={tense} sx={{ mb: 2 }}>
+                                                            <Typography
+                                                                variant="subtitle1"
+                                                                sx={{
+                                                                    fontWeight: "bold",
+                                                                    color: "#FFF44F",
+                                                                    mb: 1,
+                                                                }}
+                                                            >
+                                                                {tense}
+                                                            </Typography>
+                                                            {questions &&
+                                                                Object.keys(
+                                                                    questions.simple[
+                                                                        tense as keyof DataType["simple"]
+                                                                        ]
+                                                                ).map((lessonKey) => {
+                                                                    const done = checkDone(
+                                                                        tense as keyof DataType["simple"],
+                                                                        lessonKey
+                                                                    );
+                                                                    return (
+                                                                        <Box
+                                                                            key={lessonKey}
+                                                                            sx={{
+                                                                                display: "flex",
+                                                                                alignItems: "center",
+                                                                                justifyContent: "space-between",
+                                                                                py: 0.5,
+                                                                            }}
+                                                                        >
+                                                                            <Typography sx={{ color: "white" }}>
+                                                                                {lessonKey}
+                                                                            </Typography>
+                                                                            <Rating
+                                                                                name={`${tense}-${lessonKey}`}
+                                                                                value={done ? 1 : 0}
+                                                                                max={1}
+                                                                                readOnly
+                                                                                sx={{
+                                                                                    fontSize: "30px",
+                                                                                    color: "#FFF44F",
+                                                                                }}
+                                                                            />
+                                                                        </Box>
+                                                                    );
+                                                                })}
+                                                        </Box>
+                                                    ))}
+                                                </Box>
+                                            </Box>
+                                        </Modal>
                                     </Typography>
                                 </Box>
 
@@ -147,7 +278,6 @@ export const Header = (props: HeaderType) => {
                                 </Tooltip>
                             </Box>
 
-                            {/* Нижняя строка: Simple + селектор */}
                             <Box
                                 sx={{
                                     display: 'flex',
@@ -182,7 +312,7 @@ export const Header = (props: HeaderType) => {
                                             props.handleChange(e.target.value as timeType)
                                         }
                                         displayEmpty
-                                        inputProps={{ 'aria-label': 'Select tense' }}
+                                        inputProps={{'aria-label': 'Select tense'}}
                                         sx={{
                                             backgroundColor: 'white',
                                             borderRadius: 1,
@@ -230,7 +360,7 @@ export const Header = (props: HeaderType) => {
                                             props.handleChange(e.target.value as timeType)
                                         }
                                         displayEmpty
-                                        inputProps={{ 'aria-label': 'Select tense' }}
+                                        inputProps={{'aria-label': 'Select tense'}}
                                         sx={{
                                             backgroundColor: 'white',
                                             borderRadius: 1,
@@ -251,7 +381,7 @@ export const Header = (props: HeaderType) => {
                                     gap: 1,
                                 }}
                             >
-                                <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
+                                <Box sx={{display: 'flex', alignItems: 'baseline', gap: 0.5}}>
                                     <Typography
                                         sx={{
                                             color: '#FFF44F',
@@ -282,27 +412,29 @@ export const Header = (props: HeaderType) => {
                                             whiteSpace: 'nowrap',
                                         }}
                                     >
-                                        <Box sx={{ position: "relative", display: "inline-flex", alignItems: "center" }}>
+
+                                        <Box sx={{position: "relative", display: "inline-flex", alignItems: "center"}}
+                                             onClick={() => setModalToggle(true)}
+                                        >
                                             {/* ⭐ звезда */}
                                             <Rating
                                                 name="progress-star"
                                                 value={props.star > 0 ? 1 : 0}
                                                 max={1}
                                                 readOnly
-                                                sx={{ fontSize: "60px", color: "#FFF44F",top:'10px' }}
+                                                sx={{fontSize: "60px", color: "#FFF44F", top: '10px'}}
                                             />
                                             {props.star > 0 && (
                                                 <Typography
                                                     sx={{
                                                         position: "absolute",
                                                         left: "50%",
-                                                        top: "50%",
+                                                        top: "60%",
                                                         transform: "translate(-50%, calc(-50% + 5px))",
                                                         color: "black",
                                                         fontWeight: "bold",
                                                         fontSize: "1.2rem",
                                                         pointerEvents: "none",
-                                                        top:'60%'
                                                     }}
                                                 >
                                                     {props.star}
@@ -310,6 +442,116 @@ export const Header = (props: HeaderType) => {
                                             )}
                                         </Box>
 
+                                        <Modal
+                                            open={modalToggle}
+                                            onClose={() => setModalToggle(false)}
+                                        >
+                                            <Box
+                                                sx={{
+                                                    width: 400,
+                                                    bgcolor: "#2c2c2c",
+                                                    borderRadius: 2,
+                                                    boxShadow: 24,
+                                                    mx: "auto",
+                                                    mt: "10%",
+                                                    overflow: "hidden",
+                                                }}
+                                            >
+                                                <Box
+                                                    sx={{
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        justifyContent: "center",
+                                                        backgroundColor: "#444447",
+                                                        color: "#fff",
+                                                        py: 1,
+                                                        position: "relative",
+                                                    }}
+                                                >
+                                                    <IconButton
+                                                        onClick={() => setModalToggle(false)}
+                                                        sx={{
+                                                            position: "absolute",
+                                                            right: "10px",
+                                                            top: "6px",
+                                                            color: "#fff",
+                                                            backgroundColor: "red",
+                                                            "&:hover": {
+                                                                backgroundColor: "#cc0000",
+                                                            },
+                                                        }}
+                                                    >
+                                                        <CloseIcon />
+                                                    </IconButton>
+                                                    <Typography
+                                                        variant="h6"
+                                                        sx={{
+                                                            fontWeight: "bold",
+                                                            textAlign: "center",
+                                                            color: "#FFF44F",
+                                                            width: "100%",
+                                                            px: 6,
+                                                        }}
+                                                    >
+                                                        Выполненные времена:
+                                                    </Typography>
+                                                </Box>
+
+                                                {/* список времен */}
+                                                <Box sx={{ p: 2 }}>
+                                                    {["Present", "Past", "Future"].map((tense) => (
+                                                        <Box key={tense} sx={{ mb: 2 }}>
+                                                            <Typography
+                                                                variant="subtitle1"
+                                                                sx={{
+                                                                    fontWeight: "bold",
+                                                                    color: "#FFF44F",
+                                                                    mb: 1,
+                                                                }}
+                                                            >
+                                                                {tense}
+                                                            </Typography>
+                                                            {questions &&
+                                                                Object.keys(
+                                                                    questions.simple[
+                                                                        tense as keyof DataType["simple"]
+                                                                        ]
+                                                                ).map((lessonKey) => {
+                                                                    const done = checkDone(
+                                                                        tense as keyof DataType["simple"],
+                                                                        lessonKey
+                                                                    );
+                                                                    return (
+                                                                        <Box
+                                                                            key={lessonKey}
+                                                                            sx={{
+                                                                                display: "flex",
+                                                                                alignItems: "center",
+                                                                                justifyContent: "space-between",
+                                                                                py: 0.5,
+                                                                            }}
+                                                                        >
+                                                                            <Typography sx={{ color: "white" }}>
+                                                                                {lessonKey}
+                                                                            </Typography>
+                                                                            <Rating
+                                                                                name={`${tense}-${lessonKey}`}
+                                                                                value={done ? 1 : 0}
+                                                                                max={1}
+                                                                                readOnly
+                                                                                sx={{
+                                                                                    fontSize: "30px",
+                                                                                    color: "#FFF44F",
+                                                                                }}
+                                                                            />
+                                                                        </Box>
+                                                                    );
+                                                                })}
+                                                        </Box>
+                                                    ))}
+                                                </Box>
+                                            </Box>
+                                        </Modal>
                                     </Typography>
                                 </Box>
 
