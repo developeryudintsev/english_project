@@ -18,6 +18,8 @@ type PropsType = {
     toggleVC: boolean,
     setToggleVC: (toggleVC: boolean) => void
     setShowPractice: (showPractice: boolean) => void
+    setStar:(star:number)=>void
+    star:number
 };
 
 export const ThoriumComponent = (props: PropsType) => {
@@ -60,6 +62,8 @@ export const ThoriumComponent = (props: PropsType) => {
                     setToggleVC={props.setToggleVC}
                     setShowPractice={props.setShowPracticeFoo}
                     showPractice={props.showPractice}
+                    setStar={props.setStar}
+                    star={props.star}
                 />
             )}
         </Box>

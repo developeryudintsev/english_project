@@ -7,7 +7,7 @@ type ModalProps = {
     onClose?: () => void;
 };
 
-export const Modal: React.FC<ModalProps> = ({ children, open, onClose }) => {
+export const ModalCamponent: React.FC<ModalProps> = ({ children, open, onClose }) => {
     if (!open) return null;
 
     return (

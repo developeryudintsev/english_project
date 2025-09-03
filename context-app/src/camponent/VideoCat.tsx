@@ -2,9 +2,10 @@ import React, {useEffect, useRef, useState} from "react";
 
 type VideoCatProps = {
     src: string;
+    setToggelVideoCat:(toggelVideoCat:0 | 1 | 2|3)=>void
 };
 
-export const VideoCat: React.FC<VideoCatProps> = ({ src }) => {
+export const VideoCat: React.FC<VideoCatProps> = ({ src,setToggelVideoCat }) => {
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const [visible, setVisible] = useState(true);
     const [isFadingOut, setIsFadingOut] = useState(false);
@@ -14,7 +15,11 @@ export const VideoCat: React.FC<VideoCatProps> = ({ src }) => {
             if (videoRef.current) {
                 videoRef.current.pause();
             }
-            setIsFadingOut(false); // запускаем плавное исчезновение
+            setIsFadingOut(true);
+            setTimeout(()=>{
+                setToggelVideoCat(0)
+            },500)
+
         }, 2000);
 
         return () => clearTimeout(timer);

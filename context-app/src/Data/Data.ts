@@ -920,7 +920,7 @@ export const data: DataType = {
             ['?']: [
                 {
                     id: v1(),
-                    question: "ты это видели?",
+                    question: "Ты это видел?",
                     isDone: false,
                     word: 'saw',
                     answers: [

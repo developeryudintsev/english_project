@@ -16,6 +16,8 @@ type PropsType = {
     toggleVC: boolean,
     setToggleVC: (toggleVC: boolean) => void
     setShowPractice: (showPractice: boolean) => void
+    setStar:(star:number)=>void
+    star:number
 };
 
 export const Body = (props: PropsType) => {

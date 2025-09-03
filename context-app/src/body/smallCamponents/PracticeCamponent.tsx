@@ -21,8 +21,11 @@ import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import type {DataType, QuestionType} from "../../Data/Data";
 import {addQuestions, data, getQuestions, updateQuestion,} from "../../Data/Data";
 import {VideoCat} from "../../camponent/VideoCat";
-import {Modal} from "../../modal/Modal";
+import {ModalCamponent} from "../../modal/Modal";
 import CloseIcon from "@mui/icons-material/Close";
+import {TypeAnimation} from 'react-type-animation';
+import Rating from '@mui/material/Rating';
+import Modal from '@mui/material/Modal';
 
 type TimeKey = "Present" | "Future" | "Past";
 export type changeType = "." | "?" | "!";
@@ -32,17 +35,22 @@ type PracticeComponentProps = {
     toggle: boolean;
     openTheory: (theory: boolean) => void;
     toggleTheory: (togglePractice: boolean) => void;
-    setShowPractice: (showPractice:boolean) => void;
-    showPractice:boolean
+    setShowPractice: (showPractice: boolean) => void;
+    showPractice: boolean
     setToggleVC: (toggleVC: boolean) => void
+    setStar:(star:number)=>void
+    star:number
 };
 
-export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
+export const PracticeComponent: React.FC<PracticeComponentProps> = ({
+                                                                        time,
                                                                         toggle = false,
                                                                         openTheory,
                                                                         toggleTheory,
                                                                         setShowPractice,
-                                                                        setToggleVC
+                                                                        setToggleVC,
+                                                                        setStar,
+                                                                        star
                                                                     }) => {
     const [type, setType] = useState<changeType>(".");
     const [currentIndex, setCurrentIndex] = useState<Record<changeType, number>>({
@@ -60,6 +68,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
     const [congratulation, setCongratulation] = useState(false);
     const isFinished = congratulation;
     let [toggelModal, setToggelModal] = useState<0 | 1 | 2>(0)
+    let [toggelVideoCat, setToggelVideoCat] = useState<0 | 1 | 2 | 3>(0)
     let typeSentence =
         type === "."
             ? "утвердительное"
@@ -106,7 +115,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                     const idx = firstUnfinishedIndex === -1 ? 0 : firstUnfinishedIndex;
 
                     setCurrentQuestion(loaded[idx] ?? null);
-                    setCurrentIndex((prev) => ({ ...prev, [type]: idx }));
+                    setCurrentIndex((prev) => ({...prev, [type]: idx}));
                     setCongratulation(firstUnfinishedIndex === -1);
 
                     // 👇 авто-выбор страницы с первой незакрытой задачей
@@ -121,18 +130,22 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                 const idx = firstUnfinishedIndex === -1 ? 0 : firstUnfinishedIndex;
 
                 setCurrentQuestion(loaded[idx] ?? null);
-                setCurrentIndex((prev) => ({ ...prev, [type]: idx }));
+                setCurrentIndex((prev) => ({...prev, [type]: idx}));
                 setCongratulation(firstUnfinishedIndex === -1);
-
                 // 👇 авто-выбор страницы
                 setPage(Math.floor(idx / itemsPerPage));
             }
             setAnswerStatus("none");
             setSelectedAnswer(null);
         };
+
         init();
     }, [time, type]);
     const handleAnswer = async (answerText: string, id: string) => {
+        const exest = questions.find((q) => !q.isDone);
+        if (!exest) {
+            setToggelVideoCat(3)
+        }
         if (answerStatus !== "none") return;
         setSelectedAnswer(answerText);
         setToggelModal(1);
@@ -142,7 +155,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
             if (correctAnswer && correctAnswer.text === answerText) {
 
                 setAnswerStatus("correct");
-
+                setToggelVideoCat(2)
                 const updatedQuestion = {...currentQuestion, isDone: true};
                 setQuestions((prev) => prev.map((q) => (q.id === id ? updatedQuestion : q)));
                 setCurrentQuestion(updatedQuestion);
@@ -160,9 +173,16 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                 await updateQuestion(updatedData);
             } else {
                 setAnswerStatus("wrong");
+                setToggelVideoCat(1)
             }
         }
     };
+    useEffect(() => {
+        if (isFinished == true ) {
+            setToggelVideoCat(3)
+            setStar(star+1)
+        }
+    }, [isFinished])
     const speakText = (text: string, lang: "ru" | "en") => {
         if (!text) return;
         if (window.speechSynthesis.speaking) {
@@ -190,12 +210,12 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                 ...prev,
                 [type]: questions.indexOf(next),
             }));
-            const qestionIsTrue=visibleQuestions.find((q) => !q.isDone);
-            if(qestionIsTrue===undefined){
-                setPage((p) => Math.max(p+1))
+            const qestionIsTrue = visibleQuestions.find((q) => !q.isDone);
+            if (qestionIsTrue === undefined) {
+                setPage((p) => Math.max(p + 1))
             }
         } else {
-            setCongratulation(true);
+            setCongratulation(false);
         }
         setAnswerStatus("none");
         setSelectedAnswer(null);
@@ -205,7 +225,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
         setSelectedAnswer(null);
     };
     const gobackFoo = () => {
-            setShowPractice(false);
+        setShowPractice(false);
         setToggleVC(true)
         openTheory(false);
     };
@@ -261,21 +281,21 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
         toggleTheory(!toggle);
         openTheory(true)
     }
-    const LeftSlider=()=>{
+    const LeftSlider = () => {
         setPage((p) => Math.max(p - 1, 0))
-        const index = (page-1) * itemsPerPage;
+        const index = (page - 1) * itemsPerPage;
         const questionsWithOutDelay = questions.slice(index, index + itemsPerPage);
-        const findQestion=questionsWithOutDelay.find((f)=>f.isDone==false)
-        const result=findQestion==undefined?questionsWithOutDelay[0]:findQestion
+        const findQestion = questionsWithOutDelay.find((f) => f.isDone == false)
+        const result = findQestion == undefined ? questionsWithOutDelay[0] : findQestion
         setCurrentQuestion(result)
         wordFoo(result.id)
     }
-    const RightSlider=()=>{
+    const RightSlider = () => {
         setPage((p) => Math.max(p + 1))
-        const index = (page+1) * itemsPerPage;
+        const index = (page + 1) * itemsPerPage;
         const questionsWithOutDelay = questions.slice(index, index + itemsPerPage);
-        const findQestion=questionsWithOutDelay.find((f)=>f.isDone==false)
-        const result=findQestion==undefined?questionsWithOutDelay[0]:findQestion
+        const findQestion = questionsWithOutDelay.find((f) => f.isDone == false)
+        const result = findQestion == undefined ? questionsWithOutDelay[0] : findQestion
         setCurrentQuestion(result)
         wordFoo(result.id)
     }
@@ -307,8 +327,8 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
             }}
         >
             {toggelModal === 1 && answerStatus === 'wrong' &&
-                <Modal open={toggelModal === 1?true:false} onClose={CloseButton}>
-                    <Box>
+                <ModalCamponent open={toggelModal === 1 ? true : false} onClose={CloseButton}>
+                    <Box sx={{height: toggelVideoCat === 1 ? '300px' : '130px'}}>
                         <Box
                             sx={{
                                 display: "flex",
@@ -317,6 +337,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                                 backgroundColor: "#444447",
                                 color: "#fff",
                                 padding: "6px",
+
                                 position: "relative",
                             }}
                         >
@@ -345,7 +366,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                                     px: 6,
                                 }}
                             >
-                                {/*{typeSentence} предложение в {time} Simple строиться так:*/}
                                 {typeSentence} предложение в Simple строиться так:
                             </Typography>
                         </Box>
@@ -353,7 +373,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                             <Button
                                 onClick={() => GoToTheorya()}
                                 variant={"contained"}
-                                sx={{color:'white'}}
+                                sx={{color: 'white'}}
                             >Подробнее правила в теории</Button>
                         </Box>
                         <Box sx={{
@@ -421,14 +441,15 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                                     pointerEvents: "none", // чтобы видео не мешало кликам
                                 }}
                             >
-                                <VideoCat src={"/wrong4.mp4"} />
+                                {toggelVideoCat === 1 &&
+                                    <VideoCat src={"/wrong4.mp4"} setToggelVideoCat={setToggelVideoCat}/>}
                             </Box>
                         </Box>
                     </Box>
-                </Modal>
+                </ModalCamponent>
             }
             {toggelModal === 2 && (
-                <Modal open={toggelModal === 2?true:false} onClose={CloseButton}>
+                <ModalCamponent open={toggelModal === 2 ? true : false} onClose={CloseButton}>
                     <Box
                         sx={{
                             display: "flex",
@@ -466,7 +487,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                                 onClick={() => setToggelModal(0)}>нет</Button>
                         <Button sx={{backgroundColor: "#00d300", color: 'black'}} onClick={() => newData()}>да</Button>
                     </Box>
-                </Modal>
+                </ModalCamponent>
             )}
 
             <Box
@@ -542,7 +563,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                             <div style={{margin: 3}} onClick={() => ButtonFoo(toggle)}>
                                 Выбери глагол или просто иди по порядку
                             </div>
-                            <Box sx={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
+                            <Box sx={{display: "flex", flexWrap: "wrap", justifyContent: "center"}}>
                                 <Box
                                     sx={{
                                         display: "flex",
@@ -559,7 +580,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                                             onClick={() => LeftSlider()}
                                             sx={{
                                                 fontSize: 40,
-                                                border:"#FFF44F",
+                                                border: "#FFF44F",
                                                 color: "#FFF44F",
                                                 minWidth: "40px",
                                             }}
@@ -613,10 +634,10 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                                         <Button
                                             variant="outlined"
                                             disabled={startIndex + itemsPerPage >= questions.length}
-                                            onClick={() =>RightSlider()}
+                                            onClick={() => RightSlider()}
                                             sx={{
                                                 fontSize: 40,
-                                                border:"#FFF44F",
+                                                border: "#FFF44F",
                                                 color: "#FFF44F",
                                                 minWidth: "40px",
                                             }}
@@ -628,8 +649,19 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                             </Box>
                         </div>
                     ) : (
-                        <Box sx={{height:'150px'}}>
-                            Поздравляем! Вы ответили на все вопросы.
+                        <Box sx={{height: '30px'}}>
+                            <Typography sx={{color: '#FFF44F'}}>
+                                <TypeAnimation
+                                    sequence={[
+                                        'Поздравляем! Вы ответили на все вопросы.',
+                                        1000,
+                                    ]}
+                                    wrapper="span"
+                                    speed={50}
+                                    style={{fontSize: '1em', display: 'inline-block'}}
+                                    repeat={Infinity}
+                                />
+                            </Typography>
                             <Box
                                 sx={{
                                     position: "absolute",
@@ -639,7 +671,35 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                                     zIndex: 2,
                                 }}
                             >
-                                <VideoCat src={"/win.mp4"}/>
+                                {toggelVideoCat === 3 &&
+                                    <Modal
+                                        open={toggelVideoCat === 3 ? true : false}
+                                        aria-labelledby="modal-modal-title"
+                                        aria-describedby="modal-modal-description"
+                                    >
+                                        <Box
+                                            sx={{
+                                                position: "absolute",
+                                                top: "50%",
+                                                left: "50%",
+                                                transform: "translate(-50%, -50%)",
+                                                zIndex: 2,
+                                                pointerEvents: "none",
+                                            }}
+                                        >
+
+                                        <VideoCat src={"/win.mp4"} setToggelVideoCat={setToggelVideoCat}/>
+                                            <Box sx={{ position: "absolute",
+                                                top: "110%",
+                                                left: "50%",
+                                                transform: "translate(-50%, -50%)",
+                                                zIndex: 2,
+                                                pointerEvents: "none",}}>
+                                                <Rating name="customized-10" defaultValue={1} max={1} />
+                                            </Box>
+                                        </Box>
+                                    </Modal>
+                                }
                             </Box>
                         </Box>
                     )}
@@ -672,7 +732,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                   mb: 1,
               }}
           >
-            <Typography variant="h6" sx={{color:'white'}}>
+            <Typography variant="h6" sx={{color: 'white'}}>
               {currentIndex[type] + 1}. {currentQuestion.question}
             </Typography>
             <IconButton
@@ -729,7 +789,9 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                                     zIndex: 2,
                                 }}
                             >
-                                <VideoCat src={"/RightS6.mp4"}/>
+                                {toggelVideoCat === 2 &&
+                                    <VideoCat src={"/RightS6.mp4"} setToggelVideoCat={setToggelVideoCat}/>}
+
                             </Box>
                         )}
                         <Button
@@ -760,10 +822,10 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
 
                         <IconButton
                             onClick={() => speakText(ans.text, "en")}
-                            sx={{ ml: 1, color: "#FFF44F", zIndex: 3 }} // иконка всегда выше
+                            sx={{ml: 1, color: "#FFF44F", zIndex: 3}} // иконка всегда выше
                             aria-label="Озвучить ответ"
                         >
-                            <VolumeUpIcon />
+                            <VolumeUpIcon/>
                         </IconButton>
                     </Box>
                 );
@@ -818,7 +880,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({time,
                     )}
 
                     {/*{show && (*/}
-                        <Box>
+                    <Box>
                             <Button
                                 variant="contained"
                                 sx={{

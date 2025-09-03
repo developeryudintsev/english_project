@@ -8,14 +8,16 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import type { timeType } from '../App';
+import type {timeType} from '../App';
 import cat from '../picture/cat.JPG';
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
+import Rating from "@mui/material/Rating";
 
 type HeaderType = {
     time: timeType;
     setTime: (time: timeType) => void;
     handleChange: (event: timeType) => void;
+    star:number
 };
 
 export const Header = (props: HeaderType) => {
@@ -24,7 +26,7 @@ export const Header = (props: HeaderType) => {
 
     useEffect(() => {
         const handleResize = () => {
-            setIsMobile(window.innerWidth < 640);
+            setIsMobile(window.innerWidth < 675);
             setIsSuperSmall(window.innerWidth < 330);
         };
         handleResize();
@@ -45,7 +47,7 @@ export const Header = (props: HeaderType) => {
                         justifyContent: 'space-between',
                         width: '100%',
                         py: 1,
-                        gap: isMobile ? 2 : 0,
+                        gap: isMobile ? 3 : 0,
                     }}
                 >
                     {isMobile ? (
@@ -58,7 +60,7 @@ export const Header = (props: HeaderType) => {
                                     justifyContent: 'space-between',
                                     width: '100%',
                                     px: 1,
-                                    gap: 2,
+                                    gap: 20,
                                 }}
                             >
                                 <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
@@ -83,6 +85,17 @@ export const Header = (props: HeaderType) => {
                                         }}
                                     >
                                         (v0.7)
+                                    </Typography>
+                                    <Typography
+                                        sx={{
+                                            color: '#FFF44F',
+                                            fontWeight: 400,
+                                            fontSize: '1rem',
+                                            whiteSpace: 'nowrap',
+                                            left:'2px'
+                                        }}
+                                    >
+                                        {props.star}<Rating name="customized-10" defaultValue={props.star!==0?1:0} max={1} />
                                     </Typography>
                                 </Box>
 
@@ -235,6 +248,16 @@ export const Header = (props: HeaderType) => {
                                         }}
                                     >
                                         (v0.7)
+                                    </Typography>
+                                    <Typography
+                                        sx={{
+                                            color: '#FFF44F',
+                                            fontWeight: 400,
+                                            fontSize: '1rem',
+                                            whiteSpace: 'nowrap',
+                                        }}
+                                    >
+                                        {props.star}<Rating name="customized-10" defaultValue={props.star>0?1:0} max={1} />
                                     </Typography>
                                 </Box>
 
