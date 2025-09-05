@@ -950,10 +950,10 @@ export const data: DataType = {
                     id: v1(),
                     question: "Она придет",
                     isDone: false,
-                    word: 'will not came',
+                    word: 'will came',
                     answers: [
-                        {text: "She will come", isCorrect: false},
-                        {text: "She will not come", isCorrect: true},
+                        {text: "She will come", isCorrect: true},
+                        {text: "She will not come", isCorrect:false},
                         {text: "She don’t come", isCorrect: false},
                     ],
                 },

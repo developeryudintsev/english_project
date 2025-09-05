@@ -78,6 +78,29 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
     const itemsPerPage = 9;
     const startIndex = page * itemsPerPage;
     const visibleQuestions = questions.slice(startIndex, startIndex + itemsPerPage);
+    // 🔽 вычисляем общий прогресс для текущего времени
+    const [progress, setProgress] = useState<{ done: number, total: number }>({done: 0, total: 0});
+
+    useEffect(() => {
+        const loadProgress = async () => {
+            const stored = await getQuestions();
+            if (!stored) return;
+
+            const timeData = stored.simple[time];
+            let done = 0;
+            let total = 0;
+
+            Object.values(timeData).forEach((questionsArr) => {
+                total += questionsArr.length;
+                done += questionsArr.filter((q) => q.isDone).length;
+            });
+
+            setProgress({done, total});
+        };
+
+        loadProgress();
+    }, [time]);
+
     useEffect(() => {
         const allDone = questions.every((q) => q.isDone);
         setCongratulation(allDone);
@@ -141,10 +164,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
         init();
     }, [time, type]);
     const handleAnswer = async (answerText: string, id: string) => {
-        const exest = questions.find((q) => !q.isDone);
-        if (!exest) {
-            setToggelVideoCat(3)
-        }
+
         if (answerStatus !== "none") return;
         setSelectedAnswer(answerText);
         setToggelModal(1);
@@ -168,6 +188,10 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                         },
                     },
                 };
+                const exest = updatedData['simple'][time][type].find((q) => !q.isDone);
+                if (!exest) {
+                    setToggelVideoCat(3)
+                }
                 setFullData(updatedData);
                 await updateQuestion(updatedData);
             } else {
@@ -349,7 +373,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                 backgroundColor: "#444447",
                                 color: "#fff",
                                 padding: "6px",
-
                                 position: "relative",
                             }}
                         >
@@ -495,9 +518,9 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                         gap: 2,
                         width: "100%",
                     }}>
-                        <Button sx={{backgroundColor: "#d20000", color: 'black'}}
+                        <Button sx={{backgroundColor: "#d20000", color: 'white'}}
                                 onClick={() => setToggelModal(0)}>нет</Button>
-                        <Button sx={{backgroundColor: "#00d300", color: 'black'}} onClick={() => newData()}>да</Button>
+                        <Button sx={{backgroundColor: "#00d300", color: 'white'}} onClick={() => newData()}>да</Button>
                     </Box>
                 </ModalCamponent>
             )}
@@ -521,8 +544,8 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                 >
                     {!toggle ? (
                         <span onClick={() => ButtonFoo(toggle)}>
-              Практика – {time} Simple
-            </span>
+                            Практика – {time} Simple ({progress.done}/{progress.total})
+                        </span>
                     ) : !isFinished ? (
                         <div>
                             <Box

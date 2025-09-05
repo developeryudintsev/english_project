@@ -13,9 +13,9 @@ import cat from '../picture/cat.JPG';
 import {useEffect, useState} from "react";
 import Rating from "@mui/material/Rating";
 import Modal from "@mui/material/Modal";
-import {IconButton} from "@mui/material";
+import {IconButton, Paper, Table, TableBody, TableCell, TableRow,TableContainer} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import type {DataType, QuestionType} from "../Data/Data";
+import type {DataType} from "../Data/Data";
 import {getQuestions} from "../Data/Data";
 
 type HeaderType = {
@@ -49,11 +49,6 @@ export const Header = (props: HeaderType) => {
         }
     }, [modalToggle]);
 
-    const checkDone = (tense: keyof DataType["simple"], lessonKey: string) => {
-        const lesson = questions?.simple[tense]?.[lessonKey];
-        if (!lesson) return false;
-        return lesson.every((q: QuestionType) => q.isDone);
-    };
     return (
         <AppBar position="static" sx={{backgroundColor: '#444447'}}>
             <Container maxWidth="xl">
@@ -181,7 +176,7 @@ export const Header = (props: HeaderType) => {
                                                             },
                                                         }}
                                                     >
-                                                        <CloseIcon />
+                                                        <CloseIcon/>
                                                     </IconButton>
                                                     <Typography
                                                         variant="h6"
@@ -197,10 +192,9 @@ export const Header = (props: HeaderType) => {
                                                     </Typography>
                                                 </Box>
 
-                                                {/* список времен */}
-                                                <Box sx={{ p: 2 }}>
+                                                <Box sx={{p: 2}}>
                                                     {["Present", "Past", "Future"].map((tense) => (
-                                                        <Box key={tense} sx={{ mb: 2 }}>
+                                                        <Box key={tense} sx={{mb: 2}}>
                                                             <Typography
                                                                 variant="subtitle1"
                                                                 sx={{
@@ -213,14 +207,14 @@ export const Header = (props: HeaderType) => {
                                                             </Typography>
                                                             {questions &&
                                                                 Object.keys(
-                                                                    questions.simple[
-                                                                        tense as keyof DataType["simple"]
-                                                                        ]
+                                                                    questions.simple[tense as keyof DataType["simple"]]
                                                                 ).map((lessonKey) => {
-                                                                    const done = checkDone(
-                                                                        tense as keyof DataType["simple"],
-                                                                        lessonKey
-                                                                    );
+                                                                    const lesson =
+                                                                        questions.simple[tense as keyof DataType["simple"]][lessonKey];
+                                                                    const total = lesson.length;
+                                                                    const doneCount = lesson.filter((q) => q.isDone).length;
+                                                                    const done = doneCount === total && total > 0;
+
                                                                     return (
                                                                         <Box
                                                                             key={lessonKey}
@@ -231,8 +225,8 @@ export const Header = (props: HeaderType) => {
                                                                                 py: 0.5,
                                                                             }}
                                                                         >
-                                                                            <Typography sx={{ color: "white" }}>
-                                                                                {lessonKey}
+                                                                            <Typography sx={{color: "white"}}>
+                                                                                {lessonKey} ({doneCount}/{total})
                                                                             </Typography>
                                                                             <Rating
                                                                                 name={`${tense}-${lessonKey}`}
@@ -373,7 +367,6 @@ export const Header = (props: HeaderType) => {
                                     </Select>
                                 </FormControl>
                             </Box>
-
                             <Box
                                 sx={{
                                     display: 'flex',
@@ -416,7 +409,6 @@ export const Header = (props: HeaderType) => {
                                         <Box sx={{position: "relative", display: "inline-flex", alignItems: "center"}}
                                              onClick={() => setModalToggle(true)}
                                         >
-                                            {/* ⭐ звезда */}
                                             <Rating
                                                 name="progress-star"
                                                 value={props.star > 0 ? 1 : 0}
@@ -429,7 +421,7 @@ export const Header = (props: HeaderType) => {
                                                     sx={{
                                                         position: "absolute",
                                                         left: "50%",
-                                                        top: "60%",
+                                                        top: "61%",
                                                         transform: "translate(-50%, calc(-50% + 5px))",
                                                         color: "black",
                                                         fontWeight: "bold",
@@ -453,7 +445,7 @@ export const Header = (props: HeaderType) => {
                                                     borderRadius: 2,
                                                     boxShadow: 24,
                                                     mx: "auto",
-                                                    mt: "10%",
+                                                    mt: "2%",
                                                     overflow: "hidden",
                                                 }}
                                             >
@@ -481,7 +473,7 @@ export const Header = (props: HeaderType) => {
                                                             },
                                                         }}
                                                     >
-                                                        <CloseIcon />
+                                                        <CloseIcon/>
                                                     </IconButton>
                                                     <Typography
                                                         variant="h6"
@@ -496,11 +488,9 @@ export const Header = (props: HeaderType) => {
                                                         Выполненные времена:
                                                     </Typography>
                                                 </Box>
-
-                                                {/* список времен */}
-                                                <Box sx={{ p: 2 }}>
+                                                <Box sx={{p: 2}}>
                                                     {["Present", "Past", "Future"].map((tense) => (
-                                                        <Box key={tense} sx={{ mb: 2 }}>
+                                                        <Box key={tense} sx={{mb: 2}}>
                                                             <Typography
                                                                 variant="subtitle1"
                                                                 sx={{
@@ -511,42 +501,53 @@ export const Header = (props: HeaderType) => {
                                                             >
                                                                 {tense}
                                                             </Typography>
-                                                            {questions &&
-                                                                Object.keys(
-                                                                    questions.simple[
-                                                                        tense as keyof DataType["simple"]
-                                                                        ]
-                                                                ).map((lessonKey) => {
-                                                                    const done = checkDone(
-                                                                        tense as keyof DataType["simple"],
-                                                                        lessonKey
-                                                                    );
-                                                                    return (
-                                                                        <Box
-                                                                            key={lessonKey}
-                                                                            sx={{
-                                                                                display: "flex",
-                                                                                alignItems: "center",
-                                                                                justifyContent: "space-between",
-                                                                                py: 0.5,
-                                                                            }}
-                                                                        >
-                                                                            <Typography sx={{ color: "white" }}>
-                                                                                {lessonKey}
-                                                                            </Typography>
-                                                                            <Rating
-                                                                                name={`${tense}-${lessonKey}`}
-                                                                                value={done ? 1 : 0}
-                                                                                max={1}
-                                                                                readOnly
-                                                                                sx={{
-                                                                                    fontSize: "30px",
-                                                                                    color: "#FFF44F",
-                                                                                }}
-                                                                            />
-                                                                        </Box>
-                                                                    );
-                                                                })}
+                                                            <TableContainer component={Paper} sx={{ my: 2 }}>
+                                                            <Table size="small">
+                                                                <TableBody>
+                                                                    <TableRow>
+                                                                        <TableCell>
+                                                                            {questions &&
+                                                                                Object.keys(
+                                                                                    questions.simple[tense as keyof DataType["simple"]]
+                                                                                ).map((lessonKey) => {
+                                                                                    const lesson =
+                                                                                        questions.simple[tense as keyof DataType["simple"]][lessonKey];
+                                                                                    const total = lesson.length;
+                                                                                    const doneCount = lesson.filter((q) => q.isDone).length;
+                                                                                    const done = doneCount === total && total > 0;
+
+                                                                                    return (
+                                                                                        <Box
+                                                                                            key={lessonKey}
+                                                                                            sx={{
+                                                                                                display: "flex",
+                                                                                                alignItems: "center",
+                                                                                                justifyContent: "space-between",
+                                                                                                py: 0.5,
+                                                                                            }}
+                                                                                        >
+                                                                                            <Typography
+                                                                                                sx={{color: "black"}}>
+                                                                                                {lessonKey} ({doneCount}/{total})
+                                                                                            </Typography>
+                                                                                            <Rating
+                                                                                                name={`${tense}-${lessonKey}`}
+                                                                                                value={done ? 1 : 0}
+                                                                                                max={1}
+                                                                                                readOnly
+                                                                                                sx={{
+                                                                                                    fontSize: "30px",
+                                                                                                    color: "#FFF44F",
+                                                                                                }}
+                                                                                            />
+                                                                                        </Box>
+                                                                                    );
+                                                                                })}
+                                                                        </TableCell>
+                                                                    </TableRow>
+                                                                </TableBody>
+                                                            </Table>
+                                                            </TableContainer>
                                                         </Box>
                                                     ))}
                                                 </Box>
@@ -554,7 +555,6 @@ export const Header = (props: HeaderType) => {
                                         </Modal>
                                     </Typography>
                                 </Box>
-
                                 <Tooltip title="Ссылка на наш сайт">
                                     <a
                                         href="https://www.kiber-rus.ru/"
