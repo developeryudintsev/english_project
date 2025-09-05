@@ -78,7 +78,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
     const itemsPerPage = 9;
     const startIndex = page * itemsPerPage;
     const visibleQuestions = questions.slice(startIndex, startIndex + itemsPerPage);
-    // 🔽 вычисляем общий прогресс для текущего времени
     const [progress, setProgress] = useState<{ done: number, total: number }>({done: 0, total: 0});
 
     useEffect(() => {
@@ -364,7 +363,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
         >
             {toggelModal === 1 && answerStatus === 'wrong' &&
                 <ModalCamponent open={toggelModal === 1 ? true : false} onClose={CloseButton}>
-                    <Box sx={{height: toggelVideoCat === 1 ? '300px' : '130px'}}>
+                    <Box sx={{height: toggelVideoCat === 1 ? '350px' : '130px'}}>
                         <Box
                             sx={{
                                 display: "flex",
@@ -418,54 +417,52 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                             flexDirection: "column",
                             alignItems: "center"
                         }}>
-                            {time === "Present" && (
-                                <div style={{textAlign: "center", width: "100%"}}>
-                                    <Typography fontWeight="bold" sx={{color: "#FFF44F", mb: 1}}>
-                                        Формула:
-                                    </Typography>
-                                    <Box sx={{width: "100%", maxWidth: 800}}>
-                                        <TableContainer component={Paper} sx={{my: 1}}>
-                                            <Table size="small">
-                                                <TableHead>
-                                                    <TableRow>
-                                                        <TableCell align="center">Русский</TableCell>
-                                                        <TableCell align="center">Английский (Утверждение)</TableCell>
-                                                        <TableCell align="center">Отрицание</TableCell>
-                                                        <TableCell align="center">Вопрос</TableCell>
-                                                    </TableRow>
-                                                </TableHead>
-                                                <TableBody>
-                                                    <TableRow>
-                                                        <TableCell align="center">Я люблю</TableCell>
-                                                        <TableCell align="center">I love</TableCell>
-                                                        <TableCell align="center">I don’t love</TableCell>
-                                                        <TableCell align="center">Do I love?</TableCell>
-                                                    </TableRow>
-                                                    <TableRow>
-                                                        <TableCell sx={{backgroundColor: "#FFF44F", color: "#000"}}>Он/Она/Оно
-                                                            любит</TableCell>
-                                                        <TableCell
-                                                            sx={{backgroundColor: "#FFF44F", color: "#000", px: '10%'}}>He/She/It
-                                                            loves</TableCell>
-                                                        <TableCell
-                                                            sx={{backgroundColor: "#FFF44F", color: "#000", px: 1}}>
-                                                            He/She/It does not (doesn't) love
-                                                        </TableCell>
-                                                        <TableCell sx={{backgroundColor: "#FFF44F", color: "#000"}}>Does
-                                                            he/she/it love?</TableCell>
-                                                    </TableRow>
-                                                    <TableRow>
-                                                        <TableCell>Мы/Ты/Они любим</TableCell>
-                                                        <TableCell sx={{px: '10%'}}>We/You/They love</TableCell>
-                                                        <TableCell sx={{px: 1}}>We/You/They don't love</TableCell>
-                                                        <TableCell>Do we/you/they love?</TableCell>
-                                                    </TableRow>
-                                                </TableBody>
-                                            </Table>
-                                        </TableContainer>
-                                    </Box>
-                                </div>
-                            )}
+                            <div style={{textAlign: "center", width: "100%"}}>
+                                <Typography fontWeight="bold" sx={{color: "#FFF44F", mb: 1}}>
+                                    Формула:
+                                </Typography>
+                                <Box sx={{width: "100%", maxWidth: 800}}>
+                                    <TableContainer component={Paper} sx={{my: 1}}>
+                                        <Table size="small">
+                                            <TableHead>
+                                                <TableRow>
+                                                    <TableCell align="center">Русский</TableCell>
+                                                    <TableCell align="center">Английский (Утверждение)</TableCell>
+                                                    <TableCell align="center">Отрицание</TableCell>
+                                                    <TableCell align="center">Вопрос</TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                <TableRow>
+                                                    <TableCell align="center">Я люблю</TableCell>
+                                                    <TableCell align="center">I love</TableCell>
+                                                    <TableCell align="center">I don’t love</TableCell>
+                                                    <TableCell align="center">Do I love?</TableCell>
+                                                </TableRow>
+                                                <TableRow>
+                                                    <TableCell sx={{backgroundColor: "#FFF44F", color: "#000"}}>Он/Она/Оно
+                                                        любит</TableCell>
+                                                    <TableCell
+                                                        sx={{backgroundColor: "#FFF44F", color: "#000", px: '10%'}}>He/She/It
+                                                        loves</TableCell>
+                                                    <TableCell
+                                                        sx={{backgroundColor: "#FFF44F", color: "#000", px: 1}}>
+                                                        He/She/It does not (doesn't) love
+                                                    </TableCell>
+                                                    <TableCell sx={{backgroundColor: "#FFF44F", color: "#000"}}>Does
+                                                        he/she/it love?</TableCell>
+                                                </TableRow>
+                                                <TableRow>
+                                                    <TableCell>Мы/Ты/Они любим</TableCell>
+                                                    <TableCell sx={{px: '10%'}}>We/You/They love</TableCell>
+                                                    <TableCell sx={{px: 1}}>We/You/They don't love</TableCell>
+                                                    <TableCell>Do we/you/they love?</TableCell>
+                                                </TableRow>
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
+                                </Box>
+                            </div>
                             <Box
                                 sx={{
                                     position: "absolute",
@@ -685,59 +682,80 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                         </div>
                     ) : (
                         <Box sx={{height: '30px'}}>
-                            <Typography sx={{color: '#FFF44F'}}>
-                                <TypeAnimation
-                                    sequence={[
-                                        'Поздравляем! Вы ответили на все вопросы.',
-                                        1000,
-                                    ]}
-                                    wrapper="span"
-                                    speed={50}
-                                    style={{fontSize: '1em', display: 'inline-block'}}
-                                    repeat={Infinity}
-                                />
-                            </Typography>
-                            <Box
-                                sx={{
-                                    position: "absolute",
-                                    top: "65%",
-                                    left: "50%",
-                                    transform: "translate(-50%, -50%)",
-                                    zIndex: 2,
-                                }}
-                            >
-                                {toggelVideoCat === 3 &&
-                                    <Modal
-                                        open={toggelVideoCat === 3 ? true : false}
-                                        aria-labelledby="modal-modal-title"
-                                        aria-describedby="modal-modal-description"
+                            {toggelVideoCat === 0 && (
+                                <Typography sx={{color: "#FFF44F", mb: 2}}>
+                                    <TypeAnimation
+                                        sequence={[
+                                            "Поздравляем! Вы ответили на все вопросы.",
+                                            1000,
+                                        ]}
+                                        wrapper="span"
+                                        speed={50}
+                                        style={{fontSize: "1em", display: "inline-block"}}
+                                        repeat={Infinity}
+                                    />
+                                </Typography>
+                            )}
+                            {toggelVideoCat === 3 && (
+                                <Modal
+                                    open={toggelVideoCat === 3}
+                                    aria-labelledby="modal-modal-title"
+                                    aria-describedby="modal-modal-description"
+                                >
+                                    <Box
+                                        sx={{
+                                            position: "absolute",
+                                            top: "50%",
+                                            left: "50%",
+                                            transform: "translate(-50%, -50%)",
+                                            bgcolor: "#444447",
+                                            border: "2px solid #FFF44F",
+                                            boxShadow: 24,
+                                            p: 4,
+                                            borderRadius: "12px",
+                                            textAlign: "center",
+                                        }}
                                     >
+                                        <Typography sx={{color: "#FFF44F", mb: 2}}>
+                                            <TypeAnimation
+                                                sequence={["Поздравляем! Вы ответили на все вопросы.", 1000]}
+                                                wrapper="span"
+                                                speed={50}
+                                                style={{fontSize: "1em", display: "inline-block"}}
+                                                repeat={Infinity}
+                                            />
+                                        </Typography>
+
                                         <Box
                                             sx={{
-                                                position: "absolute",
-                                                top: "50%",
-                                                left: "50%",
-                                                transform: "translate(-50%, -50%)",
-                                                zIndex: 2,
-                                                pointerEvents: "none",
+                                                position: "relative",
+                                                display: "flex",
+                                                flexDirection: "column", // 🔹 элементы идут сверху вниз
+                                                justifyContent: "center",
+                                                alignItems: "center",
+                                                gap: 2, // 🔹 отступ между видео и текстом
                                             }}
                                         >
-
                                             <VideoCat src={"/win.mp4"} setToggelVideoCat={setToggelVideoCat}/>
-                                            <Box sx={{
-                                                position: "absolute",
-                                                top: "110%",
-                                                left: "50%",
-                                                transform: "translate(-50%, -50%)",
-                                                zIndex: 2,
-                                                pointerEvents: "none",
-                                            }}>
+
+                                            <Typography sx={{color: "#FFF44F", mb: 2}}>
+                                                Поздравляем, вы получаете звезду!
+                                            </Typography>
+
+                                            <Box
+                                                sx={{
+                                                    position: "absolute",
+                                                    top: "110%",
+                                                    left: "50%",
+                                                    transform: "translate(-50%, -50%)",
+                                                }}
+                                            >
                                                 <Rating name="customized-10" defaultValue={1} max={1}/>
                                             </Box>
                                         </Box>
-                                    </Modal>
-                                }
-                            </Box>
+                                    </Box>
+                                </Modal>
+                            )}
                         </Box>
                     )}
                 </Typography>
@@ -757,7 +775,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                     <InfoOutlinedIcon/>
                 </IconButton>
             </Box>
-
             {toggle && !isFinished && currentQuestion && (
                 <span>
           <Box
@@ -783,7 +800,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                   <CheckCircleIcon sx={{color: "limegreen", fontSize: 28}}/>
               )}
           </Box>
-
           <Box
               sx={{
                   display: "flex",
@@ -867,20 +883,9 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                     </Box>
                 );
             })}
-
           </Box>
                     {answerStatus === "correct" && (
-                        <Box
-                            sx={{
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                flexWrap: "wrap",
-                                mt: 1,
-                                gap: 3.5,
-
-                            }}
-                        >
+                        <Box>
                             <Button
                                 variant="contained"
                                 sx={{
@@ -890,6 +895,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                     mt: 2,
                                     backgroundColor: "#FFF44F",
                                     color: "black",
+                                    py: 1,
                                 }}
                                 onClick={handleNextQuestion}
                             >
@@ -915,8 +921,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                             </Button>
                         </Box>
                     )}
-
-                    {/*{show && (*/}
                     <Box>
                             <Button
                                 variant="contained"
@@ -933,7 +937,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                 ВЕРНУТЬСЯ К ВИДЕО
                             </Button>
                         </Box>
-                    {/*)}*/}
         </span>
             )}
         </Paper>
