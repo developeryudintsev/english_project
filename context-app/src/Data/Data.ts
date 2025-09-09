@@ -36,16 +36,9 @@ const ROOT_ID = "DATA_V1";
 const RATING_STORE = "rating";
 const RATING_ID = "RATING_V1";
 
-export type RatingMap = {
-    simple: {
-        Past: Record<string, 0 | 1>;
-        Present: Record<string, 0 | 1>;
-        Future: Record<string, 0 | 1>;
-    };
-};
 export const initDB = async () => {
     return openDB(DB_NAME, 2, {
-        upgrade(db, oldVersion) {
+        upgrade(db) {
             if (!db.objectStoreNames.contains(STORE_NAME)) {
                 db.createObjectStore(STORE_NAME, { keyPath: "id" });
             }
@@ -63,16 +56,14 @@ export const computeRatingMapFromData = (data: DataType): RatingMap => {
             Future: {},
         },
     };
+
     (["Past", "Present", "Future"] as const).forEach((tense) => {
         const lessons = data.simple[tense];
         Object.keys(lessons).forEach((lessonKey) => {
-            const questions = lessons[lessonKey] ?? [];
+            const questions = lessons[lessonKey];
             const total = questions.length;
             const done = questions.filter((q) => q.isDone).length;
             result.simple[tense][lessonKey] = total > 0 && done === total ? 1 : 0;
-        });
-        [".", "?", "!"].forEach(k => {
-            if (result.simple[tense][k] === undefined) result.simple[tense][k] = 0;
         });
     });
 
@@ -81,39 +72,42 @@ export const computeRatingMapFromData = (data: DataType): RatingMap => {
 export const getRatingMap = async (): Promise<RatingMap | null> => {
     const db = await initDB();
     const rec = (await db.get(RATING_STORE, RATING_ID)) as { id: string; payload: RatingMap } | undefined;
+
     if (rec) return rec.payload;
-    // если в store нет записи — попробуем вычислить по существующим вопросам (но не перезаписываем store автоматически)
+
+    // если нет записи — вычисляем из вопросов
     const data = await getQuestions();
     if (!data) return null;
-    const map = computeRatingMapFromData(data);
-    // не записываем автоматически здесь — но можно записать, если хотите:
-    // await db.put(RATING_STORE, { id: RATING_ID, payload: map });
-    return map;
+
+    return computeRatingMapFromData(data);
 };
+
 export const setRatingMap = async (map: RatingMap) => {
     const db = await initDB();
     await db.put(RATING_STORE, { id: RATING_ID, payload: map });
 };
-export const updateRatingFor = async (time: "Past" | "Present" | "Future", typeKey: "." | "?" | "!") => {
+export const updateRatingFor = async (tense: "Past" | "Present" | "Future", lessonKey: string) => {
+    const map = await getRatingMap();
+
+    const updated: RatingMap = map ?? {
+        simple: { Past: {}, Present: {}, Future: {} },
+    };
+
+    // обновляем только конкретный урок
+    const data = await getQuestions();
+    if (!data) return;
+
+    const questions = data.simple[tense][lessonKey] ?? [];
+    const total = questions.length;
+    const done = questions.filter((q) => q.isDone).length;
+
+    updated.simple[tense][lessonKey] = total > 0 && done === total ? 1 : 0;
+
+    // сохраняем в RATING_STORE
     const db = await initDB();
-    const rec = (await db.get(RATING_STORE, RATING_ID)) as { id: string; payload: RatingMap } | undefined;
-    let map: RatingMap;
-    if (rec && rec.payload) {
-        map = rec.payload;
-    } else {
-        const data = await getQuestions();
-        map = data ? computeRatingMapFromData(data) : {
-            simple: {
-                Past: { ".": 0, "?": 0, "!": 0 },
-                Present: { ".": 0, "?": 0, "!": 0 },
-                Future: { ".": 0, "?": 0, "!": 0 },
-            },
-        };
-    }
-    map.simple[time][typeKey] = 1; // помечаем как заработанную
-    await db.put(RATING_STORE, { id: RATING_ID, payload: map });
-    return map;
+    await db.put(RATING_STORE, { id: RATING_ID, payload: updated });
 };
+
 export const saveRatingMap = async (rating: RatingMap) => {
     const db = await initDB();
     await db.put(RATING_STORE, { id: ROOT_ID, payload: rating });
