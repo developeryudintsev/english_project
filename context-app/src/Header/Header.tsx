@@ -13,10 +13,10 @@ import cat from '../picture/cat.JPG';
 import {useEffect, useState} from "react";
 import Rating from "@mui/material/Rating";
 import Modal from "@mui/material/Modal";
-import {IconButton, Paper, Table, TableBody, TableCell, TableRow,TableContainer} from "@mui/material";
+import {IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import type {DataType} from "../Data/Data";
-import {getQuestions} from "../Data/Data";
+import type {DataType, RatingMap} from "../Data/Data";
+import {computeRatingMapFromData, getQuestions, getRatingMap, setRatingMap} from "../Data/Data";
 
 type HeaderType = {
     time: timeType;
@@ -30,11 +30,12 @@ export const Header = (props: HeaderType) => {
     const [isSuperSmall, setIsSuperSmall] = useState(false);
     const [modalToggle, setModalToggle] = useState(false);
     const [questions, setQuestions] = useState<DataType | null>(null);
+    const [rating, setRating] = useState<RatingMap | null>(null);
 
     useEffect(() => {
         const handleResize = () => {
             setIsMobile(window.innerWidth < 684);
-            setIsSuperSmall(window.innerWidth < 330);
+            setIsSuperSmall(window.innerWidth < 430);
         };
         handleResize();
         window.addEventListener("resize", handleResize);
@@ -42,12 +43,111 @@ export const Header = (props: HeaderType) => {
     }, []);
 
     useEffect(() => {
-        if (modalToggle) {
-            getQuestions().then((data) => {
-                setQuestions(data);
-            });
-        }
+        if (!modalToggle) return;
+        (async () => {
+            try {
+                const map = await getRatingMap();
+                if (map) {
+                    setRating(map);
+                } else {
+                    const data = await getQuestions();
+                    if (data) {
+                        const computed = computeRatingMapFromData(data);
+                        await setRatingMap(computed);
+                        setRating(computed);
+                    } else {
+                        // no data and no rating — keep rating null (will show loading)
+                        setRating(null);
+                    }
+                }
+            } catch (err) {
+                console.error("Error loading rating:", err);
+                setRating(null);
+            }
+
+            try {
+                const q = await getQuestions();
+                setQuestions(q);
+            } catch (err) {
+                console.error("Error loading questions:", err);
+                setQuestions(null);
+            }
+        })();
     }, [modalToggle]);
+
+    // helper: безопасно получить lesson array и progress
+    const getLessonInfo = (tense: "Past" | "Present" | "Future", lessonKey: string) => {
+        const lessons = questions?.simple?.[tense] ?? {};
+        const lesson = lessons?.[lessonKey] ?? [];
+        const total = Array.isArray(lesson) ? lesson.length : 0;
+        const doneCount = Array.isArray(lesson) ? lesson.filter((q) => q.isDone).length : 0;
+        return { lesson, total, doneCount };
+    };
+
+    // отрисовка содержимого модалки (чтобы не дублировать код)
+    const renderModalBody = () => {
+        if (!rating || !questions) {
+            return (
+                <Box sx={{ p: 2 }}>
+                    <Typography sx={{ color: "#FFF44F" }}>Загрузка...</Typography>
+                </Box>
+            );
+        }
+
+        return (
+            <Box sx={{ p: 2 }}>
+                {(["Present", "Past", "Future"] as const).map((tense) => (
+                    <Box key={tense} sx={{ mb: 2 }}>
+                        <Typography variant="subtitle1" sx={{ fontWeight: "bold", color: "#FFF44F", mb: 1 }}>
+                            {tense}
+                        </Typography>
+
+                        <TableContainer component={Paper} sx={{ my: 2 }}>
+                            <Table size="small">
+                                {/*<TableHead>*/}
+                                {/*    <TableRow>*/}
+                                {/*        <TableCell>Тип</TableCell>*/}
+                                {/*        <TableCell align="right">Звезда</TableCell>*/}
+                                {/*    </TableRow>*/}
+                                {/*</TableHead>*/}
+                                <TableBody>
+                                    {Object.keys(rating.simple[tense]).map((lessonKey) => {
+                                        const starValue = rating.simple[tense as keyof RatingMap["simple"]][lessonKey];
+                                        const typeSentence =
+                                            lessonKey === "."
+                                                ? "утвердительное"
+                                                : lessonKey === "?"
+                                                    ? "вопросительное"
+                                                    : "отрицательное";
+
+                                        const { total, doneCount } = getLessonInfo(tense, lessonKey);
+                                        return (
+                                            <TableRow key={lessonKey}>
+                                                <TableCell>
+                                                    <Typography sx={{ color: "black" }}>
+                                                        {typeSentence} ({doneCount}/{total})
+                                                    </Typography>
+                                                </TableCell>
+                                                <TableCell align="right">
+                                                    <Rating
+                                                        name={`${tense}-${lessonKey}`}
+                                                        value={starValue}
+                                                        max={1}
+                                                        readOnly
+                                                        sx={{ fontSize: "30px", color: "#FFF44F" }}
+                                                    />
+                                                </TableCell>
+                                            </TableRow>
+                                        );
+                                    })}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </Box>
+                ))}
+            </Box>
+        );
+    };
 
     return (
         <AppBar position="static" sx={{backgroundColor: '#444447'}}>
@@ -73,7 +173,7 @@ export const Header = (props: HeaderType) => {
                                     justifyContent: 'space-between',
                                     width: '100%',
                                     px: 1,
-                                    gap: 20,
+                                    gap: 2,
                                 }}
                             >
                                 <Box sx={{display: 'flex', alignItems: 'baseline', gap: 0.5}}>
@@ -99,19 +199,9 @@ export const Header = (props: HeaderType) => {
                                     >
                                         (v0.7)
                                     </Typography>
-                                    <Typography
-                                        sx={{
-                                            color: '#FFF44F',
-                                            fontWeight: 400,
-                                            fontSize: '1rem',
-                                            whiteSpace: 'nowrap',
-                                            left: '2px'
-                                        }}
-                                    >
-                                        <Box sx={{position: "relative", display: "inline-flex", alignItems: "center"}}
-                                             onClick={() => setModalToggle(true)}
-                                        >
-                                            {/* ⭐ звезда */}
+
+                                    <Box sx={{position: "relative", display: "inline-flex", alignItems: "center", ml: 1}}>
+                                        <Box onClick={() => setModalToggle(true)} sx={{cursor: 'pointer'}}>
                                             <Rating
                                                 name="progress-star"
                                                 value={props.star > 0 ? 1 : 0}
@@ -136,182 +226,71 @@ export const Header = (props: HeaderType) => {
                                                 </Typography>
                                             )}
                                         </Box>
+                                    </Box>
 
-                                        <Modal
-                                            open={modalToggle}
-                                            onClose={() => setModalToggle(false)}
+                                    <Modal open={modalToggle} onClose={() => setModalToggle(false)}>
+                                        <Box
+                                            sx={{
+                                                width: 400,
+                                                bgcolor: "#2c2c2c",
+                                                borderRadius: 2,
+                                                boxShadow: 24,
+                                                mx: "auto",
+                                                mt: "10%",
+                                                overflow: "hidden",
+                                            }}
                                         >
                                             <Box
                                                 sx={{
-                                                    width: 400,
-                                                    bgcolor: "#2c2c2c",
-                                                    borderRadius: 2,
-                                                    boxShadow: 24,
-                                                    mx: "auto",
-                                                    mt: "10%",
-                                                    overflow: "hidden",
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    justifyContent: "center",
+                                                    backgroundColor: "#444447",
+                                                    color: "#fff",
+                                                    py: 1,
+                                                    position: "relative",
                                                 }}
                                             >
-                                                <Box
+                                                <IconButton
+                                                    onClick={() => setModalToggle(false)}
                                                     sx={{
-                                                        display: "flex",
-                                                        alignItems: "center",
-                                                        justifyContent: "center",
-                                                        backgroundColor: "#444447",
+                                                        position: "absolute",
+                                                        right: "10px",
+                                                        top: "6px",
                                                         color: "#fff",
-                                                        py: 1,
-                                                        position: "relative",
+                                                        backgroundColor: "red",
+                                                        "&:hover": { backgroundColor: "#cc0000" },
                                                     }}
                                                 >
-                                                    <IconButton
-                                                        onClick={() => setModalToggle(false)}
-                                                        sx={{
-                                                            position: "absolute",
-                                                            right: "10px",
-                                                            top: "6px",
-                                                            color: "#fff",
-                                                            backgroundColor: "red",
-                                                            "&:hover": {
-                                                                backgroundColor: "#cc0000",
-                                                            },
-                                                        }}
-                                                    >
-                                                        <CloseIcon/>
-                                                    </IconButton>
-                                                    <Typography
-                                                        variant="h6"
-                                                        sx={{
-                                                            fontWeight: "bold",
-                                                            textAlign: "center",
-                                                            color: "#FFF44F",
-                                                            width: "100%",
-                                                            px: 6,
-                                                        }}
-                                                    >
-                                                        Выполненные времена:
-                                                    </Typography>
-                                                </Box>
-
-                                                <Box sx={{p: 2}}>
-                                                    {["Present", "Past", "Future"].map((tense) => (
-                                                        <Box key={tense} sx={{mb: 2}}>
-                                                            <Typography
-                                                                variant="subtitle1"
-                                                                sx={{
-                                                                    fontWeight: "bold",
-                                                                    color: "#FFF44F",
-                                                                    mb: 1,
-                                                                }}
-                                                            >
-                                                                {tense}
-                                                            </Typography>
-                                                            {questions &&
-                                                                Object.keys(
-                                                                    questions.simple[tense as keyof DataType["simple"]]
-                                                                ).map((lessonKey) => {
-                                                                    const lesson =
-                                                                        questions.simple[tense as keyof DataType["simple"]][lessonKey];
-                                                                    const total = lesson.length;
-                                                                    const doneCount = lesson.filter((q) => q.isDone).length;
-                                                                    const done = doneCount === total && total > 0;
-
-                                                                    return (
-                                                                        <Box
-                                                                            key={lessonKey}
-                                                                            sx={{
-                                                                                display: "flex",
-                                                                                alignItems: "center",
-                                                                                justifyContent: "space-between",
-                                                                                py: 0.5,
-                                                                            }}
-                                                                        >
-                                                                            <Typography sx={{color: "white"}}>
-                                                                                {lessonKey} ({doneCount}/{total})
-                                                                            </Typography>
-                                                                            <Rating
-                                                                                name={`${tense}-${lessonKey}`}
-                                                                                value={done ? 1 : 0}
-                                                                                max={1}
-                                                                                readOnly
-                                                                                sx={{
-                                                                                    fontSize: "30px",
-                                                                                    color: "#FFF44F",
-                                                                                }}
-                                                                            />
-                                                                        </Box>
-                                                                    );
-                                                                })}
-                                                        </Box>
-                                                    ))}
-                                                </Box>
+                                                    <CloseIcon/>
+                                                </IconButton>
+                                                <Typography variant="h6" sx={{ fontWeight: "bold", textAlign: "center", color: "#FFF44F", width: "100%", px: 6 }}>
+                                                    Выполненные времена:
+                                                </Typography>
                                             </Box>
-                                        </Modal>
-                                    </Typography>
+
+                                            {renderModalBody()}
+                                        </Box>
+                                    </Modal>
                                 </Box>
 
                                 <Tooltip title="Ссылка на наш сайт">
-                                    <a
-                                        href="https://www.kiber-rus.ru/"
-                                        target="_blank"
-                                        style={{
-                                            textDecoration: 'none',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                        }}
-                                    >
-                                        <Avatar
-                                            alt="User Avatar"
-                                            src={cat}
-                                            sx={{
-                                                border: '2px solid white',
-                                                width: isSuperSmall ? 40 : 50,
-                                                height: isSuperSmall ? 40 : 50,
-                                            }}
-                                        />
+                                    <a href="https://www.kiber-rus.ru/" target="_blank" rel="noreferrer" style={{ textDecoration: 'none', alignItems: 'center' }}>
+                                        <Avatar alt="User Avatar" src={cat} sx={{ border: '2px solid white', width: isSuperSmall ? 40 : 50, height: isSuperSmall ? 40 : 50 }} />
                                     </a>
                                 </Tooltip>
                             </Box>
 
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'space-between',
-                                    width: '100%',
-                                    px: 1,
-                                    gap: 1,
-                                }}
-                            >
-                                <Typography
-                                    sx={{
-                                        color: '#FFF44F',
-                                        fontWeight: 500,
-                                        flexShrink: 0,
-                                    }}
-                                >
-                                    Simple
-                                </Typography>
+                            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', px: 1, gap: 1 }}>
+                                <Typography sx={{ color: '#FFF44F', fontWeight: 500, flexShrink: 0 }}>Simple</Typography>
 
-                                <FormControl
-                                    sx={{
-                                        flexGrow: 1,
-                                        minWidth: isSuperSmall ? 120 : 160,
-                                        marginLeft: '20px',
-                                    }}
-                                    size="small"
-                                >
+                                <FormControl sx={{ flexGrow: 1, minWidth: isSuperSmall ? 120 : 160, marginLeft: '20px' }} size="small">
                                     <Select
                                         value={props.time}
-                                        onChange={(e) =>
-                                            props.handleChange(e.target.value as timeType)
-                                        }
+                                        onChange={(e) => props.handleChange(e.target.value as timeType)}
                                         displayEmpty
                                         inputProps={{'aria-label': 'Select tense'}}
-                                        sx={{
-                                            backgroundColor: 'white',
-                                            borderRadius: 1,
-                                            width: '100%',
-                                        }}
+                                        sx={{ backgroundColor: 'white', borderRadius: 1, width: '100%' }}
                                     >
                                         <MenuItem value="Present">Present</MenuItem>
                                         <MenuItem value="Past">Past</MenuItem>
@@ -322,44 +301,15 @@ export const Header = (props: HeaderType) => {
                         </>
                     ) : (
                         <>
-                            {/* Desktop версия */}
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: 2,
-                                    flexGrow: 1,
-                                }}
-                            >
-                                <Typography
-                                    sx={{
-                                        color: '#FFF44F',
-                                        fontWeight: 500,
-                                        flexShrink: 0,
-                                    }}
-                                >
-                                    Simple
-                                </Typography>
-                                <FormControl
-                                    size="small"
-                                    sx={{
-                                        flexGrow: 1,
-                                        minWidth: 160,
-                                        maxWidth: 250,
-                                    }}
-                                >
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexGrow: 1 }}>
+                                <Typography sx={{ color: '#FFF44F', fontWeight: 500, flexShrink: 0 }}>Simple</Typography>
+                                <FormControl size="small" sx={{ flexGrow: 1, minWidth: 160, maxWidth: 250 }}>
                                     <Select
                                         value={props.time}
-                                        onChange={(e) =>
-                                            props.handleChange(e.target.value as timeType)
-                                        }
+                                        onChange={(e) => props.handleChange(e.target.value as timeType)}
                                         displayEmpty
                                         inputProps={{'aria-label': 'Select tense'}}
-                                        sx={{
-                                            backgroundColor: 'white',
-                                            borderRadius: 1,
-                                            width: '100%',
-                                        }}
+                                        sx={{ backgroundColor: 'white', borderRadius: 1, width: '100%' }}
                                     >
                                         <MenuItem value="Present">Present</MenuItem>
                                         <MenuItem value="Past">Past</MenuItem>
@@ -367,213 +317,44 @@ export const Header = (props: HeaderType) => {
                                     </Select>
                                 </FormControl>
                             </Box>
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: 1,
-                                }}
-                            >
-                                <Box sx={{display: 'flex', alignItems: 'baseline', gap: 0.5}}>
-                                    <Typography
-                                        sx={{
-                                            color: '#FFF44F',
-                                            fontWeight: 700,
-                                            fontFamily: '"South Park Ext", sans-serif',
-                                            fontSize: '2.3rem',
-                                            textShadow: '2px 2px 0px #000, -1px -1px 0px #000',
-                                            whiteSpace: 'nowrap',
-                                        }}
-                                    >
+
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
+                                    <Typography sx={{ color: '#FFF44F', fontWeight: 700, fontFamily: '"South Park Ext", sans-serif', fontSize: '2.3rem', textShadow: '2px 2px 0px #000, -1px -1px 0px #000', whiteSpace: 'nowrap' }}>
                                         English cat
                                     </Typography>
-                                    <Typography
-                                        sx={{
-                                            color: '#FFF44F',
-                                            fontWeight: 400,
-                                            fontSize: '1rem',
-                                            whiteSpace: 'nowrap',
-                                        }}
-                                    >
-                                        (v0.7)
-                                    </Typography>
-                                    <Typography
-                                        sx={{
-                                            color: '#FFF44F',
-                                            fontWeight: 400,
-                                            fontSize: '1rem',
-                                            whiteSpace: 'nowrap',
-                                        }}
-                                    >
+                                    <Typography sx={{ color: '#FFF44F', fontWeight: 400, fontSize: '1rem', whiteSpace: 'nowrap' }}>(v0.7)</Typography>
 
-                                        <Box sx={{position: "relative", display: "inline-flex", alignItems: "center"}}
-                                             onClick={() => setModalToggle(true)}
-                                        >
-                                            <Rating
-                                                name="progress-star"
-                                                value={props.star > 0 ? 1 : 0}
-                                                max={1}
-                                                readOnly
-                                                sx={{fontSize: "60px", color: "#FFF44F", top: '10px'}}
-                                            />
+                                    <Box sx={{ position: "relative", display: "inline-flex", alignItems: "center", ml: 1 }}>
+                                        <Box onClick={() => setModalToggle(true)} sx={{ cursor: 'pointer' }}>
+                                            <Rating name="progress-star" value={props.star > 0 ? 1 : 0} max={1} readOnly sx={{ fontSize: "60px", color: "#FFF44F", top: '10px' }} />
                                             {props.star > 0 && (
-                                                <Typography
-                                                    sx={{
-                                                        position: "absolute",
-                                                        left: "50%",
-                                                        top: "61%",
-                                                        transform: "translate(-50%, calc(-50% + 5px))",
-                                                        color: "black",
-                                                        fontWeight: "bold",
-                                                        fontSize: "1.2rem",
-                                                        pointerEvents: "none",
-                                                    }}
-                                                >
+                                                <Typography sx={{ position: "absolute", left: "50%", top: "61%", transform: "translate(-50%, calc(-50% + 5px))", color: "black", fontWeight: "bold", fontSize: "1.2rem", pointerEvents: "none" }}>
                                                     {props.star}
                                                 </Typography>
                                             )}
                                         </Box>
+                                    </Box>
 
-                                        <Modal
-                                            open={modalToggle}
-                                            onClose={() => setModalToggle(false)}
-                                        >
-                                            <Box
-                                                sx={{
-                                                    width: 400,
-                                                    bgcolor: "#2c2c2c",
-                                                    borderRadius: 2,
-                                                    boxShadow: 24,
-                                                    mx: "auto",
-                                                    mt: "2%",
-                                                    overflow: "hidden",
-                                                }}
-                                            >
-                                                <Box
-                                                    sx={{
-                                                        display: "flex",
-                                                        alignItems: "center",
-                                                        justifyContent: "center",
-                                                        backgroundColor: "#444447",
-                                                        color: "#fff",
-                                                        py: 1,
-                                                        position: "relative",
-                                                    }}
-                                                >
-                                                    <IconButton
-                                                        onClick={() => setModalToggle(false)}
-                                                        sx={{
-                                                            position: "absolute",
-                                                            right: "10px",
-                                                            top: "6px",
-                                                            color: "#fff",
-                                                            backgroundColor: "red",
-                                                            "&:hover": {
-                                                                backgroundColor: "#cc0000",
-                                                            },
-                                                        }}
-                                                    >
-                                                        <CloseIcon/>
-                                                    </IconButton>
-                                                    <Typography
-                                                        variant="h6"
-                                                        sx={{
-                                                            fontWeight: "bold",
-                                                            textAlign: "center",
-                                                            color: "#FFF44F",
-                                                            width: "100%",
-                                                            px: 6,
-                                                        }}
-                                                    >
-                                                        Выполненные времена:
-                                                    </Typography>
-                                                </Box>
-                                                <Box sx={{p: 2}}>
-                                                    {["Present", "Past", "Future"].map((tense) => (
-                                                        <Box key={tense} sx={{mb: 2}}>
-                                                            <Typography
-                                                                variant="subtitle1"
-                                                                sx={{
-                                                                    fontWeight: "bold",
-                                                                    color: "#FFF44F",
-                                                                    mb: 1,
-                                                                }}
-                                                            >
-                                                                {tense}
-                                                            </Typography>
-                                                            <TableContainer component={Paper} sx={{ my: 2 }}>
-                                                            <Table size="small">
-                                                                <TableBody>
-                                                                    <TableRow>
-                                                                        <TableCell>
-                                                                            {questions &&
-                                                                                Object.keys(
-                                                                                    questions.simple[tense as keyof DataType["simple"]]
-                                                                                ).map((lessonKey) => {
-                                                                                    const lesson =
-                                                                                        questions.simple[tense as keyof DataType["simple"]][lessonKey];
-                                                                                    const total = lesson.length;
-                                                                                    const doneCount = lesson.filter((q) => q.isDone).length;
-                                                                                    const done = doneCount === total && total > 0;
-
-                                                                                    return (
-                                                                                        <Box
-                                                                                            key={lessonKey}
-                                                                                            sx={{
-                                                                                                display: "flex",
-                                                                                                alignItems: "center",
-                                                                                                justifyContent: "space-between",
-                                                                                                py: 0.5,
-                                                                                            }}
-                                                                                        >
-                                                                                            <Typography
-                                                                                                sx={{color: "black"}}>
-                                                                                                {lessonKey} ({doneCount}/{total})
-                                                                                            </Typography>
-                                                                                            <Rating
-                                                                                                name={`${tense}-${lessonKey}`}
-                                                                                                value={done ? 1 : 0}
-                                                                                                max={1}
-                                                                                                readOnly
-                                                                                                sx={{
-                                                                                                    fontSize: "30px",
-                                                                                                    color: "#FFF44F",
-                                                                                                }}
-                                                                                            />
-                                                                                        </Box>
-                                                                                    );
-                                                                                })}
-                                                                        </TableCell>
-                                                                    </TableRow>
-                                                                </TableBody>
-                                                            </Table>
-                                                            </TableContainer>
-                                                        </Box>
-                                                    ))}
-                                                </Box>
+                                    <Modal open={modalToggle} onClose={() => setModalToggle(false)}>
+                                        <Box sx={{ width: 400, bgcolor: "#2c2c2c", borderRadius: 2, boxShadow: 24, mx: "auto", mt: "2%", overflow: "hidden" }}>
+                                            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "#444447", color: "#fff", py: 1, position: "relative" }}>
+                                                <IconButton onClick={() => setModalToggle(false)} sx={{ position: "absolute", right: "10px", top: "6px", color: "#fff", backgroundColor: "red", "&:hover": { backgroundColor: "#cc0000" } }}>
+                                                    <CloseIcon/>
+                                                </IconButton>
+                                                <Typography variant="h6" sx={{ fontWeight: "bold", textAlign: "center", color: "#FFF44F", width: "100%", px: 6 }}>
+                                                    Выполненные времена:
+                                                </Typography>
                                             </Box>
-                                        </Modal>
-                                    </Typography>
+
+                                            {renderModalBody()}
+                                        </Box>
+                                    </Modal>
                                 </Box>
+
                                 <Tooltip title="Ссылка на наш сайт">
-                                    <a
-                                        href="https://www.kiber-rus.ru/"
-                                        target="_blank"
-                                        style={{
-                                            textDecoration: 'none',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                        }}
-                                    >
-                                        <Avatar
-                                            alt="User Avatar"
-                                            src={cat}
-                                            sx={{
-                                                border: '2px solid white',
-                                                width: 60,
-                                                height: 60,
-                                            }}
-                                        />
+                                    <a href="https://www.kiber-rus.ru/" target="_blank" rel="noreferrer" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+                                        <Avatar alt="User Avatar" src={cat} sx={{ border: '2px solid white', width: 60, height: 60 }} />
                                     </a>
                                 </Tooltip>
                             </Box>

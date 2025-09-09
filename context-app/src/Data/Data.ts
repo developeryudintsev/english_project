@@ -23,6 +23,149 @@ export type DataType = {
     };
 };
 
+export type RatingMap = {
+    simple: {
+        Past: { [lessonKey: string]: 0|1 };
+        Present: { [lessonKey: string]: 0|1 };
+        Future: { [lessonKey: string]: 0|1 };
+    };
+};
+const DB_NAME = "englishApp";
+const STORE_NAME = "answers";
+const ROOT_ID = "DATA_V1";
+const RATING_STORE = "rating";
+const RATING_ID = "RATING_V1";
+
+export type RatingMap = {
+    simple: {
+        Past: Record<string, 0 | 1>;
+        Present: Record<string, 0 | 1>;
+        Future: Record<string, 0 | 1>;
+    };
+};
+export const initDB = async () => {
+    return openDB(DB_NAME, 2, {
+        upgrade(db, oldVersion) {
+            if (!db.objectStoreNames.contains(STORE_NAME)) {
+                db.createObjectStore(STORE_NAME, { keyPath: "id" });
+            }
+            if (!db.objectStoreNames.contains(RATING_STORE)) {
+                db.createObjectStore(RATING_STORE, { keyPath: "id" });
+            }
+        },
+    });
+};
+export const computeRatingMapFromData = (data: DataType): RatingMap => {
+    const result: RatingMap = {
+        simple: {
+            Past: {},
+            Present: {},
+            Future: {},
+        },
+    };
+    (["Past", "Present", "Future"] as const).forEach((tense) => {
+        const lessons = data.simple[tense];
+        Object.keys(lessons).forEach((lessonKey) => {
+            const questions = lessons[lessonKey] ?? [];
+            const total = questions.length;
+            const done = questions.filter((q) => q.isDone).length;
+            result.simple[tense][lessonKey] = total > 0 && done === total ? 1 : 0;
+        });
+        [".", "?", "!"].forEach(k => {
+            if (result.simple[tense][k] === undefined) result.simple[tense][k] = 0;
+        });
+    });
+
+    return result;
+};
+export const getRatingMap = async (): Promise<RatingMap | null> => {
+    const db = await initDB();
+    const rec = (await db.get(RATING_STORE, RATING_ID)) as { id: string; payload: RatingMap } | undefined;
+    if (rec) return rec.payload;
+    // если в store нет записи — попробуем вычислить по существующим вопросам (но не перезаписываем store автоматически)
+    const data = await getQuestions();
+    if (!data) return null;
+    const map = computeRatingMapFromData(data);
+    // не записываем автоматически здесь — но можно записать, если хотите:
+    // await db.put(RATING_STORE, { id: RATING_ID, payload: map });
+    return map;
+};
+export const setRatingMap = async (map: RatingMap) => {
+    const db = await initDB();
+    await db.put(RATING_STORE, { id: RATING_ID, payload: map });
+};
+export const updateRatingFor = async (time: "Past" | "Present" | "Future", typeKey: "." | "?" | "!") => {
+    const db = await initDB();
+    const rec = (await db.get(RATING_STORE, RATING_ID)) as { id: string; payload: RatingMap } | undefined;
+    let map: RatingMap;
+    if (rec && rec.payload) {
+        map = rec.payload;
+    } else {
+        const data = await getQuestions();
+        map = data ? computeRatingMapFromData(data) : {
+            simple: {
+                Past: { ".": 0, "?": 0, "!": 0 },
+                Present: { ".": 0, "?": 0, "!": 0 },
+                Future: { ".": 0, "?": 0, "!": 0 },
+            },
+        };
+    }
+    map.simple[time][typeKey] = 1; // помечаем как заработанную
+    await db.put(RATING_STORE, { id: RATING_ID, payload: map });
+    return map;
+};
+export const saveRatingMap = async (rating: RatingMap) => {
+    const db = await initDB();
+    await db.put(RATING_STORE, { id: ROOT_ID, payload: rating });
+};
+export const updateQuestion = async (updatedData: DataType) => {
+    const db = await initDB();
+    const rec: DBRecord = { id: ROOT_ID, payload: updatedData };
+    await db.put(STORE_NAME, rec);
+
+    // сразу обновляем рейтинг
+    const newRating = calculateRating(updatedData);
+    await saveRatingMap(newRating);
+};
+const calculateRating = (data: DataType): RatingMap => {
+    const result: RatingMap = { simple: { Past: {}, Present: {}, Future: {} } };
+    (["Past", "Present", "Future"] as const).forEach((tense) => {
+        const lessons = data.simple[tense];
+        Object.keys(lessons).forEach((lessonKey) => {
+            const questions = lessons[lessonKey];
+            const total = questions.length;
+            const done = questions.filter((q) => q.isDone).length;
+            result.simple[tense][lessonKey] = total > 0 && done === total ? 1 : 0;
+        });
+    });
+    return result;
+};
+type DBRecord = {
+    id: string;
+    payload: DataType;
+};
+export const addQuestions = async (data: DataType,refresh:'reload'|'none') => {
+    if(refresh==='none'){
+        const db = await initDB();
+        const exists = await db.get(STORE_NAME, ROOT_ID);
+        console.log(exists)
+        if (!exists) {
+            const rec: DBRecord = { id: ROOT_ID, payload: data };
+            await db.add(STORE_NAME, rec);
+        }
+    }else if(refresh==='reload'){
+        const db = await initDB();
+        await db.delete(STORE_NAME, ROOT_ID);
+        const rec: DBRecord = { id: ROOT_ID, payload: data };
+        await db.add(STORE_NAME, rec);
+    }
+};
+export const getQuestions = async (): Promise<DataType | null> => {
+    const db = await initDB();
+    const rec = (await db.get(STORE_NAME, ROOT_ID)) as DBRecord | undefined;
+    return rec?.payload ?? null;
+};
+
 export const data: DataType = {
     simple: {
         ['Present']: {
@@ -989,52 +1132,3 @@ export const data: DataType = {
     },
 }
 
-const DB_NAME = "englishApp";
-const STORE_NAME = "answers";
-const ROOT_ID = "DATA_V1"; // всегда одна запись
-
-type DBRecord = {
-    id: string;
-    payload: DataType;
-};
-
-export const initDB = async () => {
-    return openDB(DB_NAME, 1, {
-        upgrade(db) {
-            if (!db.objectStoreNames.contains(STORE_NAME)) {
-                db.createObjectStore(STORE_NAME, { keyPath: "id" });
-            }
-        },
-    });
-};
-
-// 1️⃣ Добавляем один раз (если нет)
-export const addQuestions = async (data: DataType,refresh:'reload'|'none') => {
-    if(refresh==='none'){
-    const db = await initDB();
-    const exists = await db.get(STORE_NAME, ROOT_ID);
-    console.log(exists)
-    if (!exists) {
-        const rec: DBRecord = { id: ROOT_ID, payload: data };
-        await db.add(STORE_NAME, rec);
-    }
-    }else if(refresh==='reload'){
-        const db = await initDB();
-        await db.delete(STORE_NAME, ROOT_ID);
-        const rec: DBRecord = { id: ROOT_ID, payload: data };
-        await db.add(STORE_NAME, rec);
-    }
-};
-
-export const getQuestions = async (): Promise<DataType | null> => {
-    const db = await initDB();
-    const rec = (await db.get(STORE_NAME, ROOT_ID)) as DBRecord | undefined;
-    return rec?.payload ?? null;
-};
-
-// 3️⃣ Обновляем данные
-export const updateQuestion = async (updatedData: DataType) => {
-    const db = await initDB();
-    const rec: DBRecord = { id: ROOT_ID, payload: updatedData };
-    return await db.put(STORE_NAME, rec);
-};

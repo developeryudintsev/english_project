@@ -19,14 +19,13 @@ import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import type {DataType, QuestionType} from "../../Data/Data";
-import {addQuestions, data, getQuestions, updateQuestion,} from "../../Data/Data";
+import {addQuestions, data, getQuestions, getRatingMap, updateQuestion, updateRatingFor,} from "../../Data/Data";
 import {VideoCat} from "../../camponent/VideoCat";
 import {ModalCamponent} from "../../modal/Modal";
 import CloseIcon from "@mui/icons-material/Close";
 import {TypeAnimation} from 'react-type-animation';
 import Rating from '@mui/material/Rating';
 import Modal from '@mui/material/Modal';
-
 type TimeKey = "Present" | "Future" | "Past";
 export type changeType = "." | "?" | "!";
 
@@ -200,24 +199,22 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
         }
     };
     useEffect(() => {
-        const loadStars = async () => {
-            const data = await getQuestions();
-            if (!data) return;
+        const allDone = questions.every((q) => q.isDone);
+        if (allDone) {
+            (async () => {
+                await updateRatingFor(time, type);
+                const map = await getRatingMap();
+                if (map) {
+                    let completed = 0;
+                    Object.values(map.simple).forEach(timeData => {
+                        Object.values(timeData).forEach(v => { if (v === 1) completed++; });
+                    });
+                    setStar(completed);
+                }
+            })();
+        }
+    }, [questions, type, time]);
 
-            // считаем количество "страниц", где все вопросы isDone=true
-            let completed = 0;
-            Object.values(data.simple).forEach(timeData => {
-                Object.values(timeData).forEach(questions => {
-                    const allDone = questions.every(q => q.isDone);
-                    if (allDone) completed++;
-                });
-            });
-
-            setStar(completed);
-        };
-
-        loadStars();
-    }, []);
     const speakText = (text: string, lang: "ru" | "en") => {
         if (!text) return;
         if (window.speechSynthesis.speaking) {
@@ -361,9 +358,10 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                         : {border: "2px solid transparent"}),
             }}
         >
-            {toggelModal === 1 && answerStatus === 'wrong' &&
-                <ModalCamponent open={toggelModal === 1 ? true : false} onClose={CloseButton}>
-                    <Box sx={{height: toggelVideoCat === 1 ? '350px' : '130px'}}>
+
+            {toggelModal === 1 && answerStatus==='wrong' && (
+                <ModalCamponent open={toggelModal === 1} onClose={CloseButton}>
+                    <Box sx={{ height: '350px'  }}>
                         <Box
                             sx={{
                                 display: "flex",
@@ -376,7 +374,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                             }}
                         >
                             <IconButton
-                                onClick={() => CloseButton()}
+                                onClick={CloseButton}
                                 sx={{
                                     position: "absolute",
                                     right: "10px",
@@ -388,7 +386,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                     },
                                 }}
                             >
-                                <CloseIcon/>
+                                <CloseIcon />
                             </IconButton>
                             <Typography
                                 variant="h6"
@@ -400,29 +398,33 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                     px: 6,
                                 }}
                             >
-                                {typeSentence} предложение в Simple строиться так:
+                                {typeSentence} предложение в Simple строится так:
                             </Typography>
                         </Box>
-                        <Box sx={{marginTop: "6px"}}>
+
+                        <Box sx={{ marginTop: "6px" }}>
                             <Button
-                                onClick={() => GoToTheorya()}
-                                variant={"contained"}
-                                sx={{color: 'white'}}
-                            >Подробнее правила в теории</Button>
+                                onClick={GoToTheorya}
+                                variant="contained"
+                                sx={{ color: 'white' }}
+                            >
+                                Подробнее правила в теории
+                            </Button>
                         </Box>
-                        <Box sx={{
-                            padding: 0,
-                            marginTop: "-18px",
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center"
-                        }}>
-                            <div style={{textAlign: "center", width: "100%"}}>
-                                <Typography fontWeight="bold" sx={{color: "#FFF44F", mb: 1}}>
-                                    Формула:
-                                </Typography>
-                                <Box sx={{width: "100%", maxWidth: 800}}>
-                                    <TableContainer component={Paper} sx={{my: 1}}>
+
+                        <Box
+                            sx={{
+                                padding: 0,
+                                marginTop: "-18px",
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                position: "relative",
+                            }}
+                        >
+                            <div style={{ textAlign: "center",marginTop:'22px', width: "100%" }}>
+                                <Box sx={{ width: "100%", maxWidth: 800 }}>
+                                    <TableContainer component={Paper} sx={{ my: 1 }}>
                                         <Table size="small">
                                             <TableHead>
                                                 <TableRow>
@@ -440,22 +442,27 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                                     <TableCell align="center">Do I love?</TableCell>
                                                 </TableRow>
                                                 <TableRow>
-                                                    <TableCell sx={{backgroundColor: "#FFF44F", color: "#000"}}>Он/Она/Оно
-                                                        любит</TableCell>
+                                                    <TableCell sx={{ backgroundColor: "#FFF44F", color: "#000" }}>
+                                                        Он/Она/Оно любит
+                                                    </TableCell>
                                                     <TableCell
-                                                        sx={{backgroundColor: "#FFF44F", color: "#000", px: '10%'}}>He/She/It
-                                                        loves</TableCell>
+                                                        sx={{ backgroundColor: "#FFF44F", color: "#000", px: '10%' }}
+                                                    >
+                                                        He/She/It loves
+                                                    </TableCell>
                                                     <TableCell
-                                                        sx={{backgroundColor: "#FFF44F", color: "#000", px: 1}}>
+                                                        sx={{ backgroundColor: "#FFF44F", color: "#000", px: 1 }}
+                                                    >
                                                         He/She/It does not (doesn't) love
                                                     </TableCell>
-                                                    <TableCell sx={{backgroundColor: "#FFF44F", color: "#000"}}>Does
-                                                        he/she/it love?</TableCell>
+                                                    <TableCell sx={{ backgroundColor: "#FFF44F", color: "#000" }}>
+                                                        Does he/she/it love?
+                                                    </TableCell>
                                                 </TableRow>
                                                 <TableRow>
                                                     <TableCell>Мы/Ты/Они любим</TableCell>
-                                                    <TableCell sx={{px: '10%'}}>We/You/They love</TableCell>
-                                                    <TableCell sx={{px: 1}}>We/You/They don't love</TableCell>
+                                                    <TableCell sx={{ px: '10%' }}>We/You/They love</TableCell>
+                                                    <TableCell sx={{ px: 1 }}>We/You/They don't love</TableCell>
                                                     <TableCell>Do we/you/they love?</TableCell>
                                                 </TableRow>
                                             </TableBody>
@@ -463,23 +470,25 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                     </TableContainer>
                                 </Box>
                             </div>
-                            <Box
-                                sx={{
-                                    position: "absolute",
-                                    top: "70%", // центр кнопки
-                                    left: "50%",
-                                    transform: "translate(-50%, -50%)", // идеально по центру
-                                    zIndex: 2,
-                                    pointerEvents: "none", // чтобы видео не мешало кликам
-                                }}
-                            >
-                                {toggelVideoCat === 1 &&
-                                    <VideoCat src={"/wrong4.mp4"} setToggelVideoCat={setToggelVideoCat}/>}
-                            </Box>
+                            {toggelVideoCat === 1 && (
+                                <Box
+                                    sx={{
+                                        position: "absolute",
+                                        top: "70%",
+                                        left: "50%",
+                                        transform: "translate(-50%, -50%)",
+                                        zIndex: 2,
+                                        pointerEvents: "none",
+                                    }}
+                                >
+                                    <VideoCat src={"/wrong4.mp4"} setToggelVideoCat={setToggelVideoCat} />
+                                </Box>
+                            )}
                         </Box>
                     </Box>
                 </ModalCamponent>
-            }
+            )}
+
             {toggelModal === 2 && (
                 <ModalCamponent open={toggelModal === 2 ? true : false} onClose={CloseButton}>
                     <Box
