@@ -100,15 +100,11 @@ export const Header = (props: HeaderType) => {
 
                         <TableContainer component={Paper} sx={{ my: 2 }}>
                             <Table size="small">
-                                {/*<TableHead>*/}
-                                {/*    <TableRow>*/}
-                                {/*        <TableCell>Тип</TableCell>*/}
-                                {/*        <TableCell align="right">Звезда</TableCell>*/}
-                                {/*    </TableRow>*/}
-                                {/*</TableHead>*/}
                                 <TableBody>
-                                    {Object.keys(rating.simple[tense]).map((lessonKey) => {
-                                        const starValue = rating.simple[tense as keyof RatingMap["simple"]][lessonKey];
+
+                                    {Object.keys(questions.simple[tense]).map((lessonKey) => {
+                                        const starValue = rating?.simple[tense]?.[lessonKey] ?? 0;
+
                                         const typeSentence =
                                             lessonKey === "."
                                                 ? "утвердительное"
@@ -117,6 +113,7 @@ export const Header = (props: HeaderType) => {
                                                     : "отрицательное";
 
                                         const { total, doneCount } = getLessonInfo(tense, lessonKey);
+
                                         return (
                                             <TableRow key={lessonKey}>
                                                 <TableCell>
@@ -136,6 +133,7 @@ export const Header = (props: HeaderType) => {
                                             </TableRow>
                                         );
                                     })}
+
                                 </TableBody>
                             </Table>
                         </TableContainer>
@@ -247,7 +245,9 @@ export const Header = (props: HeaderType) => {
                                 <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
                                     {/* Звезда слева */}
                                     <Box sx={{position: "relative", display: "inline-flex", alignItems: "center"}}>
-                                        <Box onClick={() => setModalToggle(true)} sx={{cursor: 'pointer'}}>
+                                        <Box onClick={() =>{
+                                            setModalToggle(true)
+                                        }} sx={{cursor: 'pointer'}}>
                                             <Rating
                                                 name="progress-star"
                                                 value={props.star > 0 ? 1 : 0}
@@ -341,7 +341,9 @@ export const Header = (props: HeaderType) => {
                                     <Typography sx={{ color: '#FFF44F', fontWeight: 400, fontSize: '1rem', whiteSpace: 'nowrap' }}>(v0.7)</Typography>
 
                                     <Box sx={{ position: "relative", display: "inline-flex", alignItems: "center", ml: 1 }}>
-                                        <Box onClick={() => setModalToggle(true)} sx={{ cursor: 'pointer' }}>
+                                        <Box onClick={() =>{
+                                            setModalToggle(true)
+                                        }} sx={{ cursor: 'pointer' }}>
                                             <Rating name="progress-star" value={props.star > 0 ? 1 : 0} max={1} readOnly sx={{ fontSize: "60px", color: "#FFF44F", top: '10px' }} />
                                             {props.star > 0 && (
                                                 <Typography sx={{ position: "absolute", left: "50%", top: "58%", transform: "translate(-50%, calc(-50% + 5px))", color: "black", fontWeight: "bold", fontSize: "1.2rem", pointerEvents: "none" }}>

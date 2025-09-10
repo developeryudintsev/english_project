@@ -1,61 +1,79 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 type VideoCatProps = {
     src: string;
-    toggelVideoCat:0 | 1 | 2|3,
-    setToggelVideoCat:(toggelVideoCat:0 | 1 | 2|3)=>void
+    toggelVideoCat: 0 | 1 | 2 | 3;
+    setToggelVideoCat: (toggelVideoCat: 0 | 1 | 2 | 3) => void;
+    showCondition: boolean;
 };
 
-export const VideoCat: React.FC<VideoCatProps> = ({ src,setToggelVideoCat,toggelVideoCat }) => {
+export const VideoCat: React.FC<VideoCatProps> = ({
+                                                      src,
+                                                      setToggelVideoCat,
+                                                      toggelVideoCat,
+                                                      showCondition,
+                                                  }) => {
     const videoRef = useRef<HTMLVideoElement | null>(null);
-    const [visible, setVisible] = useState(true);
-    const [isFadingOut, setIsFadingOut] = useState(false);
+    const [loaded, setLoaded] = useState(false);
+
+    const handleCanPlay = () => {
+        setLoaded(true);
+    };
 
     useEffect(() => {
-        const timer = setTimeout(() => {
-            if (videoRef.current) {
-                videoRef.current.pause();
-            }
-            setIsFadingOut(true);
-            setTimeout(()=>{
-                setToggelVideoCat(0)
-            },500)
-
-        }, 2000);
-
-        return () => clearTimeout(timer);
-    }, []);
-
-    useEffect(() => {
-        if (isFadingOut) {
-            // через 500ms (время transition) окончательно убираем
-            const hideTimer = setTimeout(() => setVisible(false), 500);
-            return () => clearTimeout(hideTimer);
+        if (toggelVideoCat !== 0 && videoRef.current) {
+            videoRef.current.currentTime = 0;
+            videoRef.current.play().catch(() => {});
         }
-    }, [isFadingOut]);
-
-    if (!visible) return null;
+    }, [toggelVideoCat]);
 
     return (
-        <video
-            ref={videoRef}
-            src={src}
-            autoPlay
-            loop
-            onClick={() => setIsFadingOut(true)}
-            style={{
-                marginTop: "0px",
-                marginBottom: "10px",
-                width: "120px",
-                height: "120px",
-                borderRadius: "50%",
-                objectFit: "cover",
-                objectPosition: "top center",
-                cursor: "pointer",
-                opacity: isFadingOut ? 0 : 1,
-                transition: "opacity 0.5s ease",
-                display:toggelVideoCat==0?"none":''
-            }}
-        />
+        <div style={{ position: "relative", width: 120, height: 120 }}>
+            {!loaded && (
+                <div
+                    style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        background: "#222",
+                        borderRadius: "50%",
+                        color: "#FFF44F",
+                        fontSize: "14px",
+                        zIndex: 2,
+                    }}
+                >
+                    Loading...
+                </div>
+            )}
+
+            <video
+                ref={videoRef}
+                src={src}
+                autoPlay
+                muted
+                playsInline
+                onCanPlay={handleCanPlay}
+                onEnded={() => setToggelVideoCat(0)} // 👈 котик «засыпает»
+                style={{
+                    width: "120px",
+                    height: "120px",
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                    objectPosition: "top center",
+                    cursor: "pointer",
+                    visibility: showCondition && toggelVideoCat !== 0 ? "visible" : "hidden",
+                    transition: "visibility 0.3s ease",
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    zIndex: 1,
+                }}
+            />
+        </div>
     );
 };

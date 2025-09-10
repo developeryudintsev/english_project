@@ -1,5 +1,3 @@
-// сделай так чтобы видео сразу подгружались когда челоек заходит на страницу но отображались по темже условиям а то получаеться что пидео спустя 1 секунду появляються а нужно чтобы сразу по условию
-// вроде бы можно поставить display:none и через условие его убирать вот код:
 import React, {useEffect, useRef, useState} from "react";
 import {
     Box,
@@ -193,6 +191,9 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                 if (!exest) {
                     setToggelVideoCat(3)
                 }
+                if (!exest) {
+                    setToggelVideoCat(3); // 👈 победа
+                }
                 setFullData(updatedData);
                 await updateQuestion(updatedData);
             } else {
@@ -336,7 +337,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
         setCurrentQuestion(result)
         wordFoo(result.id)
     }
-
     return (
         <Paper
             elevation={3}
@@ -490,6 +490,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                         src={"/wrong4.mp4"}
                                         setToggelVideoCat={setToggelVideoCat}
                                         toggelVideoCat={toggelVideoCat}
+                                        showCondition={toggelModal === 1}
                                     />
                                 </Box>
                             )}
@@ -780,7 +781,12 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                                 gap: 2, // 🔹 отступ между видео и текстом
                                             }}
                                         >
-                                            <VideoCat src={"/win.mp4"} setToggelVideoCat={setToggelVideoCat} toggelVideoCat={toggelVideoCat}/>
+                                            <VideoCat
+                                                src={"/win.mp4"}
+                                                setToggelVideoCat={setToggelVideoCat}
+                                                toggelVideoCat={toggelVideoCat}
+                                                showCondition={toggelVideoCat === 3}
+                                            />
 
                                             <Typography sx={{color: "#FFF44F", mb: 2}}>
                                                 Поздравляем, вы получаете звезду!
@@ -886,9 +892,14 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                     zIndex: 2,
                                 }}
                             >
-                                {toggelVideoCat === 2 &&
-                                    <VideoCat src={"/RightS6.mp4"} setToggelVideoCat={setToggelVideoCat} toggelVideoCat={toggelVideoCat}/>}
-
+                                {toggelVideoCat === 2 && (
+                                    <VideoCat
+                                        src={"/RightS6.mp4"}
+                                        setToggelVideoCat={setToggelVideoCat}
+                                        toggelVideoCat={toggelVideoCat}
+                                        showCondition={toggelModal === 1 && answerStatus === "correct"} // 👈 фикс
+                                    />
+                                )}
                             </Box>
                         )}
                         <Button
@@ -999,3 +1010,4 @@ const blinkAnimation = {
         "100%": {boxShadow: "0 0 10px 2px red"},
     },
 };
+
