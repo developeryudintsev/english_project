@@ -214,7 +214,7 @@ export const Header = (props: HeaderType) => {
                                                     sx={{
                                                         position: "absolute",
                                                         left: "50%",
-                                                        top: "60%",
+                                                        top: "58%",
                                                         transform: "translate(-50%, calc(-50% + 5px))",
                                                         color: "black",
                                                         fontWeight: "bold",
@@ -329,7 +329,7 @@ export const Header = (props: HeaderType) => {
                                         <Box onClick={() => setModalToggle(true)} sx={{ cursor: 'pointer' }}>
                                             <Rating name="progress-star" value={props.star > 0 ? 1 : 0} max={1} readOnly sx={{ fontSize: "60px", color: "#FFF44F", top: '10px' }} />
                                             {props.star > 0 && (
-                                                <Typography sx={{ position: "absolute", left: "50%", top: "61%", transform: "translate(-50%, calc(-50% + 5px))", color: "black", fontWeight: "bold", fontSize: "1.2rem", pointerEvents: "none" }}>
+                                                <Typography sx={{ position: "absolute", left: "50%", top: "58%", transform: "translate(-50%, calc(-50% + 5px))", color: "black", fontWeight: "bold", fontSize: "1.2rem", pointerEvents: "none" }}>
                                                     {props.star}
                                                 </Typography>
                                             )}
