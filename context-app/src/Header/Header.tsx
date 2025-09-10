@@ -41,7 +41,6 @@ export const Header = (props: HeaderType) => {
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
     }, []);
-
     useEffect(() => {
         if (!modalToggle) return;
         (async () => {
@@ -75,7 +74,6 @@ export const Header = (props: HeaderType) => {
         })();
     }, [modalToggle]);
 
-    // helper: безопасно получить lesson array и progress
     const getLessonInfo = (tense: "Past" | "Present" | "Future", lessonKey: string) => {
         const lessons = questions?.simple?.[tense] ?? {};
         const lesson = lessons?.[lessonKey] ?? [];
@@ -83,8 +81,6 @@ export const Header = (props: HeaderType) => {
         const doneCount = Array.isArray(lesson) ? lesson.filter((q) => q.isDone).length : 0;
         return { lesson, total, doneCount };
     };
-
-    // отрисовка содержимого модалки (чтобы не дублировать код)
     const renderModalBody = () => {
         if (!rating || !questions) {
             return (
@@ -200,33 +196,7 @@ export const Header = (props: HeaderType) => {
                                         (v0.7)
                                     </Typography>
 
-                                    <Box sx={{position: "relative", display: "inline-flex", alignItems: "center", ml: 1}}>
-                                        <Box onClick={() => setModalToggle(true)} sx={{cursor: 'pointer'}}>
-                                            <Rating
-                                                name="progress-star"
-                                                value={props.star > 0 ? 1 : 0}
-                                                max={1}
-                                                readOnly
-                                                sx={{fontSize: "60px", color: "#FFF44F", top: '10px'}}
-                                            />
-                                            {props.star > 0 && (
-                                                <Typography
-                                                    sx={{
-                                                        position: "absolute",
-                                                        left: "50%",
-                                                        top: "58%",
-                                                        transform: "translate(-50%, calc(-50% + 5px))",
-                                                        color: "black",
-                                                        fontWeight: "bold",
-                                                        fontSize: "1.2rem",
-                                                        pointerEvents: "none",
-                                                    }}
-                                                >
-                                                    {props.star}
-                                                </Typography>
-                                            )}
-                                        </Box>
-                                    </Box>
+
 
                                     <Modal open={modalToggle} onClose={() => setModalToggle(false)}>
                                         <Box
@@ -273,12 +243,57 @@ export const Header = (props: HeaderType) => {
                                         </Box>
                                     </Modal>
                                 </Box>
+{/*сделай так чтобы ава и reating бфли в одну строку но reating справа*/}
+                                <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
+                                    {/* Звезда слева */}
+                                    <Box sx={{position: "relative", display: "inline-flex", alignItems: "center"}}>
+                                        <Box onClick={() => setModalToggle(true)} sx={{cursor: 'pointer'}}>
+                                            <Rating
+                                                name="progress-star"
+                                                value={props.star > 0 ? 1 : 0}
+                                                max={1}
+                                                readOnly
+                                                sx={{fontSize: "50px", color: "#FFF44F"}}
+                                            />
+                                            {props.star > 0 && (
+                                                <Typography
+                                                    sx={{
+                                                        position: "absolute",
+                                                        left: "50%",
+                                                        top: "39%",
+                                                        transform: "translate(-50%, calc(-50% + 5px))",
+                                                        color: "black",
+                                                        fontWeight: "bold",
+                                                        fontSize: "1.1rem",
+                                                        pointerEvents: "none",
+                                                    }}
+                                                >
+                                                    {props.star}
+                                                </Typography>
+                                            )}
+                                        </Box>
+                                    </Box>
 
-                                <Tooltip title="Ссылка на наш сайт">
-                                    <a href="https://www.kiber-rus.ru/" target="_blank" rel="noreferrer" style={{ textDecoration: 'none', alignItems: 'center' }}>
-                                        <Avatar alt="User Avatar" src={cat} sx={{ border: '2px solid white', width: isSuperSmall ? 40 : 50, height: isSuperSmall ? 40 : 50 }} />
-                                    </a>
-                                </Tooltip>
+                                    {/* Аватар справа */}
+                                    <Tooltip title="Ссылка на наш сайт">
+                                        <a
+                                            href="https://www.kiber-rus.ru/"
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            style={{textDecoration: 'none', alignItems: 'center'}}
+                                        >
+                                            <Avatar
+                                                alt="User Avatar"
+                                                src={cat}
+                                                sx={{
+                                                    border: '2px solid white',
+                                                    width: isSuperSmall ? 40 : 50,
+                                                    height: isSuperSmall ? 40 : 50,
+                                                }}
+                                            />
+                                        </a>
+                                    </Tooltip>
+                                </Box>
                             </Box>
 
                             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', px: 1, gap: 1 }}>

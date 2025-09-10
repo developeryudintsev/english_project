@@ -1,3 +1,5 @@
+// сделай так чтобы видео сразу подгружались когда челоек заходит на страницу но отображались по темже условиям а то получаеться что пидео спустя 1 секунду появляються а нужно чтобы сразу по условию
+// вроде бы можно поставить display:none и через условие его убирать вот код:
 import React, {useEffect, useRef, useState} from "react";
 import {
     Box,
@@ -26,6 +28,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import {TypeAnimation} from 'react-type-animation';
 import Rating from '@mui/material/Rating';
 import Modal from '@mui/material/Modal';
+
 type TimeKey = "Present" | "Future" | "Past";
 export type changeType = "." | "?" | "!";
 
@@ -207,7 +210,9 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                 if (map) {
                     let completed = 0;
                     Object.values(map.simple).forEach(timeData => {
-                        Object.values(timeData).forEach(v => { if (v === 1) completed++; });
+                        Object.values(timeData).forEach(v => {
+                            if (v === 1) completed++;
+                        });
                     });
                     setStar(completed);
                 }
@@ -359,9 +364,9 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
             }}
         >
 
-            {toggelModal === 1 && answerStatus==='wrong' && (
+            {toggelModal === 1 && answerStatus === 'wrong' && (
                 <ModalCamponent open={toggelModal === 1} onClose={CloseButton}>
-                    <Box sx={{ height: '350px'  }}>
+                    <Box sx={{height: '350px'}}>
                         <Box
                             sx={{
                                 display: "flex",
@@ -386,7 +391,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                     },
                                 }}
                             >
-                                <CloseIcon />
+                                <CloseIcon/>
                             </IconButton>
                             <Typography
                                 variant="h6"
@@ -402,11 +407,11 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                             </Typography>
                         </Box>
 
-                        <Box sx={{ marginTop: "6px" }}>
+                        <Box sx={{marginTop: "6px"}}>
                             <Button
                                 onClick={GoToTheorya}
                                 variant="contained"
-                                sx={{ color: 'white' }}
+                                sx={{color: 'white'}}
                             >
                                 Подробнее правила в теории
                             </Button>
@@ -422,9 +427,9 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                 position: "relative",
                             }}
                         >
-                            <div style={{ textAlign: "center",marginTop:'22px', width: "100%" }}>
-                                <Box sx={{ width: "100%", maxWidth: 800 }}>
-                                    <TableContainer component={Paper} sx={{ my: 1 }}>
+                            <div style={{textAlign: "center", marginTop: '22px', width: "100%"}}>
+                                <Box sx={{width: "100%", maxWidth: 800}}>
+                                    <TableContainer component={Paper} sx={{my: 1}}>
                                         <Table size="small">
                                             <TableHead>
                                                 <TableRow>
@@ -442,27 +447,27 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                                     <TableCell align="center">Do I love?</TableCell>
                                                 </TableRow>
                                                 <TableRow>
-                                                    <TableCell sx={{ backgroundColor: "#FFF44F", color: "#000" }}>
+                                                    <TableCell sx={{backgroundColor: "#FFF44F", color: "#000"}}>
                                                         Он/Она/Оно любит
                                                     </TableCell>
                                                     <TableCell
-                                                        sx={{ backgroundColor: "#FFF44F", color: "#000", px: '10%' }}
+                                                        sx={{backgroundColor: "#FFF44F", color: "#000", px: '10%'}}
                                                     >
                                                         He/She/It loves
                                                     </TableCell>
                                                     <TableCell
-                                                        sx={{ backgroundColor: "#FFF44F", color: "#000", px: 1 }}
+                                                        sx={{backgroundColor: "#FFF44F", color: "#000", px: 1}}
                                                     >
                                                         He/She/It does not (doesn't) love
                                                     </TableCell>
-                                                    <TableCell sx={{ backgroundColor: "#FFF44F", color: "#000" }}>
+                                                    <TableCell sx={{backgroundColor: "#FFF44F", color: "#000"}}>
                                                         Does he/she/it love?
                                                     </TableCell>
                                                 </TableRow>
                                                 <TableRow>
                                                     <TableCell>Мы/Ты/Они любим</TableCell>
-                                                    <TableCell sx={{ px: '10%' }}>We/You/They love</TableCell>
-                                                    <TableCell sx={{ px: 1 }}>We/You/They don't love</TableCell>
+                                                    <TableCell sx={{px: '10%'}}>We/You/They love</TableCell>
+                                                    <TableCell sx={{px: 1}}>We/You/They don't love</TableCell>
                                                     <TableCell>Do we/you/they love?</TableCell>
                                                 </TableRow>
                                             </TableBody>
@@ -481,7 +486,11 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                         pointerEvents: "none",
                                     }}
                                 >
-                                    <VideoCat src={"/wrong4.mp4"} setToggelVideoCat={setToggelVideoCat} />
+                                    <VideoCat
+                                        src={"/wrong4.mp4"}
+                                        setToggelVideoCat={setToggelVideoCat}
+                                        toggelVideoCat={toggelVideoCat}
+                                    />
                                 </Box>
                             )}
                         </Box>
@@ -690,20 +699,46 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                             </Box>
                         </div>
                     ) : (
-                        <Box sx={{height: '30px'}}>
+                        <Box sx={{height: '80px'}}>
                             {toggelVideoCat === 0 && (
-                                <Typography sx={{color: "#FFF44F", mb: 2}}>
-                                    <TypeAnimation
-                                        sequence={[
-                                            "Поздравляем! Вы ответили на все вопросы.",
-                                            1000,
-                                        ]}
-                                        wrapper="span"
-                                        speed={50}
-                                        style={{fontSize: "1em", display: "inline-block"}}
-                                        repeat={Infinity}
-                                    />
-                                </Typography>
+                                <Box>
+                                    <Typography sx={{color: "#FFF44F", mb: 2}}>
+                                        <TypeAnimation
+                                            sequence={[
+                                                "Поздравляем! Вы ответили на все вопросы.",
+                                                1000,
+                                            ]}
+                                            wrapper="span"
+                                            speed={50}
+                                            style={{fontSize: "1em", display: "inline-block"}}
+                                            repeat={Infinity}
+                                        />
+                                    </Typography>
+                                    <FormControl sx={{minWidth: 160}} size="small">
+                                        <Select
+                                            value={type}
+                                            onChange={(e) => {
+                                                const newType = e.target.value as changeType;
+                                                setType(newType);
+                                                setCurrentQuestion(
+                                                    data.simple[time][newType][currentIndex[newType]]
+                                                );
+                                            }}
+                                            displayEmpty
+                                            inputProps={{"aria-label": "Select tense"}}
+                                            sx={{
+                                                backgroundColor: "white",
+                                                borderRadius: 1,
+                                                width: "100%",
+                                            }}
+                                        >
+                                            <MenuItem value=".">утвердительное</MenuItem>
+                                            <MenuItem value="?">вопросительное</MenuItem>
+                                            <MenuItem value="!">отрицательное</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </Box>
+
                             )}
                             {toggelVideoCat === 3 && (
                                 <Modal
@@ -745,7 +780,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                                 gap: 2, // 🔹 отступ между видео и текстом
                                             }}
                                         >
-                                            <VideoCat src={"/win.mp4"} setToggelVideoCat={setToggelVideoCat}/>
+                                            <VideoCat src={"/win.mp4"} setToggelVideoCat={setToggelVideoCat} toggelVideoCat={toggelVideoCat}/>
 
                                             <Typography sx={{color: "#FFF44F", mb: 2}}>
                                                 Поздравляем, вы получаете звезду!
@@ -852,7 +887,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                 }}
                             >
                                 {toggelVideoCat === 2 &&
-                                    <VideoCat src={"/RightS6.mp4"} setToggelVideoCat={setToggelVideoCat}/>}
+                                    <VideoCat src={"/RightS6.mp4"} setToggelVideoCat={setToggelVideoCat} toggelVideoCat={toggelVideoCat}/>}
 
                             </Box>
                         )}
