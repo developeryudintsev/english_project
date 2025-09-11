@@ -21,7 +21,7 @@ export const VideoCat: React.FC<VideoCatProps> = ({
     };
 
     useEffect(() => {
-        if (toggelVideoCat !== 0 && videoRef.current) {
+        if (!loaded && toggelVideoCat !== 0 && videoRef.current) {
             videoRef.current.currentTime = 0;
             videoRef.current.play().catch(() => {});
         }
