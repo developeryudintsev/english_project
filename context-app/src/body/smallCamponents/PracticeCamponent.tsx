@@ -4,6 +4,7 @@ import {
     Button,
     FormControl,
     IconButton,
+    LinearProgress,
     MenuItem,
     Paper,
     Select,
@@ -65,6 +66,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
     const [russianVoice, setRussianVoice] = useState<SpeechSynthesisVoice | null>(null);
     const [englishVoice, setEnglishVoice] = useState<SpeechSynthesisVoice | null>(null);
     const [congratulation, setCongratulation] = useState(false);
+    const [videoLoading, setVideoLoading] = useState(true);
     const isFinished = congratulation;
     let [toggelModal, setToggelModal] = useState<0 | 1 | 2>(0)
     let [toggelVideoCat, setToggelVideoCat] = useState<0 | 1 | 2 | 3>(0)
@@ -79,7 +81,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
     const startIndex = page * itemsPerPage;
     const visibleQuestions = questions.slice(startIndex, startIndex + itemsPerPage);
     const [progress, setProgress] = useState<{ done: number, total: number }>({done: 0, total: 0});
-
+console.log(questions.length)
     useEffect(() => {
         const loadProgress = async () => {
             const stored = await getQuestions();
@@ -99,11 +101,27 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
 
         loadProgress();
     }, [time]);
-
     useEffect(() => {
         const allDone = questions.every((q) => q.isDone);
         setCongratulation(allDone);
     }, [questions, type]);
+    // Управление состоянием загрузки видео
+    useEffect(() => {
+        // Симулируем загрузку видео при монтировании компонента
+        const timer = setTimeout(() => {
+            setVideoLoading(false);
+        }, 2000); // 2 секунды загрузки
+
+        return () => clearTimeout(timer);
+    }, []);
+
+    // Сброс состояния загрузки при изменении toggle
+    useEffect(() => {
+        if (toggle) {
+            setVideoLoading(false);
+        }
+    }, [toggle]);
+
     useEffect(() => {
         const loadVoices = () => {
             const voices = window.speechSynthesis.getVoices();
@@ -220,7 +238,6 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
             })();
         }
     }, [questions, type, time]);
-
     const speakText = (text: string, lang: "ru" | "en") => {
         if (!text) return;
         if (window.speechSynthesis.speaking) {
@@ -338,6 +355,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
         wordFoo(result.id)
     }
     return (
+        <>
         <Paper
             elevation={3}
             sx={{
@@ -488,7 +506,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                 >
                                     <VideoCat
                                         src={"/wrong4.mp4"}
-                                        setToggelVideoCat={setToggelVideoCat}
+                                        setToggelVideoCatFoo={()=>setToggelVideoCat(0)}
                                         toggelVideoCat={toggelVideoCat}
                                         showCondition={toggelModal === 1}
                                     />
@@ -559,9 +577,26 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                     }}
                 >
                     {!toggle ? (
-                        <span onClick={() => ButtonFoo(toggle)}>
-                            Практика – {time} Simple ({progress.done}/{progress.total})
-                        </span>
+                        <div style={{ 
+                            display: "flex", 
+                            alignItems: "center", 
+                            justifyContent: "space-between",
+                            flexWrap: "wrap",
+                            gap: "10px"
+                        }}>
+                            <span onClick={() => ButtonFoo(toggle)}>
+                                Практика – {time} Simple ({progress.done}/{progress.total})
+                            </span>
+                            {videoLoading && (
+                                <span style={{ 
+                                    color: "#00ff00", 
+                                    fontSize: "14px", 
+                                    fontWeight: "bold"
+                                }}>
+                                    Загрузка...
+                                </span>
+                            )}
+                        </div>
                     ) : !isFinished ? (
                         <div>
                             <Box
@@ -770,38 +805,63 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                                 repeat={Infinity}
                                             />
                                         </Typography>
-
                                         <Box
                                             sx={{
                                                 position: "relative",
                                                 display: "flex",
-                                                flexDirection: "column", // 🔹 элементы идут сверху вниз
+                                                flexDirection: "column",
                                                 justifyContent: "center",
                                                 alignItems: "center",
-                                                gap: 2, // 🔹 отступ между видео и текстом
+                                                gap: 2,
                                             }}
                                         >
-                                            <VideoCat
-                                                src={"/win.mp4"}
-                                                setToggelVideoCat={setToggelVideoCat}
-                                                toggelVideoCat={toggelVideoCat}
-                                                showCondition={toggelVideoCat === 3}
-                                            />
-
-                                            <Typography sx={{color: "#FFF44F", mb: 2}}>
-                                                Поздравляем, вы получаете звезду!
-                                            </Typography>
-
+                                            {/* 🔹 Контейнер видео + звезда */}
                                             <Box
                                                 sx={{
-                                                    position: "absolute",
-                                                    top: "110%",
-                                                    left: "50%",
-                                                    transform: "translate(-50%, -50%)",
+                                                    position: "relative",
+                                                    width: "100%",
+                                                    maxWidth: "400px", // ограничим ширину видео
+                                                    height:'280px',
+                                                    mx: "auto", // центрируем
                                                 }}
                                             >
-                                                <Rating name="customized-10" defaultValue={1} max={1}/>
+                                                <Box
+                                                    sx={{
+                                                        position: "absolute",
+                                                        top: "50%", // по центру вертикали
+                                                        left: "50%", // по центру горизонтали
+                                                        transform: "translate(-50%, -50%)",
+                                                        pointerEvents: "none", // чтобы не мешала клику по видео
+                                                    }}
+                                                >
+                                                    <Rating
+                                                        name="customized-10"
+                                                        defaultValue={1}
+                                                        max={1}
+                                                        sx={{ fontSize: "350px", color: "#FFF44F" }}
+                                                    />
+                                                </Box>
+                                                <Box
+                                                    sx={{
+                                                        position: "absolute",
+                                                        top: "50%", // по центру вертикали
+                                                        left: "50%", // по центру горизонтали
+                                                        transform: "translate(-50%, -50%)",
+                                                        pointerEvents: "none", // чтобы не мешала клику по видео
+                                                    }}
+                                                >
+                                                    <VideoCat
+                                                        src={"/win.mp4"}
+                                                        setToggelVideoCatFoo={()=>setToggelVideoCat(0)}
+                                                        toggelVideoCat={toggelVideoCat}
+                                                        showCondition={toggelVideoCat === 3}
+                                                    />
+                                                </Box>
                                             </Box>
+
+                                            <Typography sx={{ color: "#FFF44F", mt: -2 }}>
+                                                Поздравляем, вы получаете звезду!
+                                            </Typography>
                                         </Box>
                                     </Box>
                                 </Modal>
@@ -837,7 +897,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
               }}
           >
             <Typography variant="h6" sx={{color: 'white'}}>
-              {currentIndex[type] + 1}. {currentQuestion.question}
+              {currentIndex[type]}/{questions.length} {currentQuestion.question}
             </Typography>
             <IconButton
                 onClick={() => speakText(currentQuestion.question, "ru")}
@@ -895,7 +955,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                 {toggelVideoCat === 2 && (
                                     <VideoCat
                                         src={"/RightS6.mp4"}
-                                        setToggelVideoCat={setToggelVideoCat}
+                                        setToggelVideoCatFoo={()=>setToggelVideoCat(0)}
                                         toggelVideoCat={toggelVideoCat}
                                         showCondition={toggelModal === 1 && answerStatus === "correct"} // 👈 фикс
                                     />
@@ -992,9 +1052,32 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                 ВЕРНУТЬСЯ К ВИДЕО
                             </Button>
                         </Box>
-        </span>
+                </span>
             )}
         </Paper>
+       
+        {videoLoading && (
+            <Box sx={{ 
+                width: "95%", 
+                maxWidth: "980px", 
+                margin: "0 auto",
+                marginTop: "-16px", // убираем отступ Paper
+                position: "relative",
+                zIndex: 1
+            }}>
+                <LinearProgress
+                    sx={{
+                        width: "100%",
+                        height: 4,
+                        backgroundColor: "rgb(0, 183, 255)",
+                        "& .MuiLinearProgress-bar": {
+                            backgroundColor: "#00ff00",
+                        },
+                    }}
+                />
+            </Box>
+        )}
+         </>
     );
 };
 

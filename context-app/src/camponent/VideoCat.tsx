@@ -3,13 +3,13 @@ import React, { useEffect, useRef, useState } from "react";
 type VideoCatProps = {
     src: string;
     toggelVideoCat: 0 | 1 | 2 | 3;
-    setToggelVideoCat: (toggelVideoCat: 0 | 1 | 2 | 3) => void;
+    setToggelVideoCatFoo: () => void;
     showCondition: boolean;
 };
 
 export const VideoCat: React.FC<VideoCatProps> = ({
                                                       src,
-                                                      setToggelVideoCat,
+                                                      setToggelVideoCatFoo,
                                                       toggelVideoCat,
                                                       showCondition,
                                                   }) => {
@@ -19,6 +19,13 @@ export const VideoCat: React.FC<VideoCatProps> = ({
     const handleCanPlay = () => {
         setLoaded(true);
     };
+
+    // Загружаем видео сразу при монтировании компонента
+    useEffect(() => {
+        if (videoRef.current) {
+            videoRef.current.load();
+        }
+    }, [src]);
 
     useEffect(() => {
         if (!loaded && toggelVideoCat !== 0 && videoRef.current) {
@@ -55,10 +62,9 @@ export const VideoCat: React.FC<VideoCatProps> = ({
                 ref={videoRef}
                 src={src}
                 autoPlay
-                muted
                 playsInline
                 onCanPlay={handleCanPlay}
-                onEnded={() => setToggelVideoCat(0)} // 👈 котик «засыпает»
+                onEnded={() => setToggelVideoCatFoo()} // 👈 котик «засыпает»
                 style={{
                     width: "120px",
                     height: "120px",
