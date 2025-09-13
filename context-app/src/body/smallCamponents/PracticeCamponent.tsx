@@ -105,7 +105,6 @@ console.log(questions.length)
         const allDone = questions.every((q) => q.isDone);
         setCongratulation(allDone);
     }, [questions, type]);
-    // Управление состоянием загрузки видео
     useEffect(() => {
         // Симулируем загрузку видео при монтировании компонента
         const timer = setTimeout(() => {
@@ -115,7 +114,6 @@ console.log(questions.length)
         return () => clearTimeout(timer);
     }, []);
 
-    // Сброс состояния загрузки при изменении toggle
     useEffect(() => {
         if (toggle) {
             setVideoLoading(false);
@@ -333,8 +331,9 @@ console.log(questions.length)
     const GoToTheorya = () => {
         setToggelModal(0)
         setAnswerStatus("none")
-        toggleTheory(!toggle);
+        toggleTheory(true); // открываем теорию
         openTheory(true)
+        setShowPractice(false); // закрываем практику
     }
     const LeftSlider = () => {
         setPage((p) => Math.max(p - 1, 0))
@@ -459,34 +458,46 @@ console.log(questions.length)
                                             </TableHead>
                                             <TableBody>
                                                 <TableRow>
-                                                    <TableCell align="center">Я люблю</TableCell>
-                                                    <TableCell align="center">I love</TableCell>
-                                                    <TableCell align="center">I don’t love</TableCell>
-                                                    <TableCell align="center">Do I love?</TableCell>
+                                                    <TableCell align="center">Я {time ==='Present'?'люблю':
+                                                    time==='Past'?'любил':'буду любить' }</TableCell>
+                                                    <TableCell align="center">I {time ==='Present'?'love':
+                                                    time==='Past'?'loved':'will love' }</TableCell>
+                                                    <TableCell align="center">I {time ==='Present'?'don\'t love':
+                                                    time==='Past'?'didn\'t love':'won\'t love' }</TableCell>
+                                                    <TableCell align="center">{time ==='Present'?'Do I love?':
+                                                    time==='Past'?'Did I love?':'Will I love?' }</TableCell>
                                                 </TableRow>
                                                 <TableRow>
                                                     <TableCell sx={{backgroundColor: "#FFF44F", color: "#000"}}>
-                                                        Он/Она/Оно любит
+                                                        Он/Она/Оно {time ==='Present'?'любит':
+                                                    time==='Past'?'любил':'будет любить' }
                                                     </TableCell>
                                                     <TableCell
                                                         sx={{backgroundColor: "#FFF44F", color: "#000", px: '10%'}}
                                                     >
-                                                        He/She/It loves
+                                                        He/She/It {time ==='Present'?'loves':
+                                                        time==='Past'?'loved':'will love' }
                                                     </TableCell>
                                                     <TableCell
                                                         sx={{backgroundColor: "#FFF44F", color: "#000", px: 1}}
                                                     >
-                                                        He/She/It does not (doesn't) love
+                                                        He/She/It {time ==='Present'?'does not (doesn\'t) love':
+                                                        time==='Past'?'did not (didn\'t) love':'will not (won\'t) love' }
                                                     </TableCell>
                                                     <TableCell sx={{backgroundColor: "#FFF44F", color: "#000"}}>
-                                                        Does he/she/it love?
+                                                        {time ==='Present'?'Does he/she/it love?':
+                                                        time==='Past'?'Did he/she/it love?':'Will he/she/it love?' }
                                                     </TableCell>
                                                 </TableRow>
                                                 <TableRow>
-                                                    <TableCell>Мы/Ты/Они любим</TableCell>
-                                                    <TableCell sx={{px: '10%'}}>We/You/They love</TableCell>
-                                                    <TableCell sx={{px: 1}}>We/You/They don't love</TableCell>
-                                                    <TableCell>Do we/you/they love?</TableCell>
+                                                    <TableCell>Мы/Ты/Они {time ==='Present'?'любим':
+                                                    time==='Past'?'любили':'будут любить' }</TableCell>
+                                                    <TableCell sx={{px: '10%'}}>We/You/They {time ==='Present'?'love':
+                                                    time==='Past'?'loved':'will love' }</TableCell>
+                                                    <TableCell sx={{px: 1}}>We/You/They {time ==='Present'?'don\'t love':
+                                                    time==='Past'?'didn\'t love':'won\'t love' }</TableCell>
+                                                    <TableCell>{time ==='Present'?'Do we/you/they love?':
+                                                    time==='Past'?'Did we/you/they love?':'Will we/you/they love?' }</TableCell>
                                                 </TableRow>
                                             </TableBody>
                                         </Table>
@@ -587,15 +598,7 @@ console.log(questions.length)
                             <span onClick={() => ButtonFoo(toggle)}>
                                 Практика – {time} Simple ({progress.done}/{progress.total})
                             </span>
-                            {videoLoading && (
-                                <span style={{ 
-                                    color: "#00ff00", 
-                                    fontSize: "14px", 
-                                    fontWeight: "bold"
-                                }}>
-                                    Загрузка...
-                                </span>
-                            )}
+                            
                         </div>
                     ) : !isFinished ? (
                         <div>
@@ -896,9 +899,10 @@ console.log(questions.length)
                   mb: 1,
               }}
           >
-            <Typography variant="h6" sx={{color: 'white'}}>
-              {currentIndex[type]}/{questions.length} {currentQuestion.question}
-            </Typography>
+              <Typography variant="h6" sx={{color: 'white', display: 'flex', alignItems: 'center', gap: 1}}>
+               <span style={{color: '#FFF44F'}}>{questions.filter(q => q.isDone).length}/{questions.length}</span>
+               <span>{currentQuestion.question}</span>
+              </Typography>
             <IconButton
                 onClick={() => speakText(currentQuestion.question, "ru")}
                 sx={{color: "#FFF44F"}}
