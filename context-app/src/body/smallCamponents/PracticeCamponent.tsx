@@ -258,15 +258,17 @@ console.log(questions.length)
     const handleNextQuestion = () => {
         const next = questions.find((q) => !q.isDone);
         if (next) {
+            const nextIndex = questions.indexOf(next);
+            const nextPage = Math.floor(nextIndex / itemsPerPage);
+            
+            // Обновляем страницу на ту, где находится неотвеченный вопрос
+            setPage(nextPage);
+            
             setCurrentQuestion(next);
             setCurrentIndex((prev) => ({
                 ...prev,
-                [type]: questions.indexOf(next),
+                [type]: nextIndex,
             }));
-            const qestionIsTrue = visibleQuestions.find((q) => !q.isDone);
-            if (qestionIsTrue === undefined) {
-                setPage((p) => Math.max(p + 1))
-            }
         } else {
             setCongratulation(false);
         }
@@ -854,7 +856,7 @@ console.log(questions.length)
                                                     }}
                                                 >
                                                     <VideoCat
-                                                        src={"/win.mp4"}
+                                                        src={"/win2.mp4"}
                                                         setToggelVideoCatFoo={()=>setToggelVideoCat(0)}
                                                         toggelVideoCat={toggelVideoCat}
                                                         showCondition={toggelVideoCat === 3}
