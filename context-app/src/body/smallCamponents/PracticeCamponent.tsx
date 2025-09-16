@@ -75,7 +75,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                 ? "вопросительное"
                 : "отрицательное";
     // pagination used internally; UI shows all questions
-    const [page, setPage] = useState(0);
+    const [, setPage] = useState(0);
     const itemsPerPage = 9;
     const [progress, setProgress] = useState<{ done: number, total: number }>({done: 0, total: 0});
 console.log(questions.length)
