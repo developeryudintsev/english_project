@@ -5,7 +5,7 @@ type VideoCatProps = {
     toggelVideoCat: 0 | 1 | 2 | 3;
     setToggelVideoCatFoo: () => void;
     showCondition: boolean;
-    size?: "small" | "normal";
+    size?: "small" |'medium'| "normal";
 };
 
 export const VideoCat: React.FC<VideoCatProps> = ({
@@ -17,7 +17,27 @@ export const VideoCat: React.FC<VideoCatProps> = ({
                                                   }) => {
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const [loaded, setLoaded] = useState(false);
-    const sizePx = size === "small" ? 48 : 120;
+    const [responsiveSize, setResponsiveSize] = useState<"small" | "medium" | "normal">(size);
+
+    // Следим за шириной экрана
+    useEffect(() => {
+        const updateSize = () => {
+            if (window.innerWidth < 600) {
+                setResponsiveSize("small");
+            } else if (window.innerWidth < 900) {
+                setResponsiveSize("medium");
+            } else {
+                setResponsiveSize("normal");
+            }
+        };
+
+        updateSize(); // вызвать при монтировании
+        window.addEventListener("resize", updateSize);
+        return () => window.removeEventListener("resize", updateSize);
+    }, []);
+
+    // Преобразуем size → px
+    const sizePx = responsiveSize === "small" ? 60 : responsiveSize === "medium" ? 90 : 120;
 
     const handleCanPlay = () => {
         setLoaded(true);
