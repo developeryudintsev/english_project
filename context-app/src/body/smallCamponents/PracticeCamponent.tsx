@@ -24,9 +24,7 @@ import {addQuestions, data, getQuestions, getRatingMap, updateQuestion, updateRa
 import {VideoCat} from "../../camponent/VideoCat";
 import {ModalCamponent} from "../../modal/Modal";
 import CloseIcon from "@mui/icons-material/Close";
-import {TypeAnimation} from 'react-type-animation';
 import Rating from '@mui/material/Rating';
-import Modal from '@mui/material/Modal';
 
 type TimeKey = "Present" | "Future" | "Past";
 export type changeType = "." | "?" | "!";
@@ -76,10 +74,9 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
             : type === "?"
                 ? "вопросительное"
                 : "отрицательное";
+    // pagination used internally; UI shows all questions
     const [page, setPage] = useState(0);
     const itemsPerPage = 9;
-    const startIndex = page * itemsPerPage;
-    const visibleQuestions = questions.slice(startIndex, startIndex + itemsPerPage);
     const [progress, setProgress] = useState<{ done: number, total: number }>({done: 0, total: 0});
 console.log(questions.length)
     useEffect(() => {
@@ -337,24 +334,7 @@ console.log(questions.length)
         openTheory(true)
         setShowPractice(false); // закрываем практику
     }
-    const LeftSlider = () => {
-        setPage((p) => Math.max(p - 1, 0))
-        const index = (page - 1) * itemsPerPage;
-        const questionsWithOutDelay = questions.slice(index, index + itemsPerPage);
-        const findQestion = questionsWithOutDelay.find((f) => f.isDone == false)
-        const result = findQestion == undefined ? questionsWithOutDelay[0] : findQestion
-        setCurrentQuestion(result)
-        wordFoo(result.id)
-    }
-    const RightSlider = () => {
-        setPage((p) => Math.max(p + 1))
-        const index = (page + 1) * itemsPerPage;
-        const questionsWithOutDelay = questions.slice(index, index + itemsPerPage);
-        const findQestion = questionsWithOutDelay.find((f) => f.isDone == false)
-        const result = findQestion == undefined ? questionsWithOutDelay[0] : findQestion
-        setCurrentQuestion(result)
-        wordFoo(result.id)
-    }
+    
     return (
         <>
         <Paper
@@ -602,7 +582,7 @@ console.log(questions.length)
                             </span>
                             
                         </div>
-                    ) : !isFinished ? (
+                    ) : (
                         <div>
                             <Box
                                 sx={{
@@ -615,6 +595,20 @@ console.log(questions.length)
                                     pr: 3,
                                 }}
                             >
+                                {isFinished && (
+                                    <Box sx={{ position: 'relative', width: 56, height: 56 }}>
+                                        <Rating name="done-star" value={1} max={1} readOnly sx={{ fontSize: 56, color: "#FFF44F" }} />
+                                        <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+                                            <VideoCat
+                                                src={"/win2.mp4"}
+                                                setToggelVideoCatFoo={() => {}}
+                                                toggelVideoCat={toggelVideoCat}
+                                                showCondition={true}
+                                                size={"small"}
+                                            />
+                                        </Box>
+                                    </Box>
+                                )}
                                 <FormControl sx={{minWidth: 160}} size="small">
                                     <Select
                                         value={type}
@@ -664,30 +658,15 @@ console.log(questions.length)
                                         width: "100%",
                                     }}
                                 >
-                                    {questions.length > itemsPerPage && (
-                                        <Button
-                                            variant="outlined"
-                                            disabled={page === 0}
-                                            onClick={() => LeftSlider()}
-                                            sx={{
-                                                fontSize: 40,
-                                                border: "#FFF44F",
-                                                color: "#FFF44F",
-                                                minWidth: "40px",
-                                            }}
-                                        >
-                                            {`<`}
-                                        </Button>
-                                    )}
                                     <Box
                                         sx={{
                                             display: "grid",
-                                            gridTemplateColumns: "repeat(3, 1fr)", // 3 кнопки в ряд
+                                            gridTemplateColumns: "repeat(3, 1fr)",
                                             gap: 1,
                                             width: "70%",
                                         }}
                                     >
-                                        {visibleQuestions.map((m) => {
+                                        {questions.map((m) => {
                                             const isCurrent = currentQuestion?.id === m.id;
                                             return (
                                                 <Button
@@ -721,157 +700,9 @@ console.log(questions.length)
                                             );
                                         })}
                                     </Box>
-                                    {questions.length > itemsPerPage && (
-                                        <Button
-                                            variant="outlined"
-                                            disabled={startIndex + itemsPerPage >= questions.length}
-                                            onClick={() => RightSlider()}
-                                            sx={{
-                                                fontSize: 40,
-                                                border: "#FFF44F",
-                                                color: "#FFF44F",
-                                                minWidth: "40px",
-                                            }}
-                                        >
-                                            {'>'}
-                                        </Button>
-                                    )}
                                 </Box>
                             </Box>
                         </div>
-                    ) : (
-                        <Box sx={{height: '80px'}}>
-                            {toggelVideoCat === 0 && (
-                                <Box>
-                                    <Typography sx={{color: "#FFF44F", mb: 2}}>
-                                        <TypeAnimation
-                                            sequence={[
-                                                "Поздравляем! Вы ответили на все вопросы.",
-                                                1000,
-                                            ]}
-                                            wrapper="span"
-                                            speed={50}
-                                            style={{fontSize: "1em", display: "inline-block"}}
-                                            repeat={Infinity}
-                                        />
-                                    </Typography>
-                                    <FormControl sx={{minWidth: 160}} size="small">
-                                        <Select
-                                            value={type}
-                                            onChange={(e) => {
-                                                const newType = e.target.value as changeType;
-                                                setType(newType);
-                                                setCurrentQuestion(
-                                                    data.simple[time][newType][currentIndex[newType]]
-                                                );
-                                            }}
-                                            displayEmpty
-                                            inputProps={{"aria-label": "Select tense"}}
-                                            sx={{
-                                                backgroundColor: "white",
-                                                borderRadius: 1,
-                                                width: "100%",
-                                            }}
-                                        >
-                                            <MenuItem value=".">утвердительное</MenuItem>
-                                            <MenuItem value="?">вопросительное</MenuItem>
-                                            <MenuItem value="!">отрицательное</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                </Box>
-
-                            )}
-                            {toggelVideoCat === 3 && (
-                                <Modal
-                                    open={toggelVideoCat === 3}
-                                    aria-labelledby="modal-modal-title"
-                                    aria-describedby="modal-modal-description"
-                                >
-                                    <Box
-                                        sx={{
-                                            position: "absolute",
-                                            top: "50%",
-                                            left: "50%",
-                                            transform: "translate(-50%, -50%)",
-                                            bgcolor: "#444447",
-                                            border: "2px solid #FFF44F",
-                                            boxShadow: 24,
-                                            p: 4,
-                                            borderRadius: "12px",
-                                            textAlign: "center",
-                                        }}
-                                    >
-                                        <Typography sx={{color: "#FFF44F", mb: 2}}>
-                                            <TypeAnimation
-                                                sequence={["Поздравляем! Вы ответили на все вопросы.", 1000]}
-                                                wrapper="span"
-                                                speed={50}
-                                                style={{fontSize: "1em", display: "inline-block"}}
-                                                repeat={Infinity}
-                                            />
-                                        </Typography>
-                                        <Box
-                                            sx={{
-                                                position: "relative",
-                                                display: "flex",
-                                                flexDirection: "column",
-                                                justifyContent: "center",
-                                                alignItems: "center",
-                                                gap: 2,
-                                            }}
-                                        >
-                                            {/* 🔹 Контейнер видео + звезда */}
-                                            <Box
-                                                sx={{
-                                                    position: "relative",
-                                                    width: "100%",
-                                                    maxWidth: "400px", // ограничим ширину видео
-                                                    height:'280px',
-                                                    mx: "auto", // центрируем
-                                                }}
-                                            >
-                                                <Box
-                                                    sx={{
-                                                        position: "absolute",
-                                                        top: "50%", // по центру вертикали
-                                                        left: "50%", // по центру горизонтали
-                                                        transform: "translate(-50%, -50%)",
-                                                        pointerEvents: "none", // чтобы не мешала клику по видео
-                                                    }}
-                                                >
-                                                    <Rating
-                                                        name="customized-10"
-                                                        defaultValue={1}
-                                                        max={1}
-                                                        sx={{ fontSize: "350px", color: "#FFF44F" }}
-                                                    />
-                                                </Box>
-                                                <Box
-                                                    sx={{
-                                                        position: "absolute",
-                                                        top: "50%", // по центру вертикали
-                                                        left: "50%", // по центру горизонтали
-                                                        transform: "translate(-50%, -50%)",
-                                                        pointerEvents: "none", // чтобы не мешала клику по видео
-                                                    }}
-                                                >
-                                                    <VideoCat
-                                                        src={"/win2.mp4"}
-                                                        setToggelVideoCatFoo={()=>setToggelVideoCat(0)}
-                                                        toggelVideoCat={toggelVideoCat}
-                                                        showCondition={toggelVideoCat === 3}
-                                                    />
-                                                </Box>
-                                            </Box>
-
-                                            <Typography sx={{ color: "#FFF44F", mt: -2 }}>
-                                                Поздравляем, вы получаете звезду!
-                                            </Typography>
-                                        </Box>
-                                    </Box>
-                                </Modal>
-                            )}
-                        </Box>
                     )}
                 </Typography>
 
@@ -890,7 +721,7 @@ console.log(questions.length)
                     <InfoOutlinedIcon/>
                 </IconButton>
             </Box>
-            {toggle && !isFinished && currentQuestion && (
+            {toggle && currentQuestion && (
                 <span>
           <Box
               sx={{
@@ -1067,7 +898,7 @@ console.log(questions.length)
                 width: "95%", 
                 maxWidth: "980px", 
                 margin: "0 auto",
-                marginTop: "-16px", // убираем отступ Paper
+                marginTop: "-16px",
                 position: "relative",
                 zIndex: 1
             }}>

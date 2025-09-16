@@ -5,6 +5,7 @@ type VideoCatProps = {
     toggelVideoCat: 0 | 1 | 2 | 3;
     setToggelVideoCatFoo: () => void;
     showCondition: boolean;
+    size?: "small" | "normal";
 };
 
 export const VideoCat: React.FC<VideoCatProps> = ({
@@ -12,9 +13,11 @@ export const VideoCat: React.FC<VideoCatProps> = ({
                                                       setToggelVideoCatFoo,
                                                       toggelVideoCat,
                                                       showCondition,
+                                                      size = "normal",
                                                   }) => {
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const [loaded, setLoaded] = useState(false);
+    const sizePx = size === "small" ? 48 : 120;
 
     const handleCanPlay = () => {
         setLoaded(true);
@@ -35,7 +38,7 @@ export const VideoCat: React.FC<VideoCatProps> = ({
     }, [toggelVideoCat]);
 
     return (
-        <div style={{ position: "relative", width: 120, height: 120 }}>
+        <div style={{ position: "relative", width: sizePx, height: sizePx }}>
             {!loaded && (
                 <div
                     style={{
@@ -66,8 +69,8 @@ export const VideoCat: React.FC<VideoCatProps> = ({
                 onCanPlay={handleCanPlay}
                 onEnded={() => setToggelVideoCatFoo()} // 👈 котик «засыпает»
                 style={{
-                    width: "120px",
-                    height: "120px",
+                    width: `${sizePx}px`,
+                    height: `${sizePx}px`,
                     borderRadius: "50%",
                     objectFit: "cover",
                     objectPosition: "top center",
