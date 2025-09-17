@@ -95,7 +95,7 @@ export const Header = (props: HeaderType) => {
                 {(["Present", "Past", "Future"] as const).map((tense) => (
                     <Box key={tense} sx={{ mb: 2 }}>
                         <Typography variant="subtitle1" sx={{ fontWeight: "bold", color: "#FFF44F", mb: 1 }}>
-                            {tense}
+                            {tense} Simple
                         </Typography>
 
                         <TableContainer component={Paper} sx={{ my: 2 }}>
@@ -241,7 +241,6 @@ export const Header = (props: HeaderType) => {
                                         </Box>
                                     </Modal>
                                 </Box>
-{/*сделай так чтобы ава и reating бфли в одну строку но reating справа*/}
                                 <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
                                     {/* Звезда слева */}
                                     <Box sx={{position: "relative", display: "inline-flex", alignItems: "center"}}>
@@ -316,7 +315,7 @@ export const Header = (props: HeaderType) => {
                         </>
                     ) : (
                         <>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexGrow: 1 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexGrow: 1,marginTop:'10px' }}>
                                 <Typography sx={{ color: '#FFF44F', fontWeight: 500, flexShrink: 0 }}>Simple</Typography>
                                 <FormControl size="small" sx={{ flexGrow: 1, minWidth: 160, maxWidth: 250 }}>
                                     <Select

@@ -27,6 +27,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import {TypeAnimation} from 'react-type-animation';
 import Rating from '@mui/material/Rating';
 import Modal from '@mui/material/Modal';
+import AutorenewIcon from "@mui/icons-material/Autorenew";
 
 type TimeKey = "Present" | "Future" | "Past";
 export type changeType = "." | "?" | "!";
@@ -749,6 +750,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                         )}
                                     </Box>
                                 </Box>
+
                                 {toggelVideoCat === 3 && (
                                     <Modal
                                         open={toggelVideoCat === 3}
@@ -766,7 +768,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                                 bgcolor: "#444447",
                                                 border: "2px solid #FFF44F",
                                                 boxShadow: 24,
-                                                p: {xs: 2, sm: 4},
+                                                p: { xs: 2, sm: 4 },
                                                 borderRadius: "12px",
                                                 textAlign: "center",
                                             }}
@@ -782,6 +784,21 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                                 }}
                                             >
                                                 <IconButton
+                                                    onClick={handleRefresh}
+                                                    sx={{
+                                                        position: "absolute",
+                                                        top: -16,
+                                                        right: 28, // 👈 немного левее крестика
+                                                        backgroundColor: "green",
+                                                        color: "white",
+                                                        "&:hover": { backgroundColor: "darkgreen" },
+                                                        width: { xs: 32, sm: 40 },
+                                                        height: { xs: 32, sm: 40 },
+                                                    }}
+                                                >
+                                                    <AutorenewIcon fontSize="small" />
+                                                </IconButton>
+                                                <IconButton
                                                     onClick={() => setToggelVideoCat(0)}
                                                     sx={{
                                                         position: "absolute",
@@ -789,21 +806,22 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                                         right: -16,
                                                         backgroundColor: "red",
                                                         color: "white",
-                                                        "&:hover": {backgroundColor: "darkred"},
-                                                        width: {xs: 32, sm: 40},
-                                                        height: {xs: 32, sm: 40},
+                                                        "&:hover": { backgroundColor: "darkred" },
+                                                        width: { xs: 32, sm: 40 },
+                                                        height: { xs: 32, sm: 40 },
                                                     }}
                                                 >
-                                                    <CloseIcon fontSize="small"/>
+                                                    <CloseIcon fontSize="small" />
                                                 </IconButton>
 
                                                 <Typography
                                                     sx={{
                                                         color: "#FFF44F",
                                                         mb: 2,
-                                                        fontSize: {xs: "0.9rem", sm: "1.2rem"},
+                                                        fontSize: { xs: "0.9rem", sm: "1.2rem" },
                                                         textAlign: "center",
                                                         wordBreak: "break-word",
+                                                        marginTop:'40px'
                                                     }}
                                                 >
                                                     <TypeAnimation
@@ -817,13 +835,12 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                                         repeat={Infinity}
                                                     />
                                                 </Typography>
-
                                                 <Box
                                                     sx={{
                                                         position: "relative",
                                                         width: "100%",
-                                                        maxWidth: {xs: "280px", sm: "400px"},
-                                                        height: {xs: "200px", sm: "280px"},
+                                                        maxWidth: { xs: "280px", sm: "400px" },
+                                                        height: { xs: "200px", sm: "280px" },
                                                         mx: "auto",
                                                     }}
                                                 >
@@ -841,7 +858,7 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                                             defaultValue={1}
                                                             max={1}
                                                             sx={{
-                                                                fontSize: {xs: "180px", sm: "280px", md: "350px"},
+                                                                fontSize: { xs: "180px", sm: "280px", md: "350px" },
                                                                 color: "#FFF44F",
                                                             }}
                                                         />
@@ -863,26 +880,11 @@ export const PracticeComponent: React.FC<PracticeComponentProps> = ({
                                                         />
                                                     </Box>
                                                 </Box>
-                                                <Button
-                                                    variant="contained"
-                                                    onClick={handleRefresh}
-                                                    sx={{
-                                                        backgroundColor: "#FFF44F",
-                                                        color: "black",
-                                                        fontWeight: "bold",
-                                                        mt: 2,
-                                                        "&:hover": {backgroundColor: "#e6d600"},
-                                                        fontSize: {xs: "0.8rem", sm: "1rem"},
-                                                        px: {xs: 2, sm: 3},
-                                                        py: {xs: 1, sm: 1.5},
-                                                    }}
-                                                >
-                                                    🔄 Обновить
-                                                </Button>
                                             </Box>
                                         </Box>
                                     </Modal>
                                 )}
+
                             </div>
                         )}
                     </Typography>
