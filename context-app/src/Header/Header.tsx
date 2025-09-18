@@ -73,7 +73,6 @@ export const Header = (props: HeaderType) => {
             }
         })();
     }, [modalToggle]);
-
     const getLessonInfo = (tense: "Past" | "Present" | "Future", lessonKey: string) => {
         const lessons = questions?.simple?.[tense] ?? {};
         const lesson = lessons?.[lessonKey] ?? [];
@@ -315,7 +314,7 @@ export const Header = (props: HeaderType) => {
                         </>
                     ) : (
                         <>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexGrow: 1,marginTop:'10px' }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexGrow: 1,marginTop:'15px' }}>
                                 <Typography sx={{ color: '#FFF44F', fontWeight: 500, flexShrink: 0 }}>Simple</Typography>
                                 <FormControl size="small" sx={{ flexGrow: 1, minWidth: 160, maxWidth: 250 }}>
                                     <Select

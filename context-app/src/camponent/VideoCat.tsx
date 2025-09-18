@@ -1,11 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
-
 type VideoCatProps = {
     src: string;
     toggelVideoCat: 0 | 1 | 2 | 3;
     setToggelVideoCatFoo: () => void;
     showCondition: boolean;
-    size?: "small" |'medium'| "normal";
+    size?: "small" | "medium" | "normal";
 };
 
 export const VideoCat: React.FC<VideoCatProps> = ({
@@ -31,31 +30,35 @@ export const VideoCat: React.FC<VideoCatProps> = ({
             }
         };
 
-        updateSize(); // вызвать при монтировании
+        updateSize();
         window.addEventListener("resize", updateSize);
         return () => window.removeEventListener("resize", updateSize);
     }, []);
 
-    // Преобразуем size → px
     const sizePx = responsiveSize === "small" ? 60 : responsiveSize === "medium" ? 90 : 120;
 
     const handleCanPlay = () => {
         setLoaded(true);
     };
 
-    // Загружаем видео сразу при монтировании компонента
+    // Загружаем видео сразу при монтировании
     useEffect(() => {
         if (videoRef.current) {
             videoRef.current.load();
         }
     }, [src]);
 
+    // Запускаем только если showCondition === true
     useEffect(() => {
-        if (!loaded && toggelVideoCat !== 0 && videoRef.current) {
-            videoRef.current.currentTime = 0;
-            videoRef.current.play().catch(() => {});
+        if (videoRef.current) {
+            if (showCondition && toggelVideoCat !== 0) {
+                videoRef.current.currentTime = 0;
+                videoRef.current.play().catch(() => {});
+            } else {
+                videoRef.current.pause();
+            }
         }
-    }, [toggelVideoCat]);
+    }, [showCondition, toggelVideoCat]);
 
     return (
         <div style={{ position: "relative", width: sizePx, height: sizePx }}>
@@ -84,10 +87,9 @@ export const VideoCat: React.FC<VideoCatProps> = ({
             <video
                 ref={videoRef}
                 src={src}
-                autoPlay
                 playsInline
                 onCanPlay={handleCanPlay}
-                onEnded={() => setToggelVideoCatFoo()} // 👈 котик «засыпает»
+                onEnded={() => setToggelVideoCatFoo()}
                 style={{
                     width: `${sizePx}px`,
                     height: `${sizePx}px`,
