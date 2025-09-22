@@ -30,7 +30,9 @@ export const AppRoutes = () => {
                         <Link to="/app">
                             <div
                                 style={{
-                                    background: "white",
+                                    background: "#555",
+                                    color:'#FFF44F',
+                                    textDecoration: 'none',
                                     border: "2px solid black",
                                     padding: "30px 60px",
                                     borderRadius: "12px",
@@ -46,7 +48,9 @@ export const AppRoutes = () => {
                         <Link to="/themes">
                             <div
                                 style={{
-                                    background: "white",
+                                    background: "#555",
+                                    color:'#FFF44F',
+                                    textDecoration: 'none',
                                     border: "2px solid black",
                                     padding: "30px 60px",
                                     borderRadius: "12px",
@@ -62,7 +66,9 @@ export const AppRoutes = () => {
                         <Link to="/about">
                             <div
                                 style={{
-                                    background: "white",
+                                    textDecoration: 'none',
+                                    background: "#555",
+                                    color:'#FFF44F',
                                     border: "2px solid black",
                                     padding: "30px 60px",
                                     borderRadius: "12px",
